@@ -5,7 +5,8 @@
   "description": "Find the forged entries on a dictionary page by deduction.",
   "scripts": {
     "check": "node check.js",
-    "gen": "node gen.js"
+    "gen": "node gen.js",
+    "share-card": "node share/render.js"
   },
   "engines": {
     "node": ">=18"

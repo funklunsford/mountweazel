@@ -10,7 +10,11 @@ A *mountweazel* is a fake entry planted in a reference work. The name comes from
 
 Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html` in a browser. There's no build step and nothing to install.
 
-Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js` and `pages.js`) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
+Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js`, `pages.js` and the link-preview image) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
+
+## Share card
+
+When the site's link is shared, previews show `share/card.png`: a 1200 × 630 front page set in the game's own type. It's drawn in `share/card.html`; after changing that, run `npm run share-card`, which renders it with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place), and commit the PNG. Its specimen entries come from retired pages, so the card never gives away a live page's answers. `index.html` carries the Open Graph and Twitter tags that point to it.
 
 - One entry starts verified. Each genuine entry you verify opens with its real history and a note about the other entries.
 - Tap an entry to call it genuine or fake. Tap the magnifying glass to mark a suspect while you think.

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mountweazel share card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=block">
+<style>
+/* The link preview: a 1200 × 630 front page. `npm run share-card` renders it to card.png.
+   The specimen entries come from retired pages, so the card never gives away today's answers. */
+:root {
+  --newsprint: #ecebe5;
+  --ink: #161514;
+  --ink-2: #57544d;
+  --rule: #b8b4aa;
+  --pencil: #2645a8;
+  --dele: #ae2a1f;
+  --hunch: #875600;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+body { background: var(--newsprint); color: var(--ink); font-family: "Newsreader", Georgia, serif; }
+.card { display: flex; flex-direction: column; width: 1200px; height: 630px; padding: 30px 48px 28px; }
+
+.masthead { display: grid; grid-template-columns: 172px 1fr 172px; align-items: center; gap: 20px; }
+.ear { padding: 9px 11px; border: 1.5px solid var(--ink); font-size: 15px; line-height: 1.3; }
+.ear b { display: block; margin-bottom: 3px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+.nameplate { margin: 0; font-family: "UnifrakturMaguntia", serif; font-weight: 400; font-size: 100px; line-height: 1; text-align: center; white-space: nowrap; }
+.folio { display: flex; justify-content: space-between; margin-top: 14px; padding: 7px 2px; border-top: 5px double var(--ink); border-bottom: 1.5px solid var(--ink); font-size: 14px; letter-spacing: .18em; text-transform: uppercase; }
+
+.front { display: grid; grid-template-columns: 1fr 440px; gap: 34px; flex: 1; margin-top: 26px; min-height: 0; }
+.lead { display: flex; flex-direction: column; min-height: 0; }
+.kicker { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+.headline { margin: 10px 0 18px; font-size: 66px; font-weight: 800; line-height: 1; letter-spacing: -.012em; font-variation-settings: "opsz" 72; text-wrap: balance; }
+.deck { margin: 0; font-size: 28px; font-style: italic; line-height: 1.32; color: var(--ink-2); }
+
+.legend { display: flex; align-items: center; gap: 30px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 10px; }
+.legend i { font-family: "Caveat", cursive; font-size: 28px; font-weight: 600; font-style: normal; letter-spacing: 0; text-transform: none; transform: rotate(-8deg); }
+.legend svg { color: var(--hunch); }
+.page { padding-left: 30px; border-left: 1.5px solid var(--rule); }
+.section { display: flex; justify-content: space-between; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1.5px solid var(--ink); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.entry { position: relative; padding: 11px 62px 11px 0; border-bottom: 1px solid var(--rule); }
+.entry:last-child { border-bottom: 0; }
+.hw { font-size: 21px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.pos { margin-left: 7px; font-size: 18px; font-style: italic; color: var(--ink-2); }
+.def { display: block; margin-top: 3px; font-size: 20px; line-height: 1.28; }
+.mark { position: absolute; right: 2px; top: 10px; font-family: "Caveat", cursive; font-size: 30px; font-weight: 600; transform: rotate(-8deg); }
+.stet { color: var(--pencil); }
+.dele { color: var(--dele); }
+.fake .hw, .fake .def { text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 3px; }
+.fake .def { color: var(--ink-2); }
+.suspect .hw { outline: 2.5px solid var(--hunch); outline-offset: 4px; border-radius: 999px; }
+.lens { position: absolute; right: 8px; top: 14px; color: var(--hunch); }
+
+.foot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 9px; border-top: 1.5px solid var(--ink); font-size: 18px; }
+.url { font-weight: 600; letter-spacing: .06em; }
+.tag { font-style: italic; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<div class="card">
+  <header class="masthead">
+    <div class="ear"><b>Today’s page</b>A dozen entries, a few of them forged</div>
+    <h1 class="nameplate">The Mountweazel</h1>
+    <div class="ear"><b>Forecast</b>Foggy, with forgeries likely.</div>
+  </header>
+  <div class="folio"><span>Vol. I</span><span>A puzzle of forged words</span><span>Price one penny</span></div>
+
+  <div class="front">
+    <div class="lead">
+      <p class="kicker">Lexicography</p>
+      <h2 class="headline">Forgeries Found on Dictionary Page</h2>
+      <p class="deck">Somebody slipped fakes in among the real archaic words. Prove which ones before the page goes to press.</p>
+      <p class="legend"><span><i class="stet">stet</i> genuine</span><span><i class="dele">dele</i> forged</span><span><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><circle cx="10" cy="10" r="6.2" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="2"/><path d="M14.6 14.6 20.5 20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg> suspect</span></p>
+    </div>
+    <div class="page">
+      <div class="section"><span>The word page</span><span>Specimen</span></div>
+      <div class="entry"><span class="hw">costard</span><span class="pos">n.</span><span class="def">a large apple; in jest, the head.</span><span class="mark stet">stet</span></div>
+      <div class="entry fake"><span class="hw">cozenwit</span><span class="pos">n.</span><span class="def">one who lives by cheating.</span><span class="mark dele">dele</span></div>
+      <div class="entry suspect"><span class="hw">groozle</span><span class="pos">v.</span><span class="def">to grunt or gurgle; to gobble food noisily.</span><svg class="lens" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><circle cx="10" cy="10" r="6.2" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="2"/><path d="M14.6 14.6 20.5 20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+      <div class="entry"><span class="hw">flyte</span><span class="pos">v.</span><span class="def">to scold, to wrangle.</span></div>
+    </div>
+  </div>
+
+  <footer class="foot"><span class="url">funklunsford.github.io/mountweazel</span><span class="tag">Find the forgeries. No guessing needed.</span></footer>
+</div>
+</body>
+</html>

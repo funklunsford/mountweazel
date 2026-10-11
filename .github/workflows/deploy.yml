@@ -1,7 +1,7 @@
 # Every push to main (a merged pull request) is checked and published to the site,
 # https://funklunsford.github.io/mountweazel/ (GitHub Pages on this repo, built by Actions).
 # Pull requests are checked but not published. Only the page itself is published:
-# index.html, game.js and pages.js, not the tools beside them.
+# index.html, game.js, pages.js and the link-preview image, not the tools beside them.
 name: Check and deploy
 
 on:
@@ -45,7 +45,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Collect the page
-        run: mkdir site && cp index.html game.js pages.js site/
+        run: |
+          mkdir -p site/share
+          cp index.html game.js pages.js site/
+          cp share/card.png site/share/
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
