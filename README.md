@@ -14,7 +14,7 @@ Every merge to `main` runs `npm run check` and, if every page passes, publishes 
 
 ## Share card
 
-When the site's link is shared, previews show `share/card.png`: a 1200 × 630 front page set in the game's own type. It's drawn in `share/card.html`; after changing that, run `npm run share-card`, which renders it with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place), and commit the PNG. Its specimen entries come from retired pages, so the card never gives away a live page's answers. `index.html` carries the Open Graph and Twitter tags that point to it.
+When the site's link is shared, previews show `share/card.png`: a 1200 × 630 card with the nameplate and a plain statement of what the game is. It shows no words from any page. It's drawn in `share/card.html`; after changing that, run `npm run share-card`, which renders it with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place), and commit the PNG. `index.html` carries the Open Graph and Twitter tags that point to it, and their title and description say the same thing in words.
 
 - One entry starts verified. Each genuine entry you verify opens with its real history and a note about the other entries.
 - Tap an entry to call it genuine or fake. Tap the magnifying glass to mark a suspect while you think.
