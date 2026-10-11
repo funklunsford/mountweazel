@@ -10,11 +10,13 @@ A *mountweazel* is a fake entry planted in a reference work. The name comes from
 
 Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html` in a browser. There's no build step and nothing to install.
 
-Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js`, `pages.js` and the link-preview image) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
+Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js`, `pages.js` and the images in `share/`) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
 
 ## Share card
 
-When the site's link is shared, previews show `share/card.png`: a 1200 × 630 card with the nameplate and a plain statement of what the game is. It shows no words from any page. It's drawn in `share/card.html`; after changing that, run `npm run share-card`, which renders it with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place), and commit the PNG. `index.html` carries the Open Graph and Twitter tags that point to it, and their title and description say the same thing in words.
+When the site's link is shared, previews show `share/card.png`: a 1200 × 630 card with the nameplate and a plain statement of what the game is. It shows no words from any page. `share/square.png` is a simpler square version, a blackletter M in a double-ruled frame with the name beneath, for apps that show square thumbnails. The M on its own makes the site's icons: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens.
+
+The cards are drawn in `share/card.html` and `share/square.html`. After changing either, run `npm run share-card` and commit the PNGs. It renders them with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place) and shrinks the icons with macOS's `sips`. `index.html` carries the Open Graph and Twitter tags: the wide card comes first and the square card second. Their title and description say in words what the card shows.
 
 - One entry starts verified. Each genuine entry you verify opens with its real history and a note about the other entries.
 - Tap an entry to call it genuine or fake. Tap the magnifying glass to mark a suspect while you think.

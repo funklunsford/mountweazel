@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mountweazel square card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,800&family=UnifrakturMaguntia&display=block">
+<style>
+/* The square card, 1200 × 1200: a blackletter M in a double-rule frame, with the name beneath.
+   Rendered by `npm run share-card` to square.png. With #mark it drops the caption, and the
+   render shrinks that version into the site's icons (favicon.png, apple-touch-icon.png). */
+:root {
+  --newsprint: #ecebe5;
+  --ink: #161514;
+  --dele: #ae2a1f;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1200px; height: 1200px; overflow: hidden; }
+body { background: var(--newsprint); color: var(--ink); }
+.frame { position: absolute; inset: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 16px double var(--ink); }
+.mark { font-family: "UnifrakturMaguntia", serif; font-size: 640px; line-height: .8; margin-top: -40px; }
+.caption { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-top: 70px; }
+.name { font-family: "UnifrakturMaguntia", serif; font-size: 108px; line-height: 1; }
+.kicker { font-family: "Newsreader", Georgia, serif; font-size: 40px; font-weight: 800; letter-spacing: .24em; text-transform: uppercase; color: var(--dele); padding-left: .24em; }
+/* The icon version: just the M, filling the frame. */
+body.only-mark .frame { inset: 60px; border-width: 22px; }
+body.only-mark .mark { font-size: 860px; margin-top: 30px; }
+body.only-mark .caption { display: none; }
+</style>
+</head>
+<body>
+<script>if (location.hash === '#mark') document.body.classList.add('only-mark');</script>
+<div class="frame">
+  <div class="mark" aria-hidden="true">M</div>
+  <div class="caption">
+    <div class="name">The Mountweazel</div>
+    <div class="kicker">A word puzzle</div>
+  </div>
+</div>
+</body>
+</html>
