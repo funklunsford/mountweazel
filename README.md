@@ -8,7 +8,9 @@ A *mountweazel* is a fake entry planted in a reference work. The name comes from
 
 ## Play
 
-Open `index.html` in a browser. There's no build step and nothing to install.
+Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html` in a browser. There's no build step and nothing to install.
+
+Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js` and `pages.js`) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
 
 - One entry starts verified. Each genuine entry you verify opens with its real history and a note about the other entries.
 - Tap an entry to call it genuine or fake. Tap the magnifying glass to mark a suspect while you think.
