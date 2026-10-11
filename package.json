@@ -1,0 +1,13 @@
+{
+  "name": "mountweazel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Find the forged entries on a dictionary page by deduction.",
+  "scripts": {
+    "check": "node check.js",
+    "gen": "node gen.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
