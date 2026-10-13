@@ -5,147 +5,159 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body { margin: 0; }</style>
 <title>Mountweazel</title>
-<meta name="description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta name="description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <link rel="canonical" href="https://funklunsford.github.io/mountweazel/">
-<meta name="theme-color" content="#86c9e3">
-<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1533">
+<meta name="theme-color" content="#ecebe5">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141413">
 <link rel="icon" type="image/png" sizes="64x64" href="share/favicon.png">
 <link rel="apple-touch-icon" href="share/apple-touch-icon.png">
 <!-- Link previews: share/card.html (wide) and share/square.html (square), rendered by `npm run share-card`. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mountweazel">
-<meta property="og:title" content="Mountweazel: climb a mountain of old words">
-<meta property="og:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta property="og:title" content="The Mountweazel: climb a mountain of old words">
+<meta property="og:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <meta property="og:url" content="https://funklunsford.github.io/mountweazel/">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Mountweazel, a word game: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
+<meta property="og:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/square.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="A round climbing badge: a snowy mountain with an orange flag on its peak, above the word Mountweazel.">
+<meta property="og:image:alt" content="A round summit badge, a snowy peak with a red flag, in a double-ruled frame above the words “The Mountweazel, a word puzzle”.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Mountweazel: climb a mountain of old words">
-<meta name="twitter:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta name="twitter:title" content="The Mountweazel: climb a mountain of old words">
+<meta name="twitter:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <meta name="twitter:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
-<meta name="twitter:image:alt" content="Mountweazel, a word game: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
+<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:ital,wght@0,400..800;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=swap">
 <style>
-/* A climbing game: a pastel sky, a banded mountain with a switchback trail and a little scout,
-   chunky outlined panels and buttons, and a striped rope bar. Light is a clear morning; dark is dusk. */
+/* A newspaper covering an expedition. The masthead, the lead and the word page are set like a
+   front page; the climb itself is a hand-tinted plate of the mountain with a scout on it. Each ledge
+   you climb sets one entry on the word page, so the page is built as you go. */
 :root {
-  --page-top: #86c9e3; --page-low: #ffe9d4;
-  --text: #2a2140; --text-2: #5b5270; --line: #2a2140;
-  --panel: #fffaf0; --panel-2: #f3ead8;
-  --right: #49b465; --right-text: #217a3c; --right-wash: #d9f2df;
-  --wrong: #e5483d; --wrong-deep: #b8322a; --wrong-text: #b8322a; --wrong-wash: #fde0dc;
-  --rope: #f0a95b; --rope-dark: #b9732f;
-  --action: #ff7d3b;
-  --hold-a: #ff8f80; --hold-b: #5cc6bd;
-  /* The scene. */
-  --scene-top: #86c9e3; --scene-low: #fde7cf;
-  --far-1: #bccfe8; --far-2: #a6bfe0;
-  --foothills: #9ed27a; --treeline: #4fa36f; --scree: #b6abc4; --ridge: #d8ecf6; --summit: #ffffff;
-  --tree: #2f7a52; --rock: #8f86a3; --shade: rgb(42 33 64 / .16);
-  --cloud: #ffffff; --trail: rgb(255 255 255 / .92); --sun: #fff1a8; --star: transparent;
-  --face-display: "Lilita One", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
-  --face-text: "Rubik", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --newsprint: #ecebe5; --sheet: #f6f4ee;
+  --ink: #161514; --ink-2: #57544d; --rule: #b8b4aa; --shadow: #161514;
+  --pencil: #2645a8; --pencil-wash: #dde3f4;
+  --dele: #ae2a1f; --dele-deep: #7d1b13; --dele-wash: #f2dbd6;
+  --rope: #c99558; --rope-dark: #8c5f2e;
+  /* The plate, tinted like an engraving coloured by hand. */
+  --sky: #dbe4e3; --far: #9aa7ad; --cloud: #f8f7f2; --sun: #f0d98a; --star: transparent;
+  --foothills: #cfd8a3; --treeline: #9db98c; --scree: #c9bfb0; --ridge: #d7e2e5; --summit: #fbfaf5;
+  --tree: #5c875b; --rock: #9c9385; --scout: #e2904a; --scout-hat: #9a6a3c; --scout-pack: #7a5532; --sash: #2645a8;
+  --face-name: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
+  --face-text: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --face-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --runhead-h: 46px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --page-top: #17122e; --page-low: #523a69;
-    --text: #f3eee6; --text-2: #bdb3d0; --line: #0d0a1a;
-    --panel: #2a2345; --panel-2: #221c3a;
-    --right: #5fcf7c; --right-text: #86e6a0; --right-wash: #1f3b2c;
-    --wrong: #ff6a5c; --wrong-deep: #c9443a; --wrong-text: #ff958b; --wrong-wash: #44222a;
-    --rope: #f0b26a; --rope-dark: #a8682b;
-    --action: #ff8a4c;
-    --scene-top: #1a1533; --scene-low: #5b3f6e;
-    --far-1: #3a3163; --far-2: #463a72;
-    --foothills: #4f7c52; --treeline: #2f5d4c; --scree: #6c6585; --ridge: #8fa6c4; --summit: #dfe6f5;
-    --tree: #1d4636; --rock: #4f4867; --shade: rgb(8 5 20 / .32);
-    --cloud: #5d5189; --trail: rgb(255 255 255 / .6); --sun: #f4f1d0; --star: #fff7d6;
+    --newsprint: #141413; --sheet: #1c1b19;
+    --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934; --shadow: #45423c;
+    --pencil: #93acff; --pencil-wash: #1f2943;
+    --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
+    --rope: #d3a46a; --rope-dark: #8a5d2c;
+    --sky: #1c2230; --far: #3c4452; --cloud: #353b48; --sun: #e9e3c0; --star: #f2ecd2;
+    --foothills: #4e5b3b; --treeline: #3b5341; --scree: #5a544b; --ridge: #5b6a73; --summit: #c7ccd2;
+    --tree: #2a4534; --rock: #6b645a; --scout: #d98a48; --scout-hat: #8a5e36; --scout-pack: #6a4a2c; --sash: #93acff;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --page-top: #17122e; --page-low: #523a69;
-  --text: #f3eee6; --text-2: #bdb3d0; --line: #0d0a1a;
-  --panel: #2a2345; --panel-2: #221c3a;
-  --right: #5fcf7c; --right-text: #86e6a0; --right-wash: #1f3b2c;
-  --wrong: #ff6a5c; --wrong-deep: #c9443a; --wrong-text: #ff958b; --wrong-wash: #44222a;
-  --rope: #f0b26a; --rope-dark: #a8682b;
-  --action: #ff8a4c;
-  --scene-top: #1a1533; --scene-low: #5b3f6e;
-  --far-1: #3a3163; --far-2: #463a72;
-  --foothills: #4f7c52; --treeline: #2f5d4c; --scree: #6c6585; --ridge: #8fa6c4; --summit: #dfe6f5;
-  --tree: #1d4636; --rock: #4f4867; --shade: rgb(8 5 20 / .32);
-  --cloud: #5d5189; --trail: rgb(255 255 255 / .6); --sun: #f4f1d0; --star: #fff7d6;
+  --newsprint: #141413; --sheet: #1c1b19;
+  --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934; --shadow: #45423c;
+  --pencil: #93acff; --pencil-wash: #1f2943;
+  --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
+  --rope: #d3a46a; --rope-dark: #8a5d2c;
+  --sky: #1c2230; --far: #3c4452; --cloud: #353b48; --sun: #e9e3c0; --star: #f2ecd2;
+  --foothills: #4e5b3b; --treeline: #3b5341; --scree: #5a544b; --ridge: #5b6a73; --summit: #c7ccd2;
+  --tree: #2a4534; --rock: #6b645a; --scout: #d98a48; --scout-hat: #8a5e36; --scout-pack: #6a4a2c; --sash: #93acff;
   color-scheme: dark;
 }
 
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-html { background: var(--page-low); }
-body { min-height: 100vh; background: linear-gradient(180deg, var(--page-top) 0, var(--page-low) 560px, var(--page-low) 100%); color: var(--text); font-family: var(--face-text); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
-.wrap { max-width: 760px; margin-inline: auto; padding: 14px 16px 56px; }
+body { background: var(--newsprint); color: var(--ink); font-family: var(--face-text); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
+.paper { max-width: 1120px; margin-inline: auto; padding: 16px 16px 64px; }
 
-/* White display lettering with a dark outline and a dropped edge, like a sticker. */
-.outlined { color: #fff; text-shadow: -2px -2px 0 var(--line), 2px -2px 0 var(--line), -2px 2px 0 var(--line), 2px 2px 0 var(--line), 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line), 0 4px 0 var(--line); }
+/* Masthead: ears either side of the nameplate, then the folio line. */
+.masthead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 18px; }
+.nameplate { grid-column: 2; grid-row: 1; margin: 0; font-family: var(--face-name); font-weight: 400; font-size: clamp(2.5rem, 8.4vw, 5.3rem); line-height: 1.05; text-align: center; }
+.ear { grid-row: 1; display: grid; gap: 5px; align-content: start; max-width: 200px; padding: 7px 10px; border: 1px solid var(--ink); font-size: .8rem; line-height: 1.3; }
+.ear-left { grid-column: 1; justify-self: start; }
+.ear-right { grid-column: 3; justify-self: end; }
+.ear-kicker { font-size: .66rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.folio { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 18px; padding: 5px 2px; border-top: 4px double var(--ink); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+@media (max-width: 719px) {
+  .masthead { grid-template-columns: 1fr; gap: 6px; }
+  .nameplate { grid-column: 1; }
+  .ear { display: none; }
+  .folio { flex-wrap: nowrap; }
+  .folio .price { display: none; }
+}
 
-/* Title. */
-.top { display: grid; justify-items: center; gap: 4px; text-align: center; }
-.logo { display: flex; align-items: center; gap: 8px; margin: 0; font-family: var(--face-display); font-weight: 400; font-size: clamp(2.3rem, 9vw, 3.6rem); line-height: 1.05; letter-spacing: .02em; color: #fff; text-shadow: -3px -3px 0 var(--line), 3px -3px 0 var(--line), -3px 3px 0 var(--line), 3px 3px 0 var(--line), 0 -3px 0 var(--line), 0 3px 0 var(--line), -3px 0 0 var(--line), 3px 0 0 var(--line), 0 6px 0 var(--line); }
-.logo svg { width: .95em; height: .95em; flex: none; overflow: visible; filter: drop-shadow(0 4px 0 var(--line)); }
-.logo .lg-mtn { fill: #fff; stroke: var(--line); stroke-width: 3; stroke-linejoin: round; }
-.logo .lg-pole { stroke: var(--line); stroke-width: 2.5; stroke-linecap: round; }
-.logo .lg-flag { fill: var(--action); stroke: var(--line); stroke-width: 2; stroke-linejoin: round; }
-.tagline { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; margin: 2px 0 0; font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.tag-pill { padding: 3px 10px; border: 2px solid var(--line); border-radius: 999px; background: var(--panel); font-variant-numeric: tabular-nums; }
-.deck { margin: 4px 0 0; max-width: 34rem; font-weight: 500; line-height: 1.35; text-wrap: balance; }
-
-/* How to climb. */
-.rules { margin-top: 12px; }
-.rules > summary { display: flex; align-items: center; gap: 8px; width: fit-content; margin-inline: auto; padding: 6px 14px; border: 2.5px solid var(--line); border-radius: 999px; background: var(--panel); box-shadow: 0 3px 0 var(--line); font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; list-style: none; }
-.rules > summary::-webkit-details-marker { display: none; }
-.rules > summary::before { content: "▸"; transition: transform .2s; }
-.rules[open] > summary::before { transform: rotate(90deg); }
-.steps { display: grid; gap: 8px; margin: 12px 0 0; padding: 14px 16px; border: 3px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: 0 5px 0 var(--line); list-style: none; }
-.steps li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
-.step-n { display: grid; place-items: center; width: 26px; height: 26px; border: 2.5px solid var(--line); border-radius: 50%; background: var(--rope); font-family: var(--face-display); font-size: .95rem; line-height: 1; color: #fff; text-shadow: 0 1px 0 var(--line); box-sizing: border-box; }
-.steps p { margin: 2px 0 0; }
-.steps kbd { font: inherit; font-size: .85em; padding: 0 5px; border: 2px solid var(--line); border-radius: 6px; background: var(--panel-2); }
-
-/* The scene: sky, mountain, trail and climber, with the altitude and rope bar over it. */
-.ascent { container: ascent / inline-size; min-width: 0; margin-top: 14px; scroll-margin-top: 8px; }
-.scene-card { position: relative; overflow: hidden; border: 3px solid var(--line); border-radius: 22px; background: linear-gradient(180deg, var(--scene-top), var(--scene-low)); box-shadow: 0 6px 0 var(--line); }
-.scene { display: block; width: 100%; height: clamp(206px, 62vw, 300px); overflow: visible; }
-.hud { position: absolute; inset: 8px 8px auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
-.hud-alt { display: grid; justify-items: start; gap: 2px; }
-.alt-num { font-family: var(--face-display); font-size: 1.55rem; line-height: 1; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
-/* The ledge and camp wrap onto two short lines, so the pill stays clear of the summit on narrow phones. */
-.where { max-width: 7.2rem; margin: 0; padding: 2px 7px; border: 2px solid var(--line); border-radius: 10px; background: rgb(255 255 255 / .82); color: #2a2140; font-size: .62rem; font-weight: 800; line-height: 1.3; letter-spacing: .05em; text-transform: uppercase; }
-.ropes { display: flex; align-items: center; gap: 4px; padding: 3px 6px; border: 2px solid var(--line); border-radius: 999px; background: rgb(255 255 255 / .82); }
+/* The running head stays at the top of the screen: altitude, ledge and camp, and the rope bar. */
+.runhead { position: sticky; top: 0; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 6px 14px; min-height: var(--runhead-h); box-sizing: border-box; margin: 0 -16px; padding: 5px 16px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--newsprint); }
+.rh-left { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; min-width: 0; }
+.rh-alt { font-size: 1.3rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rh-where { margin: 0; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.ropes { display: flex; align-items: center; gap: 4px; flex: none; }
+.ropes-label { margin-right: 2px; font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
 .rope-icon { width: 20px; height: 20px; flex: none; }
-.rope-seg { width: 24px; height: 11px; box-sizing: border-box; border: 2px solid var(--line); border-radius: 6px; background: repeating-linear-gradient(135deg, var(--rope) 0 4px, var(--rope-dark) 4px 6px); transition: background-color .3s; }
-.rope-seg.cut { background: repeating-linear-gradient(135deg, var(--wrong) 0 3px, #fff 3px 6px); }
-.title-card { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 2px; padding-top: 18px; text-align: center; pointer-events: none; opacity: 0; }
-.title-card.show { animation: titlecard 2.3s ease forwards; }
-.tc-name { font-family: var(--face-display); font-size: clamp(2.1rem, 9vw, 3.1rem); line-height: 1; letter-spacing: .05em; text-transform: uppercase; }
-.tc-sub { font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-@keyframes titlecard { 0% { opacity: 0; transform: translateY(10px) scale(.94); } 12% { opacity: 1; transform: none; } 72% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-8px); } }
+.rope-icon .coil-under { fill: none; stroke: var(--ink); stroke-width: 4.2; stroke-linecap: round; }
+.rope-icon .coil-over { fill: none; stroke: var(--rope); stroke-width: 2.2; stroke-linecap: round; }
+.rope-seg { width: 24px; height: 11px; box-sizing: border-box; border: 2px solid var(--ink); border-radius: 2px; background: repeating-linear-gradient(135deg, var(--rope) 0 4px, var(--rope-dark) 4px 6px); }
+.rope-seg.cut { background: repeating-linear-gradient(135deg, var(--dele) 0 3px, transparent 3px 6px); }
 
-/* Scene pieces, drawn by climb.js. */
-.scene .sky-sun { fill: var(--sun); }
+.front { display: grid; gap: 22px; margin-top: 16px; }
+@media (min-width: 900px) {
+  .front { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); column-gap: 34px; align-items: start; }
+  .lead { grid-column: 1 / -1; }
+  .plate { grid-column: 1; position: sticky; top: calc(var(--runhead-h) + 16px); }
+  .page { grid-column: 2; }
+}
+
+/* The lead story: what the game is, with the rules folded beneath. */
+.lead { padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
+.kicker { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--dele); }
+.headline { margin: 4px 0 8px; font-size: clamp(1.7rem, 4.4vw, 3rem); font-weight: 800; line-height: 1.03; letter-spacing: -.01em; font-variation-settings: "opsz" 72; text-wrap: balance; }
+.deck { margin: 0 0 10px; max-width: 62ch; font-size: 1.1rem; font-style: italic; line-height: 1.35; color: var(--ink-2); }
+.rules > summary { cursor: pointer; width: fit-content; font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.story { columns: 2 17rem; column-gap: 28px; column-rule: 1px solid var(--rule); margin-top: 10px; text-align: justify; hyphens: auto; }
+.story p { margin: 0 0 .6em; }
+.story p:first-child::first-letter { float: left; padding: 5px 7px 0 0; font-size: 3.5em; font-weight: 800; line-height: .8; }
+.story kbd { font: inherit; font-size: .85em; padding: 0 4px; border: 1px solid var(--rule); border-radius: 2px; }
+@media (max-width: 719px) {
+  .headline { font-size: 1.6rem; }
+  .deck { font-size: 1rem; margin-bottom: 8px; }
+  .story p:first-child::first-letter { float: none; padding: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
+}
+
+/* The plate: the mountain, hand-tinted, in a double-ruled frame with a caption. */
+.plate { margin: 0; }
+.plate-frame { position: relative; overflow: hidden; border: 2px solid var(--ink); outline: 1px solid var(--ink); outline-offset: 3px; background: linear-gradient(180deg, var(--sky), var(--newsprint)); box-shadow: 7px 7px 0 var(--shadow); }
+.scene { display: block; width: 100%; height: clamp(170px, 50vw, 330px); overflow: visible; }
+.plate figcaption { margin-top: 12px; font-size: .86rem; font-style: italic; line-height: 1.35; color: var(--ink-2); }
+.plate figcaption b { font-style: normal; font-weight: 800; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+/* A camp's name, rubber-stamped across the plate as you reach it. */
+.camp-stamp { position: absolute; inset: 0; display: grid; place-content: center; pointer-events: none; opacity: 0; }
+.camp-stamp.show { animation: campstamp 2.3s ease forwards; }
+.cs-box { display: grid; justify-items: center; gap: 2px; padding: 6px 16px 8px; border: 4px double var(--dele); background: color-mix(in srgb, var(--sheet) 88%, transparent); color: var(--dele); transform: rotate(-6deg); }
+.cs-name { font-size: clamp(1.5rem, 6vw, 2.3rem); font-weight: 800; line-height: 1; letter-spacing: .14em; text-transform: uppercase; }
+.cs-sub { font-size: .64rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+@keyframes campstamp { 0% { opacity: 0; transform: scale(1.4); } 10% { opacity: 1; transform: scale(1); } 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+
+/* Scene pieces, drawn by climb.js (SCENE). */
+.scene .sky-sun { fill: var(--sun); stroke: var(--ink); stroke-width: 1.2; }
 .scene .star { fill: var(--star); }
-.scene .far-1 { fill: var(--far-1); }
-.scene .far-2 { fill: var(--far-2); }
-.scene .cloud { fill: var(--cloud); opacity: .9; }
+.scene .far-1, .scene .far-2 { fill: url(#far-hatch); stroke: var(--far); stroke-width: 1.2; stroke-linejoin: round; }
+.scene .far-2 { stroke: var(--ink-2); }
+.scene .far-line { stroke: var(--far); stroke-width: 1; }
+.scene .cloud { fill: var(--cloud); opacity: .92; }
 .scene .drift { animation: drift 16s ease-in-out infinite alternate; }
 .scene .drift.slow { animation-duration: 23s; animation-direction: alternate-reverse; }
 @keyframes drift { from { transform: translateX(-10px); } to { transform: translateX(12px); } }
@@ -154,137 +166,193 @@ body { min-height: 100vh; background: linear-gradient(180deg, var(--page-top) 0,
 .scene .band-scree { fill: var(--scree); }
 .scene .band-ridge { fill: var(--ridge); }
 .scene .band-summit { fill: var(--summit); }
-.scene .shade { fill: var(--shade); }
-.scene .outline { fill: none; stroke: var(--line); stroke-width: 2.5; stroke-linejoin: round; }
-.scene .tree { fill: var(--tree); stroke: var(--line); stroke-width: 1.2; stroke-linejoin: round; }
-.scene .rock { fill: var(--rock); stroke: var(--line); stroke-width: 1.2; stroke-linejoin: round; }
+.scene .shade { fill: url(#ink-hatch); }
+.scene .ink-line { stroke: var(--ink); stroke-width: .8; opacity: .55; }
+.scene .outline { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linejoin: round; }
+.scene .tree { fill: var(--tree); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
+.scene .rock { fill: var(--rock); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
 .scene .haze { fill: url(#haze); }
-.scene .haze-stop { stop-color: var(--cloud); }
-.scene .hatch-bg { fill: var(--wrong); }
-.scene .hatch-fg { fill: var(--wrong-deep); }
-.scene .trail { fill: none; stroke: var(--trail); stroke-width: 2; stroke-dasharray: 2 5; stroke-linecap: round; }
+.scene .haze-stop { stop-color: var(--newsprint); }
+.scene .hatch-bg { fill: var(--dele); }
+.scene .hatch-fg { fill: var(--dele-deep); }
+.scene .trail { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 1.5 4.5; stroke-linecap: round; opacity: .7; }
 .scene .rope-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.scene .rope-under { stroke: var(--line); stroke-width: 6; }
-.scene .rope-over { stroke: var(--rope); stroke-width: 3; }
-.scene .pole { stroke: var(--line); stroke-width: 2; }
-.scene .flag { fill: var(--action); stroke: var(--line); stroke-width: 1.5; stroke-linejoin: round; }
-.scene .marker circle { fill: #fff; stroke: var(--line); stroke-width: 2.5; }
+.scene .rope-under { stroke: var(--ink); stroke-width: 5.5; }
+.scene .rope-over { stroke: var(--rope); stroke-width: 2.8; }
+.scene .pole { stroke: var(--ink); stroke-width: 2; }
+.scene .flag { fill: var(--dele); stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; }
+.scene .marker circle { fill: var(--sheet); stroke: var(--ink); stroke-width: 2.2; }
 .scene .marker .glyph { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; display: none; }
-.scene .marker.right circle { fill: var(--right); }
+.scene .marker.right circle { fill: var(--pencil); }
 .scene .marker.wrong circle { fill: url(#hatch-wrong); }
 .scene .marker.right .tick, .scene .marker.wrong .cross { display: inline; }
-.scene .marker.unreached { opacity: .55; }
-.scene .halo { fill: none; stroke: var(--action); stroke-width: 3; transform-box: fill-box; transform-origin: center; animation: halo 1.6s ease-out infinite; }
+.scene .marker.unreached { opacity: .5; }
+.scene .halo { fill: none; stroke: var(--dele); stroke-width: 2.6; transform-box: fill-box; transform-origin: center; animation: halo 1.6s ease-out infinite; }
 @keyframes halo { from { opacity: .95; transform: scale(.7); } to { opacity: 0; transform: scale(1.7); } }
 .scene .climber { transition: transform .75s cubic-bezier(.3, .8, .3, 1); }
 .scene .climber .bob { animation: bob 2.4s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-1.2px); } }
-.scene .scout-body { fill: #ff9a3c; stroke: var(--line); stroke-width: 1.6; }
-.scene .scout-pack { fill: #9b6a3e; stroke: var(--line); stroke-width: 1.4; }
-.scene .scout-hat { fill: #b07a45; stroke: var(--line); stroke-width: 1.4; stroke-linejoin: round; }
-.scene .scout-sash { fill: none; stroke: #3fa65a; stroke-width: 2.2; }
-.scene .scout-eye { fill: #fff; stroke: var(--line); stroke-width: .8; }
-.scene .scout-pupil, .scene .scout-foot { fill: #2a2140; }
+.scene .scout-body { fill: var(--scout); stroke: var(--ink); stroke-width: 1.5; }
+.scene .scout-pack { fill: var(--scout-pack); stroke: var(--ink); stroke-width: 1.3; }
+.scene .scout-hat { fill: var(--scout-hat); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
+.scene .scout-sash { fill: none; stroke: var(--sash); stroke-width: 2.2; }
+.scene .scout-eye { fill: #fff; stroke: var(--ink); stroke-width: .8; }
+.scene .scout-pupil, .scene .scout-foot { fill: #161514; }
 
-/* One ledge: two cards, then the verdict and Climb on. */
-.ledge { margin-top: 18px; }
-.prompt { margin: 0 0 12px; font-family: var(--face-display); font-weight: 400; font-size: 1.5rem; line-height: 1.1; letter-spacing: .02em; text-align: center; }
+/* The word page, built one ledge at a time. */
+.page { container: page / inline-size; min-width: 0; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin: 0; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.section-title { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.heads { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.slots { margin: 0; padding: 0; list-style: none; }
+.camp-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-top: 12px; padding: 4px 2px 3px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.camp-head:first-child { margin-top: 4px; }
+.ch-sub { font-weight: 600; letter-spacing: .1em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.camp-head.ahead { opacity: .45; }
+.camp-head.arrived { animation: arrived 1.8s ease-out; }
+@keyframes arrived { from { background: var(--dele-wash); } to { background: transparent; } }
+
+.slot { scroll-margin-top: calc(var(--runhead-h) + 10px); border-bottom: 1px solid var(--rule); }
+.slot.unset { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 7px 2px; border-bottom-style: dotted; color: var(--ink-2); font-size: .8rem; opacity: .7; }
+.slot-n { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.slot-alt { font-variant-numeric: tabular-nums; }
+.slot-note { font-style: italic; }
+.slot.frontier, .slot.reveal { padding: 12px 0 18px; border-bottom: 0; }
+.slot-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; margin: 0 0 12px; font-size: 1.15rem; font-weight: 800; line-height: 1.2; }
+.sh-alt { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
 .pair { display: grid; gap: 14px; }
-@container ascent (min-width: 560px) {
+@container page (min-width: 520px) {
   .pair { grid-template-columns: 1fr 1fr; }
-  .pair .card { min-height: 128px; }
+  .pair .card { min-height: 118px; }
 }
 .pair.arrive { animation: arrive .35s ease-out; }
-@keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes arrive { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-.card { position: relative; display: flex; flex-direction: column; gap: 4px; box-sizing: border-box; width: 100%; margin: 0; padding: 14px 16px 16px; border: 3px solid var(--line); border-radius: 18px; background: var(--panel); color: var(--text); box-shadow: 0 6px 0 var(--line); font: inherit; text-align: left; }
+/* Proof cards: pasted-up clippings with a hard shadow, pressed when you pick one. */
+.card { position: relative; display: flex; flex-direction: column; gap: 3px; box-sizing: border-box; width: 100%; margin: 0; padding: 11px 14px 14px; border: 2px solid var(--ink); border-radius: 3px; background: var(--sheet); color: var(--ink); box-shadow: 4px 4px 0 var(--shadow); font: inherit; text-align: left; }
 button.card { cursor: pointer; transition: transform .1s, box-shadow .1s, background-color .15s; }
-button.card:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--line); }
-button.card:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--line); }
-button.card:focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
-.hold { position: absolute; right: 12px; top: 12px; width: 30px; height: 24px; }
-.hold path { stroke: var(--line); stroke-width: 2; stroke-linejoin: round; }
-.hold-left path { fill: var(--hold-a); }
-.hold-right path { fill: var(--hold-b); }
-.hold circle { fill: var(--line); }
-.hw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; padding-right: 40px; }
-.hw { font-family: var(--face-display); font-size: 1.6rem; line-height: 1.1; letter-spacing: .03em; text-transform: uppercase; overflow-wrap: anywhere; }
-.pos { font-style: italic; color: var(--text-2); }
+button.card:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--shadow); background: var(--pencil-wash); }
+button.card:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--shadow); }
+button.card:focus-visible { outline: 2px solid var(--pencil); outline-offset: 3px; }
+.proof-label { font-size: .6rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.hw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 9px; padding-right: 4.4rem; }
+button.card .hw-line { padding-right: 0; }
+.hw { font-size: 1.22rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; overflow-wrap: anywhere; }
+.pos { font-style: italic; color: var(--ink-2); }
 .def { display: block; font-size: 1.05rem; }
-.card.real, .card.forged { padding-top: 22px; }
-.card.real { background: linear-gradient(var(--right), var(--right)) top / 100% 8px no-repeat, var(--panel); }
-.card.forged { background: repeating-linear-gradient(135deg, var(--wrong) 0 5px, transparent 5px 10px) top / 100% 8px no-repeat, var(--panel); }
-.card.forged .hw, .card.forged .def { text-decoration: line-through; text-decoration-color: var(--wrong); text-decoration-thickness: 2px; }
-.card.forged .def, .card.forged .pos { color: var(--text-2); }
-.pick-tag { align-self: flex-start; padding: 1px 8px; border: 2px solid var(--line); border-radius: 999px; background: var(--panel-2); font-size: .64rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.stamp { position: absolute; right: 12px; top: -14px; padding: 2px 10px 3px; border: 2.5px solid var(--line); border-radius: 10px; box-shadow: 0 3px 0 var(--line); font-family: var(--face-display); font-size: 1.05rem; line-height: 1.1; letter-spacing: .04em; color: #fff; text-shadow: 0 1px 0 var(--line); transform: rotate(4deg); pointer-events: none; }
-.card.real .stamp { background: var(--right); }
-.card.forged .stamp { background: repeating-linear-gradient(135deg, var(--wrong) 0 6px, var(--wrong-deep) 6px 10px); transform: rotate(-4deg); }
-.card.just .stamp { animation: stamp .45s cubic-bezier(.2, .9, .3, 1.4); }
+.card.real { background: linear-gradient(var(--pencil), var(--pencil)) top / 100% 5px no-repeat, var(--sheet); }
+.card.forged { background: repeating-linear-gradient(135deg, var(--dele) 0 4px, transparent 4px 8px) top / 100% 5px no-repeat, var(--sheet); }
+.card.real, .card.forged { padding-top: 15px; }
+.card.forged .hw, .card.forged .def { text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
+.card.forged .def, .card.forged .pos { color: var(--ink-2); }
+.pick-tag { font-size: .62rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.card.real .pick-tag { color: var(--pencil); }
+.card.forged .pick-tag { color: var(--dele); }
+.stamp { position: absolute; right: 12px; top: 8px; font-family: var(--face-hand); font-size: 1.6rem; line-height: 1; transform: rotate(-8deg); pointer-events: none; }
+.card.real .stamp { color: var(--pencil); }
+.card.forged .stamp { color: var(--dele); }
+.card.just .stamp { animation: stamp .45s cubic-bezier(.2, .9, .3, 1.3); }
 .card.just.forged.picked { animation: crumble .5s ease-out; }
-.card.just.real.picked { animation: pullup .45s ease-out; }
-@keyframes stamp { from { opacity: 0; scale: 1.7; } to { opacity: 1; scale: 1; } }
+@keyframes stamp { from { opacity: 0; transform: rotate(-8deg) scale(1.8); } to { opacity: 1; transform: rotate(-8deg) scale(1); } }
 @keyframes crumble { 15% { transform: translateX(-5px) rotate(-1deg); } 35% { transform: translateX(5px) rotate(1deg); } 55% { transform: translateX(-3px); } 75% { transform: translateX(2px); } }
-@keyframes pullup { 40% { transform: translateY(-6px); } }
 
-.reveal { display: grid; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 2px dashed var(--text-2); font-size: .95rem; }
+.reveal { display: grid; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--rule); font-size: .94rem; }
 .reveal p { margin: 0; }
-.quote { margin: 0; padding: 6px 10px; border-left: 4px solid var(--rope); border-radius: 0 10px 10px 0; background: var(--panel-2); font-style: italic; }
-.quote cite { display: block; margin-top: 2px; font-size: .85em; font-style: normal; color: var(--text-2); }
-.anatomy { padding: 8px 10px; border-radius: 12px; background: var(--wrong-wash); }
-.anatomy .tag { margin-right: 6px; font-family: var(--face-display); font-size: 1.05em; letter-spacing: .03em; color: var(--wrong-text); }
+.quote { margin: 0; padding-left: 12px; border-left: 2px solid var(--rule); font-style: italic; }
+.quote cite { display: block; font-size: .85em; font-style: normal; color: var(--ink-2); }
+.anatomy { padding: 7px 10px; background: var(--dele-wash); }
+.anatomy .tag { margin-right: 7px; font-family: var(--face-hand); font-size: 1.3em; line-height: 1; color: var(--dele); }
 
 /* After a pick, the verdict and Climb on float at the bottom of the screen while you read. */
-.next-bar { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-top: 18px; padding: 8px 8px 8px 14px; border: 3px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: 0 6px 0 var(--line); }
-.verdict-line { flex: 1 1 10rem; margin: 0; font-weight: 700; line-height: 1.3; }
-.verdict-line.right { color: var(--right-text); }
-.verdict-line.wrong { color: var(--wrong-text); }
-.btn { min-height: 46px; padding: 8px 20px; border: 3px solid var(--line); border-radius: 14px; box-shadow: 0 5px 0 var(--line); font-family: var(--face-display); font-size: 1.15rem; letter-spacing: .03em; cursor: pointer; transition: transform .1s, box-shadow .1s; }
-.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--line); }
-.btn-go { flex: none; background: var(--action); color: #fff; text-shadow: 0 2px 0 rgb(0 0 0 / .25); }
-.btn-plain { background: var(--panel-2); color: var(--text); font-size: 1rem; }
+.next-bar { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-top: 18px; padding: 8px 8px 8px 12px; border: 2px solid var(--ink); border-radius: 3px; background: var(--sheet); box-shadow: 4px 4px 0 var(--shadow); }
+.verdict-line { flex: 1 1 10rem; margin: 0; font-weight: 600; line-height: 1.3; }
+.verdict-line.right { color: var(--pencil); }
+.verdict-line.wrong { color: var(--dele); }
+.btn { min-height: 44px; padding: 8px 18px; border: 2px solid var(--ink); border-radius: 3px; font: inherit; font-size: .84rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: transform .1s, box-shadow .1s; }
+.btn-go { flex: none; background: var(--ink); color: var(--newsprint); box-shadow: 3px 3px 0 var(--dele); }
+.btn-go:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--dele); }
+.btn-plain { background: transparent; color: var(--ink); box-shadow: 3px 3px 0 var(--rule); }
+.btn-plain:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--rule); }
 
-/* The end of a climb: a badge, the result, then the log of every ledge. */
-.press { display: grid; justify-items: center; gap: 10px; padding: 18px 16px 20px; border: 3px solid var(--line); border-radius: 22px; background: var(--panel); box-shadow: 0 6px 0 var(--line); text-align: center; margin-top: 18px; }
-.badge { width: 128px; height: 128px; }
-.badge-name { margin: -4px 0 0; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--text-2); }
-.press h2 { margin: 0; font-family: var(--face-display); font-weight: 400; font-size: 2rem; line-height: 1.05; letter-spacing: .02em; text-wrap: balance; outline: none; }
-.muted { margin: 0; color: var(--text-2); font-size: .95rem; }
-#share-text { box-sizing: border-box; width: 100%; max-width: 26rem; padding: 8px 10px; border: 2px solid var(--line); border-radius: 12px; background: var(--panel-2); color: var(--text); font: inherit; font-size: .95rem; text-align: center; resize: none; }
-.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+/* A settled ledge: the real entry set in type, the forgery struck out beneath it. */
+.slot.set, .slot.unreached { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 10px; padding: 9px 2px 10px; }
+.slot-mark { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 2px; box-sizing: border-box; border: 2px solid var(--ink); border-radius: 50%; font-size: .72rem; font-weight: 800; line-height: 1; color: #fff; }
+.slot.right .slot-mark { background: var(--pencil); }
+.slot.wrong .slot-mark { background: repeating-linear-gradient(135deg, var(--dele) 0 3px, var(--dele-deep) 3px 6px); }
+.slot.unreached .slot-mark { border-style: dashed; color: var(--ink-2); }
+.slot.unreached .set-entries { opacity: .6; }
+.set-entries { display: grid; gap: 1px; min-width: 0; }
+.set-entry { margin: 0; line-height: 1.35; }
+.set-entry .hw { font-size: .96rem; }
+.set-entry .def { display: inline; font-size: 1rem; }
+.set-entry.forged .hw, .set-entry.forged .def { color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
+.set-alt { margin-left: 6px; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.proof { margin-left: 6px; font-family: var(--face-hand); font-size: 1.2em; line-height: 1; white-space: nowrap; }
+.proof.real { color: var(--pencil); }
+.proof.forged { color: var(--dele); }
+.erratum { margin: 1px 0 0; font-size: .84rem; font-style: italic; color: var(--dele); }
+.more { margin-top: 2px; }
+.more > summary { width: fit-content; padding: 2px 0; font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more .reveal { margin-top: 4px; }
+/* A ledge just set comes off the press: each line inked from the top down. */
+.slot.typeset .set-entry, .slot.typeset .erratum { animation: typeset .55s ease-out both; }
+.slot.typeset .set-entry.forged { animation-delay: .25s; }
+.slot.typeset .erratum { animation-delay: .45s; }
+@keyframes typeset { from { clip-path: inset(0 0 100% 0); opacity: .3; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
 
-.log-panel { margin-top: 24px; }
-.log-title { margin: 0 0 10px; font-family: var(--face-display); font-weight: 400; font-size: 1.45rem; letter-spacing: .02em; text-align: center; }
-.log { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.log-row { border: 3px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: 0 4px 0 var(--line); }
-.log-row summary { display: grid; grid-template-columns: 26px 4.6em minmax(0, 1fr); align-items: center; gap: 2px 10px; padding: 9px 12px; cursor: pointer; list-style: none; }
-.log-row summary::-webkit-details-marker { display: none; }
-.log-mark { display: grid; place-items: center; width: 24px; height: 24px; box-sizing: border-box; border: 2.5px solid var(--line); border-radius: 50%; font-size: .8rem; font-weight: 800; line-height: 1; color: #fff; }
-.log-row.right .log-mark { background: var(--right); }
-.log-row.wrong .log-mark { background: repeating-linear-gradient(135deg, var(--wrong) 0 3px, var(--wrong-deep) 3px 6px); }
-.log-row.unreached .log-mark { border-style: dashed; color: var(--text-2); }
-.log-words { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; min-width: 0; }
-.log-alt { font-size: .76rem; font-weight: 700; letter-spacing: .04em; color: var(--text-2); font-variant-numeric: tabular-nums; }
-.log-real { font-family: var(--face-display); font-size: 1.1rem; letter-spacing: .03em; text-transform: uppercase; }
-.log-fake { color: var(--text-2); text-decoration: line-through; text-decoration-color: var(--wrong); text-decoration-thickness: 2px; }
-.log-body { display: grid; gap: 22px 14px; padding: 14px 12px 14px; border-top: 2px dashed var(--text-2); }
-@container ascent (min-width: 560px) {
-  .log-body { grid-template-columns: 1fr 1fr; align-items: start; }
-}
+/* The end of a climb: the stop-press box, with a badge for the camp you reached. */
+.press { display: grid; justify-items: center; gap: 8px; margin-top: 22px; padding: 16px 16px 18px; border: 2px solid var(--ink); background: var(--sheet); box-shadow: 6px 6px 0 var(--shadow); text-align: center; }
+.press .kicker { color: var(--dele); }
+.badge { width: 112px; height: 112px; }
+.badge-name { margin: -4px 0 0; font-size: .66rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
+.press h2 { margin: 0; font-size: 1.9rem; font-weight: 800; line-height: 1.05; text-wrap: balance; outline: none; }
+.muted { margin: 0; color: var(--ink-2); font-size: .95rem; }
+#share-text { box-sizing: border-box; width: 100%; max-width: 26rem; padding: 8px 10px; border: 1px solid var(--rule); background: var(--newsprint); color: var(--ink); font: inherit; font-size: .95rem; text-align: center; resize: none; }
+.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
 
-.colophon { margin: 26px 0 0; font-size: .8rem; text-align: center; color: var(--text-2); }
+.colophon { margin: 22px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-size: .8rem; font-style: italic; color: var(--ink-2); }
 
-.btn:focus-visible, .rules > summary:focus-visible, .log-row summary:focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 10; box-sizing: border-box; width: max-content; max-width: min(92vw, 520px); padding: 10px 16px; transform: translateX(-50%); border: 3px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--text); font-size: .95rem; font-weight: 600; box-shadow: 0 5px 0 var(--line); }
+.btn:focus-visible, .rules > summary:focus-visible, .more > summary:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 10; box-sizing: border-box; width: max-content; max-width: min(92vw, 520px); padding: 10px 16px; transform: translateX(-50%); background: var(--ink); color: var(--newsprint); font-size: .95rem; box-shadow: 0 6px 24px rgb(0 0 0 / .22); }
 @media (max-width: 480px) {
   body { font-size: 16px; }
-  .deck { font-size: .95rem; }
+  .story { text-align: left; hyphens: manual; }
 }
-/* The smallest phones: a shorter rope bar, clear of the summit flag. */
-@media (max-width: 359px) {
+/* Phones: a one-line running head, a short lead and a smaller plate, so the first ledge's proofs
+   are on the first screen. The proof cards say what to do; the rules wait behind How to play. */
+@media (max-width: 719px) {
+  .front { gap: 14px; margin-top: 12px; }
+  .lead { padding-bottom: 8px; }
+  .headline { font-size: 1.22rem; margin: 2px 0 4px; }
+  .deck { display: none; }
+  .scene { height: clamp(130px, 40vw, 180px); }
+  .plate figcaption { margin-top: 10px; font-size: .8rem; }
+  .runhead { gap: 6px 10px; }
+  .rh-left { flex-wrap: nowrap; }
+  .rh-alt { font-size: 1.1rem; }
+  .rh-where { font-size: .62rem; letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .w-extra { display: none; }
+  .ropes-label { display: none; }
   .ropes { gap: 3px; }
   .rope-seg { width: 18px; }
-  .where { max-width: 6.4rem; font-size: .58rem; }
+  .slot-head { font-size: 1.08rem; }
+  .camp-head { flex-wrap: nowrap; font-size: .64rem; letter-spacing: .1em; }
+  .ch-sub { letter-spacing: .04em; white-space: nowrap; }
+  /* Proof A and B move into the card's corner. */
+  .proof-label { position: absolute; right: 12px; top: 12px; }
+  button.card .hw-line { padding-right: 64px; }
+}
+/* The smallest phones: everything a size down, so long headwords like FLIBBERTIGIBBET stay whole. */
+@media (max-width: 359px) {
+  .rope-seg { width: 15px; }
+  .nameplate { font-size: 2.2rem; }
+  .headline { font-size: 1.06rem; }
+  .scene { height: 120px; }
+  .camp-head { flex-wrap: wrap; }
+  .card .hw { font-size: 1.08rem; }
+  button.card .hw-line { padding-right: 58px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
@@ -292,63 +360,82 @@ button.card:focus-visible { outline: 3px solid var(--action); outline-offset: 3p
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <h1 class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path class="lg-mtn" d="M3 35 L16 12 L22 21 L27 14 L38 35 Z"/><path class="lg-pole" d="M16 12 V2"/><path class="lg-flag" d="M16 2 l9 3.4 l-9 3.4 Z"/></svg>Mountweazel</h1>
-    <p class="tagline"><span class="tag-pill" id="issue">Climb No. 1</span><span class="tag-pill" id="dateline"></span></p>
-    <p class="deck">Two old words on every ledge, one real and one forged. Grab the real one to climb. You carry three ropes, and a wrong grab cuts one.</p>
+<div class="paper">
+  <header class="masthead">
+    <div class="ear ear-left">
+      <span class="ear-kicker">Today’s climb</span>
+      <span>Twelve ledges, three ropes</span>
+    </div>
+    <h1 class="nameplate">The Mountweazel</h1>
+    <div class="ear ear-right">
+      <span class="ear-kicker">Forecast</span>
+      <span>Clear in the foothills, fog at the summit.</span>
+    </div>
+    <div class="folio">
+      <span id="issue">Vol. I · Climb No. 1</span>
+      <span id="dateline"></span>
+      <span class="price">Price one penny</span>
+    </div>
   </header>
 
-  <details class="rules">
-    <summary>How to climb</summary>
-    <ol class="steps">
-      <li><span class="step-n">1</span><p>Tap the word you think is real. Both cards then turn over: where the real word comes from, and how the forgery was made.</p></li>
-      <li><span class="step-n">2</span><p>A wrong grab cuts a rope, but you keep climbing. Lose all three ropes and the climb ends where you stand.</p></li>
-      <li><span class="step-n">3</span><p>The words grow rarer and stranger as you climb, from the foothills to the summit at 12,000 feet. With a keyboard, press <kbd>←</kbd> or <kbd>→</kbd> to grab.</p></li>
-    </ol>
-  </details>
+  <div class="runhead" id="runhead">
+    <div class="rh-left">
+      <span class="rh-alt" id="alt">0 ft</span>
+      <p class="rh-where" id="where"></p>
+    </div>
+    <div class="ropes" id="ropes" role="img" aria-label="3 ropes left"><span class="ropes-label" aria-hidden="true">Ropes</span></div>
+  </div>
 
-  <main class="ascent" id="ascent" aria-label="The climb">
-    <section class="scene-card" aria-label="Mount Weazel">
-      <svg class="scene" id="mountain" viewBox="0 0 360 230" role="img" aria-label="Mount Weazel"></svg>
-      <div class="hud">
-        <div class="hud-alt">
-          <span class="alt-num outlined" id="alt">0 ft</span>
-          <p class="where" id="where"></p>
+  <div class="front">
+    <article class="lead">
+      <p class="kicker">Expedition</p>
+      <h2 class="headline">Twelve Ledges Up Mount Weazel</h2>
+      <p class="deck">Two old words wait on every ledge, one real and one forged. Pick the real one to climb, and it’s set on the word page. You carry three ropes; a wrong pick cuts one.</p>
+      <details class="rules">
+        <summary>How to play</summary>
+        <div class="story">
+          <p>Tap the word you think is real. Both are then revealed: where the real word comes from, and how the forgery was made. Climb on, and the ledge is set on the word page: the real entry in type, the forgery struck out.</p>
+          <p>The words grow rarer and stranger as you climb, from the foothills to the summit at 12,000 feet. A wrong pick cuts a rope, and the forgery goes to press with an erratum, but you keep climbing. Lose all three ropes and the climb ends where you stand.</p>
+          <p>A mountweazel is a fake entry planted in a reference work to catch copiers. With a keyboard, press <kbd>←</kbd> or <kbd>→</kbd> to pick.</p>
         </div>
-        <div class="ropes" id="ropes" role="img" aria-label="3 ropes left"></div>
-      </div>
-      <div class="title-card" id="title-card" aria-hidden="true"><span class="tc-name outlined" id="tc-name"></span><span class="tc-sub outlined" id="tc-sub"></span></div>
-    </section>
+      </details>
+    </article>
 
-    <section class="ledge" id="ledge" aria-label="This ledge">
-      <h2 class="prompt" id="prompt">Grab the real word</h2>
-      <div class="pair" id="pair"></div>
+    <figure class="plate" aria-label="The mountain">
+      <div class="plate-frame">
+        <svg class="scene" id="mountain" viewBox="0 0 360 230" role="img" aria-label="Mount Weazel"></svg>
+        <div class="camp-stamp" id="title-card" aria-hidden="true"><div class="cs-box"><span class="cs-name" id="tc-name"></span><span class="cs-sub" id="tc-sub"></span></div></div>
+      </div>
+      <figcaption><b>Fig. 1.</b> <span id="caption">Mount Weazel, 12,000 ft.</span></figcaption>
+    </figure>
+
+    <main class="page" id="ascent" aria-label="The word page">
+      <div class="section-head">
+        <h2 class="section-title">The word page</h2>
+        <span class="heads" id="set-count">0 of 12 set</span>
+      </div>
+      <ol class="slots" id="slots"></ol>
       <div class="next-bar" id="next-bar" hidden>
         <p class="verdict-line" id="verdict-line"></p>
         <button class="btn btn-go" id="climb-on" type="button">Climb on</button>
       </div>
-    </section>
 
-    <section class="press" id="press" hidden aria-label="Result">
-      <svg class="badge" id="badge" viewBox="0 0 128 128" aria-hidden="true"></svg>
-      <p class="badge-name" id="badge-name"></p>
-      <h2 id="verdict" tabindex="-1">Summit reached!</h2>
-      <p id="press-stats" class="muted"></p>
-      <textarea id="share-text" rows="3" readonly aria-label="Your result to share"></textarea>
-      <div class="controls">
-        <button id="copy" type="button" class="btn btn-go">Copy result</button>
-        <button id="reset" type="button" class="btn btn-plain">Start over</button>
-      </div>
-    </section>
+      <section class="press" id="press" hidden aria-label="Result">
+        <p class="kicker">Stop press</p>
+        <svg class="badge" id="badge" viewBox="0 0 128 128" aria-hidden="true"></svg>
+        <p class="badge-name" id="badge-name"></p>
+        <h2 id="verdict" tabindex="-1">Summit reached</h2>
+        <p id="press-stats" class="muted"></p>
+        <textarea id="share-text" rows="3" readonly aria-label="Your result to share"></textarea>
+        <div class="controls">
+          <button id="copy" type="button" class="btn btn-go">Copy result</button>
+          <button id="reset" type="button" class="btn btn-plain">Start over</button>
+        </div>
+      </section>
 
-    <section class="log-panel" id="log-panel" hidden aria-label="Climb log">
-      <h2 class="log-title">Climb log</h2>
-      <ol class="log" id="log"></ol>
-    </section>
-  </main>
-
-  <p class="colophon">Every forgery here was invented for the climb. What the real entries say comes from dictionaries and the works they quote.</p>
+      <p class="colophon">Every forgery here was invented for the climb. What the real entries say comes from dictionaries and the works they quote.</p>
+    </main>
+  </div>
 </div>
 <p id="live" class="sr-only" aria-live="polite"></p>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>

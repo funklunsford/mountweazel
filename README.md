@@ -1,6 +1,6 @@
 # Mountweazel
 
-A climbing word game. Each of the twelve ledges up Mount Weazel shows two old words, one real and one forged; pick the real one to climb on. The real words grow rarer and stranger toward the summit. You carry three ropes, and each wrong pick cuts one.
+A climbing word game, set as a newspaper front page. Each of the twelve ledges up Mount Weazel shows two old words, one real and one forged; pick the real one to climb on, and the ledge is set on the word page. The real words grow rarer and stranger toward the summit. You carry three ropes, and each wrong pick cuts one.
 
 A *mountweazel* is a fake entry planted in a reference work. The name comes from Lillian Virginia Mountweazel, an invented person slipped into the 1975 New Columbia Encyclopedia.
 
@@ -12,9 +12,10 @@ Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html`
 
 - Tap the word you think is real, or press ← or → on a keyboard. Both cards then turn over: the real word's history, with a quotation where there is one, and how the forgery was made.
 - A wrong pick cuts one of your three ropes, but you keep climbing. Lose the third and the climb ends where you stand.
-- The ledges are a thousand feet apart, in camps: the Foothills (ledges 1–3), the Treeline (4–6), the Scree (7–9), the Ridge (10–11) and the Summit (12). Each camp has its own band of the mountain, and its name comes up as you reach it.
-- A little scout climbs the switchback trail as you go, fixing an orange rope behind it. Ledges you got right are ticked, and ledges where a rope was cut are crossed and hatched.
-- At the end you get a merit badge for the camp you reached, a grid to share (🟩 a right pick, 🟥 a rope cut, ⬜ not reached) and a log of all twelve ledges, with every reveal.
+- The ledges are a thousand feet apart, in camps: the Foothills (ledges 1–3), the Treeline (4–6), the Scree (7–9), the Ridge (10–11) and the Summit (12). Each camp has its own band of the mountain and its own heading on the word page, and its name is stamped across the plate as you reach it.
+- **The word page is built one ledge at a time.** Each ledge is a slot on the page. Climb on, and the slot is set: the real entry in type, the forgery struck out beneath it, a ✓ or ✗ in the margin, and its history behind a History link. A wrong pick goes to press with an erratum. By the summit the page is full.
+- **The plate** ("Fig. 1") is a hand-tinted engraving of the mountain. A little scout climbs its switchback trail as you go, fixing a rope behind it; ledges you got right are ticked, and ledges where a rope was cut are crossed and hatched. The running head at the top of the screen keeps the altitude, the ledge and the rope bar in view.
+- At the end, the Stop press box gives you a badge for the camp you reached and a grid to share (🟩 a right pick, 🟥 a rope cut, ⬜ not reached). Any ledges you didn't reach are filled in on the page, greyed.
 
 The browser keeps your progress, so a reload picks up where you left off.
 
@@ -43,14 +44,14 @@ Mountweazel began as a no-guess deduction page, modelled on [Clues by Sam](https
 
 ## Share card
 
-When the site's link is shared, previews show `share/card.png`: a 1200 × 630 card with the name, a plain statement of what the game is, and the page's mountain partway through a climb. It shows no words from any climb. `share/square.png` is a simpler square version, a gold summit badge with the name beneath, for apps that show square thumbnails. The site's icons are a sky tile with a white peak and an orange flag: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens. The mountain in `card.html` is the page's own drawing: `SCENE` in `climb.js` describes it once, the page builds it, and `share/scene-svg.js` writes it into the card as static SVG, partway through a climb. `npm run share-card` runs that first; on its own, `node share/scene-svg.js 7 2,5` sets how many ledges the scout has climbed and where ropes were cut.
+When the site's link is shared, previews show `share/card.png`: a 1200 × 630 front page with the nameplate, a plain statement of what the game is, and the page's plate of the mountain partway through a climb. It shows no words from any climb. `share/square.png` is a simpler square version, a gold summit badge in a double-ruled frame with the blackletter name beneath, for apps that show square thumbnails. The site's icons are a newsprint tile with a snowy peak and a red flag: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens. The mountain in `card.html` is the page's own drawing: `SCENE` in `climb.js` describes it once, the page builds it, and `share/scene-svg.js` writes it into the card as static SVG, partway through a climb. `npm run share-card` runs that first; on its own, `node share/scene-svg.js 7 2,5` sets how many ledges the scout has climbed and where ropes were cut.
 
 The cards are drawn in `share/card.html` and `share/square.html`. After changing either, run `npm run share-card` and commit the PNGs. It renders them with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place) and shrinks the icons with macOS's `sips`. `index.html` carries the Open Graph and Twitter tags: the wide card comes first and the square card second. Their title and description say in words what the card shows.
 
 ## Credits
 
-- The look takes its inspiration from [PEAK](https://store.steampowered.com/app/3527290/PEAK/), the co-op climbing game by Aggro Crab and Landfall: pastel skies, chunky outlined lettering, scouts and merit badges, and a stamina bar with hatched segments.
+- The climbing side of the look takes its inspiration from [PEAK](https://store.steampowered.com/app/3527290/PEAK/), the co-op climbing game by Aggro Crab and Landfall: the scout, merit badges, camp names as you reach them, and a stamina bar with hatched segments.
 - The first, deduction version of Mountweazel was modelled on [Clues by Sam](https://cluesbysam.com).
 - Word histories come from [Wiktionary](https://en.wiktionary.org) (CC BY-SA 4.0) and the [Dictionaries of the Scots Language](https://dsl.ac.uk). Quotations are from public-domain works. The fakes are invented.
 - How common a word is comes from [SCOWL](http://wordlist.aspell.net), Kevin Atkinson's word lists.
-- Fonts: Lilita One and Rubik, from Google Fonts under the SIL Open Font License.
+- Fonts: UnifrakturMaguntia, Newsreader and Caveat, from Google Fonts under the SIL Open Font License.

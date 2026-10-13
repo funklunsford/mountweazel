@@ -1,6 +1,6 @@
 /* Mountweazel: the climb. One ledge at a time: pick the real word of the two, see both revealed,
-   then climb on. You carry three ropes; a wrong pick cuts one, and losing the last ends the climb.
-   The words are in climbs.js. */
+   then climb on, and the ledge is set on the word page. You carry three ropes; a wrong pick cuts
+   one, and losing the last ends the climb. The words are in climbs.js. */
 'use strict';
 
 // The drawn mountain, in the scene's viewBox (360 × 230). The ledges climb its face in switchbacks,
@@ -27,10 +27,15 @@ const SCENE = {
     };
     const cloud = (x, y, s) => node('g', { class: 'cloud' },
       [[0, 0, 9], [11, -5, 11], [24, 0, 9], [12, 4, 8]].map(([dx, dy, r]) => node('circle', { cx: x + dx * s, cy: y + dy * s, r: r * s })));
+    const hatch = (id, size, angle, cls) => node('pattern', { id, width: size, height: size, patternUnits: 'userSpaceOnUse', patternTransform: `rotate(${angle})` },
+      [node('line', { class: cls, x1: 0, y1: 0, x2: 0, y2: size })]);
     const defs = node('defs', {}, [
-      // Hatching marks a ledge where a rope was cut; haze softens the foot of the mountain.
+      // Hatching: the shaded face and the far ranges, engraved; a ledge where a rope was cut.
+      hatch('ink-hatch', 3.2, 40, 'ink-line'),
+      hatch('far-hatch', 4, -35, 'far-line'),
       node('pattern', { id: 'hatch-wrong', width: 4, height: 4, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' },
         [node('rect', { class: 'hatch-bg', width: 4, height: 4 }), node('rect', { class: 'hatch-fg', width: 1.6, height: 4 })]),
+      // Haze softens the foot of the mountain.
       node('linearGradient', { id: 'haze', x1: 0, y1: 0, x2: 0, y2: 1 },
         [node('stop', { class: 'haze-stop', offset: 0, 'stop-opacity': 0 }), node('stop', { class: 'haze-stop', offset: 1, 'stop-opacity': .55 })]),
       node('clipPath', { id: 'mountain-clip' }, [node('path', { d: this.mountain })])
@@ -95,11 +100,11 @@ if (typeof document !== 'undefined') {
   const ROPES = 3;
   const RULES_KEY = 'mountweazel-climb-rules-seen';
   const SVG = 'http://www.w3.org/2000/svg';
-  // Where the last rope went, for the sentence that ends a climb.
+  // Where someone is on the mountain, for the plate's caption and the sentence that ends a climb.
   const AT_CAMP = { Foothills: 'in the Foothills', Treeline: 'at the Treeline', Scree: 'on the Scree', Ridge: 'on the Ridge', Summit: 'on the last ledge' };
   const { ledgeAt: LEDGE_AT, base: BASE } = SCENE;
-  // Merit badges for the end of a climb: the camp you finished in.
-  const BADGE_FILL = { Foothills: '#9ed27a', Treeline: '#4fa36f', Scree: '#a79cc0', Ridge: '#8fc6e6', Summit: '#ffc845' };
+  // Badges for the end of a climb, like embroidered patches: the camp you finished in.
+  const BADGE_FILL = { Foothills: '#c3cf8e', Treeline: '#93b583', Scree: '#c2b6a4', Ridge: '#b7cfd8', Summit: '#efc75a' };
   const $ = sel => document.querySelector(sel);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -113,6 +118,10 @@ if (typeof document !== 'undefined') {
   let shownAlt = null;
   let resetArmed = null;
   let toastTimer = null;
+  // The word page: one slot per ledge and a heading per camp, built once and updated in place.
+  const slotEls = [];
+  const campHeads = {};
+  let nextBar, climbOnBtn, verdictLine, slotList;
 
   const fresh = () => ({ picks: [], seen: 0 });
   const feet = n => `${(n * 1000).toLocaleString('en-US')} ft`;
@@ -128,6 +137,11 @@ if (typeof document !== 'undefined') {
   const climbed = () => wrongs() >= ROPES ? state.picks.length - 1 : state.picks.length;
   const mode = () => state.picks.length > state.seen ? 'reveal' : over() ? 'end' : 'pick';
   const campStarts = i => i === 0 || ledges[i].camp !== ledges[i - 1].camp;
+  const campLedges = camp => ledges.map((l, j) => l.camp === camp ? j : -1).filter(j => j >= 0);
+  const campSpan = camp => {
+    const js = campLedges(camp);
+    return js.length > 1 ? `Ledges ${js[0] + 1}–${js[js.length - 1] + 1} · up to ${feet(js[js.length - 1] + 1)}` : `Ledge ${js[0] + 1} · ${feet(js[0] + 1)}`;
+  };
 
   function valid(s) {
     if (!s || typeof s !== 'object' || !Array.isArray(s.picks) || !Number.isInteger(s.seen)) return false;
@@ -167,7 +181,7 @@ if (typeof document !== 'undefined') {
     return node;
   }
 
-  /* ---------- The scene: sky, mountain, trail, ledges, flag and climber ---------- */
+  /* ---------- The plate ---------- */
 
   // Builds SCENE's drawing into the page and returns the parts that change as you climb.
   function buildScene() {
@@ -189,57 +203,53 @@ if (typeof document !== 'undefined') {
 
   function ropeIcon() {
     const icon = svg('svg', { class: 'rope-icon', viewBox: '0 0 24 24', 'aria-hidden': 'true' });
-    const coil = { fill: 'none', 'stroke-linecap': 'round' };
-    icon.append(
-      svg('ellipse', { ...coil, cx: 11, cy: 11, rx: 8, ry: 6.5, stroke: '#2a2140', 'stroke-width': 4.4 }),
-      svg('ellipse', { ...coil, cx: 11, cy: 11, rx: 8, ry: 6.5, stroke: '#f0a95b', 'stroke-width': 2.4 }),
-      svg('ellipse', { ...coil, cx: 11, cy: 11, rx: 4, ry: 3, stroke: '#2a2140', 'stroke-width': 4 }),
-      svg('ellipse', { ...coil, cx: 11, cy: 11, rx: 4, ry: 3, stroke: '#f0a95b', 'stroke-width': 2 }),
-      svg('path', { ...coil, d: 'M17.5 15c2 2 2.6 4.2 1.6 6.8', stroke: '#2a2140', 'stroke-width': 4 }),
-      svg('path', { ...coil, d: 'M17.5 15c2 2 2.6 4.2 1.6 6.8', stroke: '#f0a95b', 'stroke-width': 2 }));
+    for (const cls of ['coil-under', 'coil-over']) {
+      icon.append(
+        svg('ellipse', { class: cls, cx: 11, cy: 11, rx: 8, ry: 6.5 }),
+        svg('ellipse', { class: cls, cx: 11, cy: 11, rx: 4, ry: 3 }),
+        svg('path', { class: cls, d: 'M17.5 15c2 2 2.6 4.2 1.6 6.8' }));
+    }
     return icon;
   }
 
-  // An embroidered merit badge for the camp a climb finished in.
+  // A badge for the camp a climb finished in, stitched like a patch.
   function drawBadge(camp) {
-    const root = $('#badge');
-    const ink = { stroke: '#2a2140', 'stroke-width': 3, 'stroke-linejoin': 'round' };
+    const ink = { stroke: '#161514', 'stroke-width': 3, 'stroke-linejoin': 'round' };
     const parts = [
-      svg('circle', { cx: 64, cy: 64, r: 58, fill: BADGE_FILL[camp], stroke: '#2a2140', 'stroke-width': 5 }),
-      svg('circle', { cx: 64, cy: 64, r: 49, fill: 'none', stroke: '#fff', 'stroke-width': 2.5, 'stroke-dasharray': '5 4', opacity: .9 })
+      svg('circle', { cx: 64, cy: 64, r: 58, fill: BADGE_FILL[camp], stroke: '#161514', 'stroke-width': 4 }),
+      svg('circle', { cx: 64, cy: 64, r: 49, fill: 'none', stroke: '#fbfaf5', 'stroke-width': 2.5, 'stroke-dasharray': '5 4' })
     ];
     if (camp === 'Summit') {
       parts.push(
-        svg('path', { ...ink, fill: '#fff', d: 'M24 92 L54 40 L66 58 L76 46 L104 92 Z' }),
+        svg('path', { ...ink, fill: '#fbfaf5', d: 'M24 92 L54 40 L66 58 L76 46 L104 92 Z' }),
         svg('line', { ...ink, x1: 54, y1: 40, x2: 54, y2: 20 }),
-        svg('path', { ...ink, 'stroke-width': 2.5, fill: '#ff7d3b', d: 'M54 20 l16 6 l-16 6 z' }));
+        svg('path', { ...ink, 'stroke-width': 2.5, fill: '#ae2a1f', d: 'M54 20 l16 6 l-16 6 z' }));
     } else if (camp === 'Ridge') {
-      for (const a of [0, 60, 120]) {
-        parts.push(svg('line', { x1: 64, y1: 38, x2: 64, y2: 90, stroke: '#2a2140', 'stroke-width': 9, 'stroke-linecap': 'round', transform: `rotate(${a} 64 64)` }));
-      }
-      for (const a of [0, 60, 120]) {
-        parts.push(svg('line', { x1: 64, y1: 38, x2: 64, y2: 90, stroke: '#fff', 'stroke-width': 4, 'stroke-linecap': 'round', transform: `rotate(${a} 64 64)` }));
+      for (const [stroke, width] of [['#161514', 9], ['#fbfaf5', 4]]) {
+        for (const a of [0, 60, 120]) {
+          parts.push(svg('line', { x1: 64, y1: 38, x2: 64, y2: 90, stroke, 'stroke-width': width, 'stroke-linecap': 'round', transform: `rotate(${a} 64 64)` }));
+        }
       }
     } else if (camp === 'Scree') {
       parts.push(
-        svg('path', { ...ink, fill: '#d9d2e6', d: 'M30 90 L36 70 L52 62 L62 74 L60 90 Z' }),
-        svg('path', { ...ink, fill: '#c3b9d6', d: 'M58 90 L64 66 L82 58 L98 72 L98 90 Z' }),
-        svg('path', { ...ink, fill: '#ece7f3', d: 'M48 90 L54 80 L66 78 L70 90 Z' }));
+        svg('path', { ...ink, fill: '#e2dbcf', d: 'M30 90 L36 70 L52 62 L62 74 L60 90 Z' }),
+        svg('path', { ...ink, fill: '#d2c8b8', d: 'M58 90 L64 66 L82 58 L98 72 L98 90 Z' }),
+        svg('path', { ...ink, fill: '#f1ece3', d: 'M48 90 L54 80 L66 78 L70 90 Z' }));
     } else if (camp === 'Treeline') {
       parts.push(
-        svg('rect', { ...ink, fill: '#9b6a3e', x: 58, y: 84, width: 12, height: 12 }),
-        svg('path', { ...ink, fill: '#2f7a52', d: 'M64 28 L80 54 H72 L88 86 H40 L56 54 H48 Z' }));
+        svg('rect', { ...ink, fill: '#7a5532', x: 58, y: 84, width: 12, height: 12 }),
+        svg('path', { ...ink, fill: '#5c875b', d: 'M64 28 L80 54 H72 L88 86 H40 L56 54 H48 Z' }));
     } else {
       parts.push(
-        svg('circle', { ...ink, fill: '#fff1a8', cx: 84, cy: 46, r: 10 }),
-        svg('path', { ...ink, fill: '#6cbf5a', d: 'M22 92 C34 62 58 60 74 92 Z' }),
-        svg('path', { ...ink, fill: '#8fd16f', d: 'M50 92 C64 68 92 66 106 92 Z' }));
+        svg('circle', { ...ink, fill: '#f0d98a', cx: 84, cy: 46, r: 10 }),
+        svg('path', { ...ink, fill: '#a9c27d', d: 'M22 92 C34 62 58 60 74 92 Z' }),
+        svg('path', { ...ink, fill: '#cfd8a3', d: 'M50 92 C64 68 92 66 106 92 Z' }));
     }
-    root.replaceChildren(...parts);
+    $('#badge').replaceChildren(...parts);
     $('#badge-name').textContent = `${camp} badge`;
   }
 
-  /* ---------- Cards ---------- */
+  /* ---------- Entries ---------- */
 
   function revealBody(entry, isReal) {
     const box = el('div', 'reveal');
@@ -258,8 +268,8 @@ if (typeof document !== 'undefined') {
     return box;
   }
 
-  // A card is a button until it's picked, then a revealed entry: stamped real or forged, with its story.
-  // Before a pick the two cards differ only by side (the colour of the hold), never by which is real.
+  // A proof card is a button until it's picked, then a revealed entry, marked real or forged.
+  // Before a pick the two cards differ only by side (Proof A or B), never by which is real.
   function card(i, side, revealed, just) {
     const ledge = ledges[i];
     const isReal = ledge.realOn === side;
@@ -269,9 +279,7 @@ if (typeof document !== 'undefined') {
     if (!revealed) {
       const button = el('button', 'card');
       button.type = 'button';
-      const hold = svg('svg', { class: `hold hold-${side}`, viewBox: '0 0 30 24', 'aria-hidden': 'true' });
-      hold.append(svg('path', { d: side === 'left' ? 'M4 14 C3 7 9 3 15 4 C22 5 27 9 26 15 C25 20 18 22 12 21 C7 20 5 18 4 14 Z' : 'M5 12 C5 6 11 3 16 3 C23 3 27 8 26 13 C25 19 19 21 14 21 C8 21 5 17 5 12 Z' }), svg('circle', { cx: 15, cy: 12.5, r: 2.2 }));
-      button.append(hold, line, el('span', 'def', entry.def));
+      button.append(el('span', 'proof-label', side === 'left' ? 'Proof A' : 'Proof B'), line, el('span', 'def', entry.def));
       button.addEventListener('click', () => pick(side));
       return button;
     }
@@ -280,8 +288,100 @@ if (typeof document !== 'undefined') {
       node.classList.add('picked');
       node.append(el('span', 'pick-tag', 'Your pick'));
     }
-    node.append(el('span', 'stamp', isReal ? 'Real ✓' : 'Forged ✗'), line, el('span', 'def', entry.def), revealBody(entry, isReal));
+    node.append(el('span', 'stamp', isReal ? 'real ✓' : 'forged ✗'), line, el('span', 'def', entry.def), revealBody(entry, isReal));
     return node;
+  }
+
+  /* ---------- The word page ---------- */
+
+  function buildPage() {
+    slotList = $('#slots');
+    nextBar = $('#next-bar');
+    climbOnBtn = $('#climb-on');
+    verdictLine = $('#verdict-line');
+    ledges.forEach((l, i) => {
+      if (campStarts(i)) {
+        const head = el('li', 'camp-head');
+        head.append(el('span', 'ch-name', `The ${l.camp}`), el('span', 'ch-sub', campSpan(l.camp)));
+        campHeads[l.camp] = { el: head, first: i };
+        slotList.append(head);
+      }
+      const slot = el('li', 'slot');
+      slotEls.push(slot);
+      slotList.append(slot);
+    });
+  }
+
+  function slotKind(i) {
+    if (i < state.picks.length) return mode() === 'reveal' && i === state.seen ? 'reveal' : 'set';
+    if (mode() === 'pick' && i === state.picks.length) return 'frontier';
+    return over() ? 'unreached' : 'unset';
+  }
+
+  function fillSlot(i, kind, { just = false, typeset = false, arrive = false } = {}) {
+    const slot = slotEls[i];
+    const l = ledges[i];
+    slot.className = 'slot ' + kind;
+    slot.replaceChildren();
+    if (kind === 'unset') {
+      slot.append(el('span', 'slot-n', `Ledge ${i + 1}`), el('span', 'slot-alt', feet(i + 1)), el('span', 'slot-note', 'To be set'));
+      return;
+    }
+    if (kind === 'frontier' || kind === 'reveal') {
+      const head = el('h3', 'slot-head', kind === 'frontier' ? 'Which word is real?' : `Ledge ${i + 1}, revealed`);
+      head.append(el('span', 'sh-alt', kind === 'frontier' ? `Ledge ${i + 1} · ${feet(i + 1)}` : `${feet(i + 1)} · ${l.camp}`));
+      if (kind === 'frontier') head.id = 'prompt';
+      const pair = el('div', 'pair' + (arrive && !reduceMotion ? ' arrive' : ''));
+      pair.id = 'pair';
+      const revealed = kind === 'reveal';
+      pair.append(card(i, 'left', revealed, just), card(i, 'right', revealed, just));
+      slot.append(head, pair);
+      return;
+    }
+    // Set (or, after the climb, not reached): the real entry in type, the forgery struck out.
+    const result = kind === 'unreached' ? 'unreached' : (rightAt(i) ? 'right' : 'wrong');
+    slot.classList.add(result);
+    if (typeset && !reduceMotion) slot.classList.add('typeset');
+    const mark = el('span', 'slot-mark', { right: '✓', wrong: '✗', unreached: '·' }[result]);
+    mark.setAttribute('aria-hidden', 'true');
+    const body = el('div', 'set-entries');
+    const real = el('p', 'set-entry real');
+    real.append(el('span', 'sr-only', { right: 'Right: ', wrong: 'Wrong: ', unreached: 'Not reached: ' }[result]),
+      el('b', 'hw', l.real.word), ' ', el('i', 'pos', l.real.pos), ' ', el('span', 'def', l.real.def),
+      el('span', 'proof real', 'real'), el('span', 'set-alt', feet(i + 1)));
+    const fake = el('p', 'set-entry forged');
+    fake.append(el('b', 'hw', l.fake.word), ' ', el('i', 'pos', l.fake.pos), ' ', el('span', 'def', l.fake.def), el('span', 'proof forged', 'forged'));
+    body.append(real, fake);
+    if (result === 'wrong') body.append(el('p', 'erratum', `Erratum: ${upper(l.fake.word)} went to press in error, and a rope was cut.`));
+    const more = el('details', 'more');
+    more.append(el('summary', null, 'History'), revealBody(l.real, true), revealBody(l.fake, false));
+    body.append(more);
+    slot.append(mark, body);
+  }
+
+  // Redraws only the slots whose state changed, so an open History stays open.
+  function renderPage(m, just, arrive) {
+    for (let i = 0; i < ledges.length; i++) {
+      const kind = slotKind(i);
+      const key = `${kind}:${state.picks[i] || ''}`;
+      const slot = slotEls[i];
+      if (slot.dataset.key === key) continue;
+      const was = slot.dataset.key || '';
+      slot.dataset.key = key;
+      fillSlot(i, kind, { just: just && kind === 'reveal', typeset: arrive && kind === 'set' && was.startsWith('reveal'), arrive: arrive && kind === 'frontier' });
+    }
+    const reach = m === 'pick' ? state.picks.length : m === 'reveal' ? state.seen : state.picks.length - 1;
+    for (const { el: head, first } of Object.values(campHeads)) head.classList.toggle('ahead', first > reach);
+    // The verdict and Climb on travel with the ledge being revealed.
+    if (m === 'reveal') {
+      const slot = slotEls[state.seen];
+      if (nextBar.parentNode !== slot) slot.append(nextBar);
+      nextBar.hidden = false;
+    } else {
+      if (nextBar.previousElementSibling !== slotList) slotList.after(nextBar);
+      nextBar.hidden = true;
+    }
+    $('#set-count').textContent = `${Math.min(state.seen, ledges.length)} of ${ledges.length} set`;
   }
 
   /* ---------- Drawing ---------- */
@@ -291,27 +391,27 @@ if (typeof document !== 'undefined') {
     const current = m === 'pick' ? state.picks.length : m === 'reveal' ? state.seen : null;
     renderStatus(m, current, just);
     renderScene(m === 'pick' ? current : null);
-    $('#ledge').hidden = m === 'end';
+    renderPage(m, just, arrive);
+    if (m === 'reveal') renderVerdict(state.seen);
     $('#press').hidden = m !== 'end';
-    $('#log-panel').hidden = m !== 'end';
     if (m === 'end') renderEnd();
-    else renderLedge(m, current, just);
-    if (arrive && !reduceMotion && m === 'pick') {
-      const pair = $('#pair');
-      pair.classList.remove('arrive');
-      void pair.offsetWidth;
-      pair.classList.add('arrive');
-    }
   }
 
   function renderStatus(m, current, animate) {
-    $('#where').textContent = m === 'end'
-      ? (summit() ? `Summit · all ${ledges.length} ledges` : `Out of rope · ledge ${climbed()} of ${ledges.length}`)
-      : `Ledge ${current + 1} of ${ledges.length} · ${ledges[current].camp}`;
+    // The camp half drops out on phones, where every camp has its own heading on the page.
+    const [main, extra] = m === 'end'
+      ? (summit() ? ['Summit', ` · all ${ledges.length} ledges`] : ['Out of rope', ` · ledge ${climbed()} of ${ledges.length}`])
+      : [`Ledge ${current + 1} of ${ledges.length}`, ` · ${ledges[current].camp}`];
+    $('#where').replaceChildren(el('span', 'w-main', main), el('span', 'w-extra', extra));
     setAltitude(climbed() * 1000, animate);
     const left = ropesLeft();
     document.querySelectorAll('#ropes .rope-seg').forEach((r, k) => r.classList.toggle('cut', k >= left));
     $('#ropes').setAttribute('aria-label', `${plural(left, 'rope', 'ropes')} left`);
+    const up = climbed();
+    $('#caption').textContent = summit() ? `Our correspondent on the summit, ${feet(ledges.length)}.`
+      : m === 'end' ? `Our correspondent turned back ${AT_CAMP[ledges[state.picks.length - 1].camp]}, at ${feet(up)}.`
+      : up === 0 ? 'Our correspondent at the foot of Mount Weazel.'
+      : `Our correspondent ${AT_CAMP[ledges[up - 1].camp]}, ${feet(up)} up.`;
   }
 
   // The altitude counts up to its new value when you climb.
@@ -354,7 +454,7 @@ if (typeof document !== 'undefined') {
       `Mount Weazel: ${climbed()} of ${ledges.length} ledges climbed, ${plural(ropesLeft(), 'rope', 'ropes')} left.`);
   }
 
-  // A camp's name in big letters over the mountain as you reach it.
+  // A camp's name, stamped across the plate and lit up on the word page, as you reach it.
   function showTitle(name, sub) {
     if (reduceMotion) return;
     const box = $('#title-card');
@@ -367,62 +467,40 @@ if (typeof document !== 'undefined') {
 
   function announceCamp() {
     const m = mode();
-    if (m === 'end' && summit()) { showTitle('Summit!', `${feet(ledges.length)} · all ${ledges.length} ledges`); return; }
+    if (m === 'end' && summit()) { showTitle('Summit', `${feet(ledges.length)} · all ${ledges.length} ledges`); return; }
     if (m !== 'pick') return;
     const i = state.picks.length;
     if (!campStarts(i)) return;
-    const same = ledges.map((l, j) => l.camp === ledges[i].camp ? j : -1).filter(j => j >= 0);
-    const span = same.length > 1 ? `Ledges ${same[0] + 1}–${same[same.length - 1] + 1}` : `Ledge ${same[0] + 1}`;
-    showTitle(ledges[i].camp, same.length > 1 ? `${span} · up to ${feet(same[same.length - 1] + 1)}` : `${span} · ${feet(same[0] + 1)}`);
+    const camp = ledges[i].camp;
+    showTitle(camp, campSpan(camp));
+    if (reduceMotion) return;
+    const head = campHeads[camp].el;
+    head.classList.remove('arrived');
+    void head.offsetWidth;
+    head.classList.add('arrived');
   }
 
-  function renderLedge(m, i, just) {
+  function renderVerdict(i) {
     const ledge = ledges[i];
-    const revealed = m === 'reveal';
-    $('#prompt').hidden = revealed;
-    $('#pair').replaceChildren(card(i, 'left', revealed, just), card(i, 'right', revealed, just));
-    $('#next-bar').hidden = !revealed;
-    if (!revealed) return;
     const right = rightAt(i);
-    const verdict = $('#verdict-line');
-    verdict.className = 'verdict-line ' + (right ? 'right' : 'wrong');
-    if (right) verdict.textContent = summit()
+    verdictLine.className = 'verdict-line ' + (right ? 'right' : 'wrong');
+    if (right) verdictLine.textContent = summit()
       ? `Right: ${upper(ledge.real.word)} is real. You’re on the summit!`
       : `Right: ${upper(ledge.real.word)} is real. Up to ${feet(i + 1)}.`;
-    else if (wrongs() >= ROPES) verdict.textContent = `${upper(ledge.fake.word)} was forged, and that was your last rope.`;
-    else if (summit()) verdict.textContent = `${upper(ledge.fake.word)} was forged. A rope is cut, but you’re on the summit!`;
-    else verdict.textContent = `${upper(ledge.fake.word)} was forged. A rope is cut: ${plural(ropesLeft(), 'rope', 'ropes')} left.`;
-    $('#climb-on').textContent = over() ? 'See your climb' : 'Climb on';
+    else if (wrongs() >= ROPES) verdictLine.textContent = `${upper(ledge.fake.word)} was forged, and that was your last rope.`;
+    else if (summit()) verdictLine.textContent = `${upper(ledge.fake.word)} was forged. A rope is cut, but you’re on the summit!`;
+    else verdictLine.textContent = `${upper(ledge.fake.word)} was forged. A rope is cut: ${plural(ropesLeft(), 'rope', 'ropes')} left.`;
+    climbOnBtn.textContent = over() ? 'See the page' : 'Climb on';
   }
 
   function renderEnd() {
     const top = summit();
     drawBadge(top ? 'Summit' : ledges[Math.max(0, climbed() - 1)].camp);
-    $('#verdict').textContent = top ? (wrongs() === 0 ? 'A clean ascent!' : 'Summit reached!') : `Out of rope at ${feet(climbed()).replace(' ', '\u00a0')}`;
+    $('#verdict').textContent = top ? (wrongs() === 0 ? 'A Clean Ascent' : 'Summit Reached') : `Out of Rope at ${feet(climbed()).replace(' ft', ' Feet')}`;
     $('#press-stats').textContent = top
-      ? `All ${ledges.length} ledges climbed, with ${ropesLeft()} of ${ROPES} ropes left.`
+      ? `All ${ledges.length} ledges climbed and set, with ${ropesLeft()} of ${ROPES} ropes left.`
       : `You climbed ${climbed()} of ${ledges.length} ledges. Your last rope went ${AT_CAMP[ledges[state.picks.length - 1].camp]}.`;
     $('#share-text').value = shareText();
-    $('#log').replaceChildren(...ledges.map((l, i) => {
-      const reached = i < state.picks.length;
-      const result = reached ? (rightAt(i) ? 'right' : 'wrong') : 'unreached';
-      const row = el('li', 'log-row ' + result);
-      const details = el('details');
-      const summary = el('summary');
-      const mark = el('span', 'log-mark', { right: '✓', wrong: '✗', unreached: '·' }[result]);
-      mark.setAttribute('aria-hidden', 'true');
-      const words = el('span', 'log-words');
-      words.append(el('span', 'log-real', l.real.word), el('span', 'log-fake', l.fake.word));
-      summary.append(mark,
-        el('span', 'sr-only', { right: 'Right: ', wrong: 'Wrong: ', unreached: 'Not reached: ' }[result]),
-        el('span', 'log-alt', feet(i + 1)),
-        words);
-      const body = el('div', 'log-body');
-      body.append(card(i, l.realOn, true, false), card(i, l.realOn === 'left' ? 'right' : 'left', true, false));
-      details.append(summary, body);
-      row.append(details);
-      return row;
-    }));
   }
 
   /* ---------- Playing ---------- */
@@ -433,8 +511,8 @@ if (typeof document !== 'undefined') {
     markRulesSeen();
     save();
     render(true);
-    $('#live').textContent = $('#verdict-line').textContent;
-    $('#climb-on').focus({ preventScroll: true });
+    $('#live').textContent = verdictLine.textContent;
+    climbOnBtn.focus({ preventScroll: true });
   }
 
   function climbOn() {
@@ -442,11 +520,20 @@ if (typeof document !== 'undefined') {
     state.seen = state.picks.length;
     save();
     render(false, true);
-    const box = $('#ascent');
-    if (box.getBoundingClientRect().top < 0) box.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-    announceCamp();
-    if (mode() === 'pick') $('#pair .card').focus({ preventScroll: true });
-    else $('#verdict').focus({ preventScroll: true });
+    const behavior = reduceMotion ? 'auto' : 'smooth';
+    if (mode() === 'pick') {
+      // Show the entry just set, with the next ledge's proofs beneath it, below the running head.
+      const set = slotEls[state.picks.length - 1];
+      const slot = slotEls[state.picks.length];
+      const top = set.getBoundingClientRect().top;
+      if (top < $('#runhead').offsetHeight || slot.getBoundingClientRect().bottom > innerHeight) set.scrollIntoView({ behavior, block: 'start' });
+      announceCamp();
+      slot.querySelector('.card').focus({ preventScroll: true });
+    } else {
+      $('#press').scrollIntoView({ behavior, block: 'start' });
+      announceCamp();
+      $('#verdict').focus({ preventScroll: true });
+    }
   }
 
   function reset() {
@@ -462,7 +549,7 @@ if (typeof document !== 'undefined') {
     render(false, true);
     $('#ascent').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     announceCamp();
-    toast('Back at the foot of the mountain.');
+    toast('Back at the foot of the mountain, with a blank page.');
   }
 
   function onKey(ev) {
@@ -498,19 +585,27 @@ if (typeof document !== 'undefined') {
     toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
   }
 
+  // Slots scroll into view below the running head, whatever its height.
+  function measureRunhead() {
+    document.documentElement.style.setProperty('--runhead-h', `${$('#runhead').offsetHeight}px`);
+  }
+
   function boot(data) {
-    $('#climb-on').addEventListener('click', climbOn);
+    buildPage();
+    climbOnBtn.addEventListener('click', climbOn);
     $('#copy').addEventListener('click', copyShare);
     $('#reset').addEventListener('click', reset);
     document.addEventListener('keydown', onKey);
 
-    $('#issue').textContent = `Climb No. ${climb.number}`;
+    $('#issue').textContent = `Vol. I · Climb No. ${climb.number}`;
     const narrow = window.matchMedia('(max-width: 719px)').matches;
     $('#dateline').textContent = new Date().toLocaleDateString(undefined, narrow ?
       { weekday: 'short', month: 'short', day: 'numeric' } :
-      { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     $('#ropes').append(ropeIcon(), ...Array.from({ length: ROPES }, () => el('span', 'rope-seg')));
     scene = buildScene();
+    measureRunhead();
+    window.addEventListener('resize', measureRunhead);
 
     let saved = data && data.state;
     if (!saved) { try { saved = JSON.parse(localStorage.getItem(saveKey)); } catch (_) { saved = null; } }
