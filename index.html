@@ -85,12 +85,13 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .page-tab { font: inherit; font-size: .78rem; min-height: 32px; padding: 3px 10px; border: 1px solid var(--rule); border-radius: 2px; background: transparent; color: var(--ink-2); cursor: pointer; }
 .page-tab:hover { border-color: var(--ink); color: var(--ink); }
 .page-tab[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--newsprint); }
-@media (max-width: 720px) {
-  .masthead { grid-template-columns: 1fr 1fr; }
-  .nameplate { grid-column: 1 / -1; grid-row: 1; }
-  .ear { grid-row: 2; max-width: none; }
-  .ear-left { grid-column: 1; justify-self: stretch; }
-  .ear-right { grid-column: 2; justify-self: stretch; }
+/* Phones: just the nameplate and a one-line folio. */
+@media (max-width: 719px) {
+  .masthead { grid-template-columns: 1fr; gap: 6px; }
+  .nameplate { grid-column: 1; }
+  .ear { display: none; }
+  .folio { flex-wrap: nowrap; }
+  .folio .price { display: none; }
 }
 
 /* The front: lead story and dictionary page in the main column, the sidebar beside them. */
@@ -101,6 +102,12 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   .lead { grid-column: 1; grid-row: 1; }
   .page { grid-column: 1; grid-row: 2; }
   .notebook { grid-column: 2; grid-row: 1 / span 2; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 14px); max-height: calc(100vh - 28px); overflow: auto; padding: 0 4px 0 24px; border-left: 1px solid var(--rule); }
+}
+/* Narrower screens: the word page straight after the lead, the notebook after the page,
+   and a slim dock at the bottom keeps the count and Hint in reach. */
+@media (max-width: 1039px) {
+  .page { order: 1; }
+  .notebook { order: 2; }
 }
 
 .lead { padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
@@ -113,6 +120,12 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .story p { margin: 0 0 .6em; }
 .story p:first-child::first-letter { float: left; padding: 5px 7px 0 0; font-size: 3.5em; font-weight: 800; line-height: .8; }
 .story .call { vertical-align: -2px; }
+@media (max-width: 719px) {
+  .headline { font-size: 1.75rem; }
+  .deck { font-size: 1.02rem; }
+  .byline { display: none; }
+  .story p:first-child::first-letter { float: none; padding: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
+}
 
 .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); }
 .section-title { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
@@ -137,7 +150,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .hw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
 .hw { font-size: .98em; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .pos { font-style: italic; color: var(--ink-2); }
-.label { font-size: .68em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); border: 1px solid var(--rule); padding: 0 5px; line-height: 1.5; white-space: nowrap; }
+.label { font-size: .68em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
 .def { display: block; margin-top: 1px; }
 .entry.start .hw-line::after { content: "given"; font-family: var(--face-hand); font-size: 1.15em; line-height: 1; color: var(--pencil); }
 .entry.fake .hw, .entry.fake .def { text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
@@ -155,6 +168,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .call.proven { background: var(--pencil); }
 .call.hunch { background: var(--hunch); }
 .call.mistake { background: var(--dele); }
+.entry .call { display: none; }
 
 .proofmark { position: absolute; right: 0; top: 6px; font-family: var(--face-hand); font-size: 1.45rem; line-height: 1; transform: rotate(-8deg); pointer-events: none; }
 .entry.genuine .proofmark { color: var(--pencil); }
@@ -170,6 +184,13 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .act-fake:hover { background: var(--dele-wash); }
 
 .reveal { display: grid; gap: 8px; margin-top: 8px; font-size: .94rem; }
+.history-block { display: grid; gap: 8px; }
+.history-toggle { display: none; }
+@media (max-width: 719px) {
+  .history-toggle { display: block; width: fit-content; padding: 4px 0; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  .history-block { display: none; }
+  .entry.show-history .history-block { display: grid; }
+}
 .reveal p { margin: 0; }
 .quote { margin: 0; padding-left: 12px; border-left: 2px solid var(--rule); font-style: italic; }
 .quote cite { display: block; font-size: .85em; font-style: normal; color: var(--ink-2); }
@@ -199,7 +220,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .pill.quiet { border-color: var(--rule); color: var(--ink-2); }
 .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; cursor: pointer; }
 .toggle input { width: 18px; height: 18px; margin: 0; accent-color: var(--pencil); }
-.act:focus-visible, .pill:focus-visible, .page-tab:focus-visible, .toggle input:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+.act:focus-visible, .pill:focus-visible, .page-tab:focus-visible, .toggle input:focus-visible, .dock-btn:focus-visible, .history-toggle:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
 
 .notes { margin: 0; padding-left: 1.5em; display: grid; gap: 7px; font-size: .95rem; }
 .notes li::marker { color: var(--ink-2); font-variant-numeric: tabular-nums; }
@@ -214,8 +235,20 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .press h2 { margin: 0; font-size: 1.7rem; font-weight: 800; line-height: 1.05; }
 #share-text { font: inherit; font-size: .95rem; width: 100%; box-sizing: border-box; resize: none; padding: 8px 10px; border: 1px solid var(--rule); background: var(--newsprint); color: var(--ink); }
 
+.dock { display: none; }
+@media (max-width: 1039px) {
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; display: flex; align-items: center; gap: 10px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 4px double var(--ink); background: var(--newsprint); }
+  .dock .slot { width: 18px; height: 18px; }
+  .dock-struck { flex: 1; min-width: 0; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  .dock-btn { font: inherit; font-size: .9rem; min-height: 40px; padding: 4px 14px; border: 1.5px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink); cursor: pointer; }
+  .dock-btn .count { margin-left: 2px; }
+  .paper { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+}
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); box-sizing: border-box; width: max-content; max-width: min(92vw, 520px); padding: 10px 16px; background: var(--ink); color: var(--newsprint); font-size: .95rem; box-shadow: 0 6px 24px rgb(0 0 0 / .22); z-index: 10; }
 
+@media (max-width: 1039px) {
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
+}
 @media (max-width: 480px) {
   body { font-size: 16px; }
   .story { text-align: left; hyphens: manual; }
@@ -240,7 +273,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
     <div class="folio">
       <span id="issue">Vol. I · No. 2</span>
       <span id="dateline"></span>
-      <span>Price one penny</span>
+      <span class="price">Price one penny</span>
     </div>
   </header>
 
@@ -253,9 +286,9 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
         <summary>How to play</summary>
         <p class="byline">From our correspondent at the proof desk</p>
         <div class="story">
-          <p>Genuine entries vouch for each other. Each one you verify opens with its real history and a note about the others. <b id="start-word">fleerish</b> has been verified for you to start.</p>
-          <p>Tap an entry to call it genuine or fake. Tap the magnifying glass to mark a suspect while you think; it costs nothing. A call your notes already prove scores <span class="call proven">✓</span>, a right call they don’t prove yet is a hunch <span class="call hunch">?</span>, and a wrong one is a mistake <span class="call mistake">✗</span>. Prove every call for a clean proof.</p>
-          <p>An entry’s neighbours are the entries just before and after it in alphabetical order. Hint first tells you which notes to read together, then which entry they settle.</p>
+          <p>Genuine entries vouch for each other. Verify one and it opens with its history and a note about the others. <b id="start-word">fleerish</b> is verified for you to start.</p>
+          <p>Tap an entry to call it genuine or fake, or tap its magnifying glass to mark a suspect. A call your notes prove scores <span class="call proven">✓</span>; a right guess is a hunch <span class="call hunch">?</span>, and a wrong one a mistake <span class="call mistake">✗</span>.</p>
+          <p>Neighbours are the entries just before and after one, in alphabetical order. Hint shows which notes to read together, then which entry they settle.</p>
         </div>
       </details>
     </article>
@@ -287,7 +320,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
         </div>
       </section>
 
-      <section class="panel" aria-label="Notes">
+      <section class="panel" id="notes-panel" aria-label="Notes">
         <h2 class="section-head"><span class="section-title">Notes &amp; Queries <span id="note-count" class="count">1</span></span></h2>
         <ol id="notes" class="notes"></ol>
       </section>
@@ -304,6 +337,12 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   </div>
 </div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div class="dock" id="dock" role="region" aria-label="Progress">
+  <span class="slots" aria-hidden="true"></span>
+  <span class="dock-struck" id="dock-struck">0 of 3 struck</span>
+  <button class="dock-btn" id="dock-notes" type="button">Notes <span class="count" id="dock-note-count">1</span></button>
+  <button class="dock-btn" id="dock-hint" type="button">Hint</button>
+</div>
 <script src="pages.js"></script>
 <script src="game.js"></script>
 </body>

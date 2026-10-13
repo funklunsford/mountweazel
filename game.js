@@ -105,6 +105,7 @@ if (typeof document !== 'undefined') {
   const MARK = { proven: { glyph: '✓', name: 'Proven' }, hunch: { glyph: '?', name: 'Hunch' }, mistake: { glyph: '✗', name: 'Mistake' } };
   const SHARE = { proven: '✅', hunch: '🟨', mistake: '❌' };
   const CURRENT_KEY = 'mountweazel-current-page';
+  const RULES_KEY = 'mountweazel-rules-seen';
   const $ = sel => document.querySelector(sel);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -209,11 +210,15 @@ if (typeof document !== 'undefined') {
     $('#head-mid').textContent = `${E.page.letters} · ${E.page.number}`;
     $('#issue').textContent = `Vol. I · No. ${E.page.number}`;
     $('#ear-count').textContent = `${entries.length} entries, ${E.page.fakes} of them forged`;
-    $('#dateline').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const narrow = window.matchMedia('(max-width: 719px)').matches;
+    $('#dateline').textContent = new Date().toLocaleDateString(undefined, narrow ?
+      { weekday: 'short', month: 'short', day: 'numeric' } :
+      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     $('#howto-fakes').textContent = E.page.fakes;
     $('#howto-entries').textContent = entries.length;
     $('#start-word').textContent = E.ENTRY[E.page.start].word;
-    $('#slots').replaceChildren(...Array.from({ length: E.page.fakes }, () => el('span', 'slot')));
+    document.querySelectorAll('.slots').forEach(box =>
+      box.replaceChildren(...Array.from({ length: E.page.fakes }, () => el('span', 'slot'))));
   }
 
   function fillReveal(e) {
@@ -225,15 +230,22 @@ if (typeof document !== 'undefined') {
       box.append(p);
       return;
     }
-    box.append(el('p', 'history', e.history));
+    // The note comes first: it's what the puzzle needs. On a phone the history waits behind a button.
+    const n = el('p', 'note');
+    const tag = el('span', 'note-tag', 'Note');
+    n.append(tag, document.createTextNode(E.page.notes[e.id].text));
+    const more = el('div', 'history-block');
+    more.append(el('p', 'history', e.history));
     if (e.quote) {
       const q = el('blockquote', 'quote');
       q.append(el('span', 'q-text', `“${e.quote.text}”`), el('cite', null, e.quote.cite));
-      box.append(q);
+      more.append(q);
     }
-    const n = el('p', 'note');
-    n.append(el('span', 'note-tag', 'Note'), document.createTextNode(E.page.notes[e.id].text));
-    box.append(n);
+    const toggleHistory = el('button', 'history-toggle', 'History');
+    toggleHistory.type = 'button';
+    toggleHistory.addEventListener('click', () => { els[e.id].showHistory = !els[e.id].showHistory; render(); });
+    box.append(n, toggleHistory, more);
+    Object.assign(els[e.id], { note: n, noteTag: tag, toggleHistory });
   }
 
   function render() {
@@ -246,7 +258,12 @@ if (typeof document !== 'undefined') {
       const hinted = hint && hint.stage === 2 && hint.target === e.id && !status;
       const suspected = !status && Boolean(state.suspects[e.id]);
       x.art.className = 'entry' + (status ? ' ' + status : '') + (e.id === E.page.start ? ' start' : '') +
-        (isOpen ? ' open' : '') + (hinted ? ' hinted' : '') + (suspected ? ' suspected' : '');
+        (isOpen ? ' open' : '') + (hinted ? ' hinted' : '') + (suspected ? ' suspected' : '') +
+        (status && x.showHistory ? ' show-history' : '');
+      if (x.toggleHistory) {
+        x.toggleHistory.textContent = x.showHistory ? 'Hide history' : 'History';
+        x.toggleHistory.setAttribute('aria-expanded', String(Boolean(x.showHistory)));
+      }
       x.sus.hidden = Boolean(status);
       x.sus.setAttribute('aria-pressed', String(suspected));
       x.sus.setAttribute('aria-label', `${suspected ? 'Unmark' : 'Mark'} ${e.word} as a suspect`);
@@ -275,11 +292,21 @@ if (typeof document !== 'undefined') {
       return li;
     }));
     $('#note-count').textContent = order.length;
+    $('#dock-note-count').textContent = order.length;
+    // The same numbers on the notes inside the entries, so a hint works without the list.
+    order.forEach((id, i) => {
+      const x = els[id];
+      if (!x.noteTag) return;
+      x.noteTag.textContent = `Note ${i + 1}`;
+      x.note.classList.toggle('hinted', hintedNotes.has(i + 1));
+    });
 
     // Progress.
     const struck = Object.values(state.known).filter(s => s === 'fake').length;
-    document.querySelectorAll('.slot').forEach((s, i) => s.classList.toggle('on', i < struck));
+    document.querySelectorAll('.slots').forEach(box =>
+      [...box.children].forEach((s, i) => s.classList.toggle('on', i < struck)));
     $('#struck').textContent = `${struck} of ${E.page.fakes} struck`;
+    $('#dock-struck').textContent = `${struck} of ${E.page.fakes} struck`;
     const n = counts();
     $('#calls').replaceChildren(...state.calls.map(c => {
       const g = el('span', 'call ' + c.mark, MARK[c.mark].glyph);
@@ -295,6 +322,7 @@ if (typeof document !== 'undefined') {
     const finished = done();
     $('#play-panel').hidden = finished;
     $('#press').hidden = !finished;
+    $('#dock').hidden = finished;
     if (finished) {
       $('#verdict').textContent = n.hunch === 0 && n.mistake === 0 ? 'Clean proof.' : 'Ready for press.';
       const secs = state.started && state.finished ? Math.max(0, Math.round((state.finished - state.started) / 1000)) : null;
@@ -328,6 +356,7 @@ if (typeof document !== 'undefined') {
     state.known[id] = E.truth(id);
     state.calls.push({ id, mark });
     delete state.suspects[id];
+    markRulesSeen();
     openId = null;
     if (done()) state.finished = Date.now();
     save();
@@ -404,7 +433,7 @@ if (typeof document !== 'undefined') {
     state = fresh();
     state.hardcore = hardcore;
     openId = hint = null;
-    for (const id in els) { els[id].reveal.hidden = true; els[id].reveal.replaceChildren(); }
+    for (const id in els) { els[id].reveal.hidden = true; els[id].reveal.replaceChildren(); els[id].showHistory = false; }
     save();
     render();
     toast(`Fresh proof. ${upper(E.page.start)} is verified for you to start.`);
@@ -445,16 +474,28 @@ if (typeof document !== 'undefined') {
     if (!saved) { try { saved = JSON.parse(localStorage.getItem(saveKey())); } catch (_) { saved = null; } }
     state = valid(saved) ? saved : fresh();
     if (!state.suspects) state.suspects = {};
+    // The rules open for a first visit only; once you've made a call they stay folded.
     const rules = document.querySelector('.rules');
-    if (rules) rules.open = state.calls.length === 0;
+    if (rules) rules.open = !rulesSeen() && state.calls.length === 0;
     try { localStorage.setItem(CURRENT_KEY, String(pageIndex)); } catch (_) { /* fine */ }
     build();
     render();
   }
 
+  function rulesSeen() {
+    try { return localStorage.getItem(RULES_KEY) === '1'; } catch (_) { return false; }
+  }
+
+  function markRulesSeen() {
+    try { localStorage.setItem(RULES_KEY, '1'); } catch (_) { /* fine */ }
+  }
+
   function boot(data) {
     buildSwitcher();
     $('#hint').addEventListener('click', giveHint);
+    $('#dock-hint').addEventListener('click', giveHint);
+    $('#dock-notes').addEventListener('click', () =>
+      $('#notes-panel').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }));
     $('#reset').addEventListener('click', reset);
     $('#reset-2').addEventListener('click', reset);
     $('#hardcore').addEventListener('change', ev => { state.hardcore = ev.target.checked; save(); });
