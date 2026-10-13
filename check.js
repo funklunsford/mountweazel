@@ -1,6 +1,7 @@
 // Checks every climb in climbs.js. Run with `npm run check`; the deploy runs it too.
 'use strict';
 const CLIMBS = require('./climbs.js');
+const { SCENE } = require('./climb.js');
 
 const CAMPS = ['Foothills', 'Treeline', 'Scree', 'Ridge', 'Summit'];
 const LAYOUT = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4].map(k => CAMPS[k]);
@@ -17,6 +18,7 @@ for (const climb of CLIMBS) {
   const where = test => ledges.map((l, i) => test(l, i) ? at(l, i) : null).filter(Boolean);
 
   check(ledges.length === 12, 'twelve ledges, one per thousand feet');
+  check(SCENE.ledgeAt.length === ledges.length, 'the drawn mountain has a spot for every ledge');
   check(where(l => !['left', 'right'].includes(l.realOn)).length === 0, 'every ledge says which side the real word is on');
   check(where(l => !(filled(l.real.word) && filled(l.real.pos) && filled(l.real.def) && filled(l.real.history))).length === 0,
     'every real word has a part of speech, a definition and a history');

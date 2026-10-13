@@ -3,20 +3,101 @@
    The words are in climbs.js. */
 'use strict';
 
+// The drawn mountain, in the scene's viewBox (360 × 230). The ledges climb its face in switchbacks,
+// each camp in its own band of colour, and check.js holds every climb to that layout. SCENE.tree()
+// describes the whole drawing as [tag, attributes, children]: the page builds it into SVG, and
+// share/scene-svg.js turns it into markup for the share card.
+const SCENE = {
+  ledgeAt: [[64, 216], [112, 204], [160, 192], [210, 170], [170, 153], [134, 140], [168, 118], [204, 104], [236, 90], [212, 72], [190, 56], [196, 30]],
+  base: [34, 226],
+  peak: [196, 24],
+  mountain: 'M8 230 L40 208 L62 197 L86 172 L108 162 L126 134 L146 120 L160 94 L172 80 L182 54 L196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 Z',
+  // The camps' bands above the foothills, each running down to a wavy line: [band, height, wave].
+  bands: [['treeline', 181, 3], ['scree', 127, 3], ['ridge', 80, 3], ['summit', 45, 5]],
+
+  tree() {
+    const node = (tag, attrs = {}, kids = []) => [tag, attrs, kids];
+    const points = ps => ps.map(p => p.join(',')).join(' ');
+    const [px, py] = this.peak;
+    // A wavy line across the mountain at height y, with everything above it filled.
+    const above = (y, amp) => {
+      let d = `M-10 -10 H370 V${y}`;
+      for (let x = 370, k = 0; x > -20; x -= 30, k++) d += ` Q${x - 15} ${y + (k % 2 ? amp : -amp)} ${x - 30} ${y}`;
+      return d + ' Z';
+    };
+    const cloud = (x, y, s) => node('g', { class: 'cloud' },
+      [[0, 0, 9], [11, -5, 11], [24, 0, 9], [12, 4, 8]].map(([dx, dy, r]) => node('circle', { cx: x + dx * s, cy: y + dy * s, r: r * s })));
+    const defs = node('defs', {}, [
+      // Hatching marks a ledge where a rope was cut; haze softens the foot of the mountain.
+      node('pattern', { id: 'hatch-wrong', width: 4, height: 4, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' },
+        [node('rect', { class: 'hatch-bg', width: 4, height: 4 }), node('rect', { class: 'hatch-fg', width: 1.6, height: 4 })]),
+      node('linearGradient', { id: 'haze', x1: 0, y1: 0, x2: 0, y2: 1 },
+        [node('stop', { class: 'haze-stop', offset: 0, 'stop-opacity': 0 }), node('stop', { class: 'haze-stop', offset: 1, 'stop-opacity': .55 })]),
+      node('clipPath', { id: 'mountain-clip' }, [node('path', { d: this.mountain })])
+    ]);
+    const stars = [[30, 30], [70, 16], [118, 44], [150, 12], [252, 18], [282, 50], [334, 24], [344, 76], [18, 84], [96, 74], [-40, 40], [-90, 70], [400, 30], [450, 64]]
+      .map(([x, y]) => node('circle', { class: 'star', cx: x, cy: y, r: .9 }));
+    const trees = [[100, 177], [122, 171], [150, 177], [190, 137], [232, 151], [248, 173], [270, 157]]
+      .map(([x, y]) => node('path', { class: 'tree', d: `M${x} ${y - 15} L${x + 4.5} ${y - 8} H${x + 2.5} L${x + 6.5} ${y - 1} H${x - 6.5} L${x - 2.5} ${y - 8} H${x - 4.5} Z` }));
+    const rocks = [[150, 110], [226, 119], [186, 91], [256, 112], [214, 125]]
+      .map(([x, y]) => node('path', { class: 'rock', d: `M${x - 6} ${y} L${x - 4} ${y - 5} L${x + 1} ${y - 7} L${x + 6} ${y - 3} L${x + 6} ${y} Z` }));
+    const markers = this.ledgeAt.map(([x, y]) => node('g', { class: 'marker', transform: `translate(${x} ${y})` }, [
+      node('circle', { r: 6.5 }),
+      node('path', { class: 'glyph tick', d: 'M-3 .2 L-.8 2.6 L3.2 -2.4' }),
+      node('path', { class: 'glyph cross', d: 'M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4' })]));
+    // The scout: a bean in a ranger hat, with a pack and a sash, standing on its origin.
+    const scout = node('g', { class: 'climber' }, [node('g', { class: 'bob' }, [node('g', { transform: 'scale(1.15)' }, [
+      node('rect', { class: 'scout-pack', x: -9.6, y: -15.5, width: 6, height: 10, rx: 2 }),
+      node('ellipse', { class: 'scout-body', cx: 0, cy: -9.5, rx: 6.5, ry: 8.5 }),
+      node('path', { class: 'scout-sash', d: 'M-5.8 -9 L4.8 -2.6' }),
+      node('ellipse', { class: 'scout-eye', cx: -2.2, cy: -11.6, rx: 1.7, ry: 2.1 }),
+      node('ellipse', { class: 'scout-eye', cx: 2.4, cy: -11.6, rx: 1.7, ry: 2.1 }),
+      node('circle', { class: 'scout-pupil', cx: -1.8, cy: -11.3, r: .85 }),
+      node('circle', { class: 'scout-pupil', cx: 2.8, cy: -11.3, r: .85 }),
+      node('path', { class: 'scout-hat', d: 'M-4.2 -16.6 C-4.2 -22.4 4.2 -22.4 4.2 -16.6 Z' }),
+      node('ellipse', { class: 'scout-hat', cx: 0, cy: -16.6, rx: 8.4, ry: 2.1 }),
+      node('ellipse', { class: 'scout-foot', cx: -2.8, cy: -.9, rx: 2.4, ry: 1.4 }),
+      node('ellipse', { class: 'scout-foot', cx: 2.8, cy: -.9, rx: 2.4, ry: 1.4 })])])]);
+    return [
+      defs,
+      node('g', {}, [...stars, node('circle', { class: 'sky-sun', cx: 306, cy: 76, r: 15 })]),
+      // Far ranges run past both edges, so a wide screen shows more of them, not a gap.
+      node('path', { class: 'far-1', d: 'M-240 230 V150 L-190 128 L-150 146 L-100 116 L-60 140 L-20 124 L24 140 L48 152 L78 122 L108 146 L140 128 L180 140 L230 120 L262 132 L298 96 L326 120 L360 104 L392 126 L430 100 L470 130 L520 112 L600 136 V230 Z' }),
+      node('path', { class: 'far-2', d: 'M-240 230 V190 L-200 172 L-160 186 L-120 164 L-80 182 L-40 170 L0 192 L34 172 L62 186 L96 160 L124 182 L230 176 L268 150 L300 168 L332 140 L360 158 L400 170 L440 150 L490 176 L540 160 L600 180 V230 Z' }),
+      node('g', { class: 'drift slow' }, [cloud(-6, 126, 1.3), cloud(318, 112, 1.1), cloud(-150, 100, 1.2), cloud(450, 92, 1.3)]),
+      node('path', { class: 'band-foothills', d: 'M-240 226 Q-150 218 -60 225 T120 224 T300 223 T480 225 T660 222 V240 H-240 Z' }),
+      // The mountain: bands of colour clipped to its shape, trees and rocks, the shaded east face.
+      node('g', { 'clip-path': 'url(#mountain-clip)' }, [
+        node('rect', { class: 'band-foothills', x: -10, y: -10, width: 380, height: 250 }),
+        ...this.bands.map(([name, y, amp]) => node('path', { class: 'band-' + name, d: above(y, amp) })),
+        ...trees,
+        ...rocks,
+        node('path', { class: 'shade', d: 'M196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 L232 230 L222 196 L214 160 L208 120 L203 80 L199 50 Z' })
+      ]),
+      node('path', { class: 'outline', d: this.mountain }),
+      node('rect', { class: 'haze', x: -240, y: 196, width: 840, height: 40 }),
+      // The route: a dotted trail to every ledge, and the rope fixed so far.
+      node('polyline', { class: 'trail', points: points([this.base, ...this.ledgeAt]) }),
+      node('polyline', { class: 'rope-line rope-under' }),
+      node('polyline', { class: 'rope-line rope-over' }),
+      node('line', { class: 'pole', x1: px, y1: py, x2: px, y2: py - 19 }),
+      node('path', { class: 'flag', d: `M${px} ${py - 19}l13 4.5l-13 4.5z` }),
+      ...markers,
+      node('circle', { class: 'halo', r: 8 }),
+      scout,
+      node('g', { class: 'drift' }, [cloud(266, 44, .8)])
+    ];
+  }
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = { SCENE };
+
 if (typeof document !== 'undefined') {
   const ROPES = 3;
   const RULES_KEY = 'mountweazel-climb-rules-seen';
   const SVG = 'http://www.w3.org/2000/svg';
   // Where the last rope went, for the sentence that ends a climb.
   const AT_CAMP = { Foothills: 'in the Foothills', Treeline: 'at the Treeline', Scree: 'on the Scree', Ridge: 'on the Ridge', Summit: 'on the last ledge' };
-  // Where each ledge sits on the drawn mountain (viewBox 360 × 230): switchbacks up the face, each
-  // camp in its own band of colour. check.js holds every climb to this layout of camps.
-  const LEDGE_AT = [[64, 216], [112, 204], [160, 192], [210, 170], [170, 153], [134, 140], [168, 118], [204, 104], [236, 90], [212, 72], [190, 56], [196, 30]];
-  const BASE = [34, 226];
-  const PEAK = [196, 24];
-  const MOUNTAIN = 'M8 230 L40 208 L62 197 L86 172 L108 162 L126 134 L146 120 L160 94 L172 80 L182 54 L196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 Z';
-  // The camps' bands, bottom to top, each running down to a wavy line across the mountain.
-  const BANDS = [['treeline', 181, 3], ['scree', 127, 3], ['ridge', 80, 3], ['summit', 45, 5]];
+  const { ledgeAt: LEDGE_AT, base: BASE } = SCENE;
   // Merit badges for the end of a climb: the camp you finished in.
   const BADGE_FILL = { Foothills: '#9ed27a', Treeline: '#4fa36f', Scree: '#a79cc0', Ridge: '#8fc6e6', Summit: '#ffc845' };
   const $ = sel => document.querySelector(sel);
@@ -88,98 +169,22 @@ if (typeof document !== 'undefined') {
 
   /* ---------- The scene: sky, mountain, trail, ledges, flag and climber ---------- */
 
-  // A wavy line across the mountain at height y, with everything above it filled.
-  function above(y, amp) {
-    let d = `M-10 -10 H370 V${y}`;
-    for (let x = 370, k = 0; x > -20; x -= 30, k++) d += ` Q${x - 15} ${y + (k % 2 ? amp : -amp)} ${x - 30} ${y}`;
-    return d + ' Z';
-  }
-
-  function cloud(x, y, s) {
-    const g = svg('g', { class: 'cloud' });
-    for (const [dx, dy, r] of [[0, 0, 9], [11, -5, 11], [24, 0, 9], [12, 4, 8]]) g.append(svg('circle', { cx: x + dx * s, cy: y + dy * s, r: r * s }));
-    return g;
-  }
-
-  function buildClimber() {
-    const climber = svg('g', { class: 'climber' });
-    const bob = svg('g', { class: 'bob' });
-    const scout = svg('g', { transform: 'scale(1.15)' });
-    scout.append(
-      svg('rect', { class: 'scout-pack', x: -9.6, y: -15.5, width: 6, height: 10, rx: 2 }),
-      svg('ellipse', { class: 'scout-body', cx: 0, cy: -9.5, rx: 6.5, ry: 8.5 }),
-      svg('path', { class: 'scout-sash', d: 'M-5.8 -9 L4.8 -2.6' }),
-      svg('ellipse', { class: 'scout-eye', cx: -2.2, cy: -11.6, rx: 1.7, ry: 2.1 }),
-      svg('ellipse', { class: 'scout-eye', cx: 2.4, cy: -11.6, rx: 1.7, ry: 2.1 }),
-      svg('circle', { class: 'scout-pupil', cx: -1.8, cy: -11.3, r: .85 }),
-      svg('circle', { class: 'scout-pupil', cx: 2.8, cy: -11.3, r: .85 }),
-      svg('path', { class: 'scout-hat', d: 'M-4.2 -16.6 C-4.2 -22.4 4.2 -22.4 4.2 -16.6 Z' }),
-      svg('ellipse', { class: 'scout-hat', cx: 0, cy: -16.6, rx: 8.4, ry: 2.1 }),
-      svg('ellipse', { class: 'scout-foot', cx: -2.8, cy: -.9, rx: 2.4, ry: 1.4 }),
-      svg('ellipse', { class: 'scout-foot', cx: 2.8, cy: -.9, rx: 2.4, ry: 1.4 }));
-    bob.append(scout);
-    climber.append(bob);
-    return climber;
-  }
-
+  // Builds SCENE's drawing into the page and returns the parts that change as you climb.
   function buildScene() {
     const root = $('#mountain');
-    const defs = svg('defs');
-    // Hatching marks a ledge where a rope was cut; haze softens the foot of the mountain.
-    const hatch = svg('pattern', { id: 'hatch-wrong', width: 4, height: 4, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' });
-    hatch.append(svg('rect', { class: 'hatch-bg', width: 4, height: 4 }), svg('rect', { class: 'hatch-fg', width: 1.6, height: 4 }));
-    const haze = svg('linearGradient', { id: 'haze', x1: 0, y1: 0, x2: 0, y2: 1 });
-    haze.append(svg('stop', { class: 'haze-stop', offset: 0, 'stop-opacity': 0 }), svg('stop', { class: 'haze-stop', offset: 1, 'stop-opacity': .55 }));
-    const clip = svg('clipPath', { id: 'mountain-clip' });
-    clip.append(svg('path', { d: MOUNTAIN }));
-    defs.append(hatch, haze, clip);
-
-    const sky = svg('g');
-    for (const [x, y] of [[30, 30], [70, 16], [118, 44], [150, 12], [252, 18], [282, 50], [334, 24], [344, 76], [18, 84], [96, 74], [-40, 40], [-90, 70], [400, 30], [450, 64]]) {
-      sky.append(svg('circle', { class: 'star', cx: x, cy: y, r: .9 }));
-    }
-    sky.append(svg('circle', { class: 'sky-sun', cx: 306, cy: 76, r: 15 }));
-
-    // Far ranges run past both edges, so a wide screen shows more of them, not a gap.
-    const far1 = svg('path', { class: 'far-1', d: 'M-240 230 V150 L-190 128 L-150 146 L-100 116 L-60 140 L-20 124 L24 140 L48 152 L78 122 L108 146 L140 128 L180 140 L230 120 L262 132 L298 96 L326 120 L360 104 L392 126 L430 100 L470 130 L520 112 L600 136 V230 Z' });
-    const far2 = svg('path', { class: 'far-2', d: 'M-240 230 V190 L-200 172 L-160 186 L-120 164 L-80 182 L-40 170 L0 192 L34 172 L62 186 L96 160 L124 182 L230 176 L268 150 L300 168 L332 140 L360 158 L400 170 L440 150 L490 176 L540 160 L600 180 V230 Z' });
-    const backClouds = svg('g', { class: 'drift slow' });
-    backClouds.append(cloud(-6, 126, 1.3), cloud(318, 112, 1.1), cloud(-150, 100, 1.2), cloud(450, 92, 1.3));
-    const ground = svg('path', { class: 'band-foothills', d: 'M-240 226 Q-150 218 -60 225 T120 224 T300 223 T480 225 T660 222 V240 H-240 Z' });
-
-    // The mountain: bands of colour clipped to its shape, trees and rocks, the shaded east face.
-    const body = svg('g', { 'clip-path': 'url(#mountain-clip)' });
-    body.append(svg('rect', { class: 'band-foothills', x: -10, y: -10, width: 380, height: 250 }));
-    for (const [name, y, amp] of BANDS) body.append(svg('path', { class: 'band-' + name, d: above(y, amp) }));
-    for (const [x, y] of [[100, 177], [122, 171], [150, 177], [190, 137], [232, 151], [248, 173], [270, 157]]) {
-      body.append(svg('path', { class: 'tree', d: `M${x} ${y - 15} L${x + 4.5} ${y - 8} H${x + 2.5} L${x + 6.5} ${y - 1} H${x - 6.5} L${x - 2.5} ${y - 8} H${x - 4.5} Z` }));
-    }
-    for (const [x, y] of [[150, 110], [226, 119], [186, 91], [256, 112], [214, 125]]) {
-      body.append(svg('path', { class: 'rock', d: `M${x - 6} ${y} L${x - 4} ${y - 5} L${x + 1} ${y - 7} L${x + 6} ${y - 3} L${x + 6} ${y} Z` }));
-    }
-    body.append(svg('path', { class: 'shade', d: 'M196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 L232 230 L222 196 L214 160 L208 120 L203 80 L199 50 Z' }));
-    const outline = svg('path', { class: 'outline', d: MOUNTAIN });
-    const mist = svg('rect', { class: 'haze', x: -240, y: 196, width: 840, height: 40 });
-
-    // The route: a dotted trail to every ledge, and the rope you've fixed so far.
-    const trail = svg('polyline', { class: 'trail', points: points([BASE, ...LEDGE_AT]) });
-    const ropeUnder = svg('polyline', { class: 'rope-line rope-under' });
-    const ropeOver = svg('polyline', { class: 'rope-line rope-over' });
-    const markers = LEDGE_AT.map(([x, y]) => {
-      const m = svg('g', { class: 'marker', transform: `translate(${x} ${y})` });
-      m.append(svg('circle', { r: 6.5 }), svg('path', { class: 'glyph tick', d: 'M-3 .2 L-.8 2.6 L3.2 -2.4' }), svg('path', { class: 'glyph cross', d: 'M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4' }));
-      return m;
-    });
-    const [px, py] = PEAK;
-    const pole = svg('line', { class: 'pole', x1: px, y1: py, x2: px, y2: py - 19 });
-    const flag = svg('path', { class: 'flag', d: `M${px} ${py - 19}l13 4.5l-13 4.5z` });
-    const halo = svg('circle', { class: 'halo', r: 8 });
-    const climber = buildClimber();
-    const frontCloud = svg('g', { class: 'drift' });
-    frontCloud.append(cloud(266, 44, .8));
-
-    root.append(defs, sky, far1, far2, backClouds, ground, body, outline, mist, trail, ropeUnder, ropeOver, pole, flag, ...markers, halo, climber, frontCloud);
-    return { markers, ropeUnder, ropeOver, halo, climber };
+    const build = ([tag, attrs, kids]) => {
+      const node = svg(tag, attrs);
+      for (const kid of kids) node.append(build(kid));
+      return node;
+    };
+    root.append(...SCENE.tree().map(build));
+    return {
+      markers: [...root.querySelectorAll('.marker')],
+      ropeUnder: root.querySelector('.rope-under'),
+      ropeOver: root.querySelector('.rope-over'),
+      halo: root.querySelector('.halo'),
+      climber: root.querySelector('.climber')
+    };
   }
 
   function ropeIcon() {
