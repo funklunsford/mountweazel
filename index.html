@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body { margin: 0; }</style>
 <title>Mountweazel</title>
-<meta name="description" content="A word puzzle: find the fake words hiding among real old ones. Every real word you confirm gives you a clue about the others; use the clues to prove which were made up. No guessing needed.">
+<meta name="description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <link rel="canonical" href="https://funklunsford.github.io/mountweazel/">
 <meta name="theme-color" content="#ecebe5">
 <link rel="icon" type="image/png" sizes="64x64" href="share/favicon.png">
@@ -13,31 +13,30 @@
 <!-- Link previews: share/card.html (wide) and share/square.html (square), rendered by `npm run share-card`. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mountweazel">
-<meta property="og:title" content="The Mountweazel: find the fake words">
-<meta property="og:description" content="A word puzzle: find the fake words hiding among real old ones. Every real word you confirm gives you a clue about the others; use the clues to prove which were made up. No guessing needed.">
+<meta property="og:title" content="The Mountweazel: climb a mountain of old words">
+<meta property="og:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <meta property="og:url" content="https://funklunsford.github.io/mountweazel/">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Mountweazel, a word puzzle: find the fake words hiding among real old ones. Every real word you confirm gives you a clue about the others. No guessing needed.">
+<meta property="og:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/square.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="A blackletter M in a double-ruled frame, above the words “The Mountweazel, a word puzzle”.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Mountweazel: find the fake words">
-<meta name="twitter:description" content="A word puzzle: find the fake words hiding among real old ones. Every real word you confirm gives you a clue about the others; use the clues to prove which were made up. No guessing needed.">
+<meta name="twitter:title" content="The Mountweazel: climb a mountain of old words">
+<meta name="twitter:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on. The words grow rarer and stranger toward the summit, and you carry three ropes.">
 <meta name="twitter:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
-<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: find the fake words hiding among real old ones. Every real word you confirm gives you a clue about the others. No guessing needed.">
+<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=swap">
 <style>
-/* Layout: a broadsheet front page. Nameplate, ears and folio line across the top; the rules run
-   as the lead story; the dictionary page fills the main column; the proof and Notes & Queries sit
-   in a sidebar (stacked above the page on a phone). */
+/* Layout: a newspaper front page. Nameplate, ears and folio line across the top; the rules run
+   as the lead story; the climb fills one column below, one ledge at a time. */
 :root {
   --newsprint: #ecebe5;
   --ink: #161514;
@@ -47,8 +46,6 @@
   --pencil-wash: #dde3f4;
   --dele: #ae2a1f;
   --dele-wash: #f2dbd6;
-  --hunch: #875600;
-  --hunch-wash: #f0e2c4;
   --face-name: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
   --face-text: "Newsreader", "Iowan Old Style", Georgia, serif;
   --face-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
@@ -57,34 +54,28 @@
   :root:not([data-theme="light"]) {
     --newsprint: #141413; --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934;
     --pencil: #93acff; --pencil-wash: #1f2943; --dele: #ff8577; --dele-wash: #3b201d;
-    --hunch: #e6b45c; --hunch-wash: #382c17;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --newsprint: #141413; --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934;
   --pencil: #93acff; --pencil-wash: #1f2943; --dele: #ff8577; --dele-wash: #3b201d;
-  --hunch: #e6b45c; --hunch-wash: #382c17;
   color-scheme: dark;
 }
 
 [hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 body { background: var(--newsprint); color: var(--ink); font-family: var(--face-text); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
-.paper { max-width: 1200px; margin-inline: auto; padding-inline: 16px; padding-block: 16px 80px; }
+.paper { max-width: 980px; margin-inline: auto; padding-inline: 16px; padding-block: 16px 64px; }
 
 /* Masthead: ears either side of the nameplate, then the folio line. */
 .masthead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 18px; }
 .nameplate { grid-column: 2; grid-row: 1; margin: 0; font-family: var(--face-name); font-weight: 400; font-size: clamp(2.5rem, 8.4vw, 5.3rem); line-height: 1.05; text-align: center; }
-.ear { grid-row: 1; display: grid; gap: 5px; align-content: start; max-width: 220px; padding: 7px 10px; border: 1px solid var(--ink); font-size: .8rem; line-height: 1.3; }
+.ear { grid-row: 1; display: grid; gap: 5px; align-content: start; max-width: 200px; padding: 7px 10px; border: 1px solid var(--ink); font-size: .8rem; line-height: 1.3; }
 .ear-left { grid-column: 1; justify-self: start; }
 .ear-right { grid-column: 3; justify-self: end; }
 .ear-kicker { font-size: .66rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.ear-block { display: grid; gap: 5px; }
 .folio { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 18px; padding: 5px 2px; border-top: 4px double var(--ink); border-bottom: 1px solid var(--ink); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
-.pages { display: flex; flex-wrap: wrap; gap: 6px; }
-.page-tab { font: inherit; font-size: .78rem; min-height: 32px; padding: 3px 10px; border: 1px solid var(--rule); border-radius: 2px; background: transparent; color: var(--ink-2); cursor: pointer; }
-.page-tab:hover { border-color: var(--ink); color: var(--ink); }
-.page-tab[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--newsprint); }
 /* Phones: just the nameplate and a one-line folio. */
 @media (max-width: 719px) {
   .masthead { grid-template-columns: 1fr; gap: 6px; }
@@ -94,161 +85,140 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   .folio .price { display: none; }
 }
 
-/* The front: lead story and dictionary page in the main column, the sidebar beside them. */
 .front { display: grid; gap: 22px; margin-top: 16px; }
-.notebook { display: grid; gap: 20px; align-content: start; min-width: 0; }
-@media (min-width: 1040px) {
-  .front { grid-template-columns: minmax(0, 1fr) 320px; column-gap: 30px; align-items: start; }
-  .lead { grid-column: 1; grid-row: 1; }
-  .page { grid-column: 1; grid-row: 2; }
-  .notebook { grid-column: 2; grid-row: 1 / span 2; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 14px); max-height: calc(100vh - 28px); overflow: auto; padding: 0 4px 0 24px; border-left: 1px solid var(--rule); }
-}
-/* Narrower screens: the word page straight after the lead, the notebook after the page,
-   and a slim dock at the bottom keeps the count and Hint in reach. */
-@media (max-width: 1039px) {
-  .page { order: 1; }
-  .notebook { order: 2; }
-}
 
+/* The lead story: what the game is, with the rules folded beneath. */
 .lead { padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
 .kicker { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
 .headline { margin: 4px 0 8px; font-size: clamp(1.9rem, 4.4vw, 3rem); font-weight: 800; line-height: 1.03; letter-spacing: -.01em; font-variation-settings: "opsz" 72; text-wrap: balance; }
 .deck { margin: 0 0 10px; max-width: 62ch; font-size: 1.12rem; font-style: italic; line-height: 1.35; color: var(--ink-2); }
 .rules > summary { cursor: pointer; width: fit-content; font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-.byline { margin: 10px 0 8px; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
-.story { columns: 2 17rem; column-gap: 28px; column-rule: 1px solid var(--rule); text-align: justify; hyphens: auto; }
+.story { columns: 2 17rem; column-gap: 28px; column-rule: 1px solid var(--rule); margin-top: 10px; text-align: justify; hyphens: auto; }
 .story p { margin: 0 0 .6em; }
 .story p:first-child::first-letter { float: left; padding: 5px 7px 0 0; font-size: 3.5em; font-weight: 800; line-height: .8; }
-.story .call { vertical-align: -2px; }
+.story kbd { font: inherit; font-size: .85em; padding: 0 4px; border: 1px solid var(--rule); border-radius: 2px; }
 @media (max-width: 719px) {
   .headline { font-size: 1.75rem; }
   .deck { font-size: 1.02rem; }
-  .byline { display: none; }
   .story p:first-child::first-letter { float: none; padding: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
 }
 
-.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); }
-.section-title { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
-.heads { display: flex; gap: 14px; font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin: 0; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.section-title { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.heads { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
-/* The dictionary page. */
-.page { container-type: inline-size; min-width: 0; }
-.cols { display: grid; }
-.col { min-width: 0; }
-@container (min-width: 620px) {
-  .cols { grid-template-columns: 1fr 1fr; column-gap: 26px; }
-  .col + .col { border-left: 1px solid var(--rule); padding-left: 26px; }
+/* The ascent: where you are, the mountain, then one ledge's two cards. */
+.ascent { container: ascent / inline-size; min-width: 0; scroll-margin-top: 8px; }
+.status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; margin-top: 10px; }
+.where { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+.ropes { display: flex; align-items: center; gap: 3px; }
+.ropes-label { margin-right: 4px; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.rope { width: 24px; height: 24px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; transition: opacity .3s; }
+.rope .slash { display: none; stroke: var(--dele); stroke-width: 2.2; }
+.rope.cut { opacity: .45; }
+.rope.cut .slash { display: inline; }
+
+.mountain { display: block; width: 100%; height: auto; max-height: 150px; margin: 8px 0 14px; overflow: visible; }
+.mountain .ground { fill: var(--newsprint); }
+.mountain .hatched { fill: url(#hatch); }
+.mountain .far, .mountain .ridge { fill: none; stroke-width: 1.5; stroke-linejoin: round; }
+.mountain .far { stroke: var(--rule); }
+.mountain .ridge { stroke: var(--ink); }
+.mountain .hatch-line { stroke: var(--rule); stroke-width: 1.1; }
+.mountain .trail { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.mountain .pole { stroke: var(--ink); stroke-width: 1.5; }
+.mountain .flag { fill: var(--dele); }
+.mountain .dot { fill: var(--newsprint); stroke: var(--ink-2); stroke-width: 1.5; }
+.mountain .dot.right { fill: var(--pencil); stroke: var(--pencil); }
+.mountain .dot.wrong { fill: var(--dele); stroke: var(--dele); }
+.mountain .dot.unreached { stroke: var(--rule); }
+.mountain .dot.now { stroke: var(--ink); stroke-width: 2.5; }
+.mountain .halo { fill: none; stroke: var(--ink); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; animation: halo 1.8s ease-out infinite; }
+@keyframes halo { from { opacity: .8; transform: scale(.6); } to { opacity: 0; transform: scale(1.5); } }
+
+.prompt { margin: 0 0 10px; font-size: 1.25rem; font-weight: 800; line-height: 1.2; }
+.pair { display: grid; gap: 12px; }
+@container ascent (min-width: 560px) {
+  .pair { grid-template-columns: 1fr 1fr; }
+  .pair .card { min-height: 120px; }
 }
-.colophon { margin: 12px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-size: .8rem; font-style: italic; color: var(--ink-2); }
+.pair.arrive { animation: arrive .35s ease-out; }
+@keyframes arrive { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-.entry { position: relative; padding: 10px 2.6rem 12px 0; border-bottom: 1px solid var(--rule); }
-.entry-main { all: unset; box-sizing: border-box; display: block; width: calc(100% + 12px); margin: 0 -6px; padding: 4px 6px; border-radius: 2px; cursor: pointer; }
-.entry-main:hover, .entry.open .entry-main { background: var(--pencil-wash); }
-.entry-main:focus-visible { outline: 2px solid var(--pencil); outline-offset: 1px; }
-.entry.genuine .entry-main, .entry.fake .entry-main { cursor: default; }
-.entry.genuine .entry-main:hover, .entry.fake .entry-main:hover { background: transparent; }
-.hw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
-.hw { font-size: .98em; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.card { position: relative; display: flex; flex-direction: column; gap: 4px; box-sizing: border-box; width: 100%; margin: 0; padding: 16px 18px 18px; border: 1.5px solid var(--ink); border-radius: 2px; background: var(--newsprint); color: var(--ink); font: inherit; text-align: left; }
+button.card { cursor: pointer; transition: background-color .15s; }
+button.card:hover { background: var(--pencil-wash); }
+button.card:active { background: var(--pencil-wash); transform: translateY(1px); }
+button.card:focus-visible { outline: 3px solid var(--pencil); outline-offset: 2px; }
+.hw-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding-right: 4.2rem; }
+button.card .hw-line { padding-right: 0; }
+.hw { font-size: 1.3rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; overflow-wrap: anywhere; }
 .pos { font-style: italic; color: var(--ink-2); }
-.label { font-size: .68em; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
-.def { display: block; margin-top: 1px; }
-.entry.start .hw-line::after { content: "given"; font-family: var(--face-hand); font-size: 1.15em; line-height: 1; color: var(--pencil); }
-.entry.fake .hw, .entry.fake .def { text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
-.entry.fake .def, .entry.fake .pos { color: var(--ink-2); }
-.entry.suspected .hw { outline: 2px solid var(--hunch); outline-offset: 3px; border-radius: 999px; }
-
-.suspect { position: absolute; right: -4px; top: 6px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); cursor: pointer; }
-.suspect:hover { color: var(--ink); background: var(--hunch-wash); }
-.suspect[aria-pressed="true"] { color: var(--hunch); }
-.suspect[aria-pressed="true"] circle { fill: currentColor; fill-opacity: .25; }
-.suspect:focus-visible { outline: 2px solid var(--pencil); outline-offset: 1px; }
-
-.call { display: inline-grid; place-items: center; width: 1.35em; height: 1.35em; border-radius: 50%; font-size: .78em; font-weight: 800; line-height: 1; color: var(--newsprint); }
-.call:empty { display: none; }
-.call.proven { background: var(--pencil); }
-.call.hunch { background: var(--hunch); }
-.call.mistake { background: var(--dele); }
-.entry .call { display: none; }
-
-.proofmark { position: absolute; right: 0; top: 6px; font-family: var(--face-hand); font-size: 1.45rem; line-height: 1; transform: rotate(-8deg); pointer-events: none; }
-.entry.genuine .proofmark { color: var(--pencil); }
-.entry.fake .proofmark { color: var(--dele); }
-.entry.just .proofmark { animation: stamp .45s cubic-bezier(.2, .9, .3, 1.3); }
+.def { display: block; font-size: 1.08rem; }
+.card.real { border-color: var(--pencil); }
+.card.forged { border-color: var(--dele); }
+.card.picked { border-width: 3px; padding: 14.5px 16.5px 16.5px; }
+.card.forged .hw, .card.forged .def { text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
+.card.forged .def, .card.forged .pos { color: var(--ink-2); }
+.pick-tag { font-size: .66rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.card.real .pick-tag { color: var(--pencil); }
+.card.forged .pick-tag { color: var(--dele); }
+.stamp { position: absolute; right: 14px; top: 8px; font-family: var(--face-hand); font-size: 1.75rem; line-height: 1; transform: rotate(-8deg); pointer-events: none; }
+.card.real .stamp { color: var(--pencil); }
+.card.forged .stamp { color: var(--dele); }
+.card.just .stamp { animation: stamp .45s cubic-bezier(.2, .9, .3, 1.3); }
 @keyframes stamp { from { opacity: 0; transform: rotate(-8deg) scale(1.8); } to { opacity: 1; transform: rotate(-8deg) scale(1); } }
 
-.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.act { font: inherit; font-size: .95rem; min-height: 40px; padding: 6px 18px; border: 1.5px solid currentColor; border-radius: 2px; background: var(--newsprint); cursor: pointer; }
-.act-genuine { color: var(--pencil); }
-.act-fake { color: var(--dele); }
-.act-genuine:hover { background: var(--pencil-wash); }
-.act-fake:hover { background: var(--dele-wash); }
-
-.reveal { display: grid; gap: 8px; margin-top: 8px; font-size: .94rem; }
-.history-block { display: grid; gap: 8px; }
-.history-toggle { display: none; }
-@media (max-width: 719px) {
-  .history-toggle { display: block; width: fit-content; padding: 4px 0; border: 0; background: none; color: var(--ink-2); font: inherit; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-  .history-block { display: none; }
-  .entry.show-history .history-block { display: grid; }
-}
+.reveal { display: grid; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: .95rem; }
 .reveal p { margin: 0; }
 .quote { margin: 0; padding-left: 12px; border-left: 2px solid var(--rule); font-style: italic; }
 .quote cite { display: block; font-size: .85em; font-style: normal; color: var(--ink-2); }
-.note, .anatomy { padding: 7px 10px; }
-.note { background: var(--pencil-wash); }
-.anatomy { background: var(--dele-wash); }
-.note-tag, .anatomy .tag { margin-right: 7px; font-family: var(--face-hand); font-size: 1.3em; line-height: 1; }
-.note-tag { color: var(--pencil); }
-.anatomy .tag { color: var(--dele); }
-.entry.hinted .entry-main { outline: 2px dashed var(--hunch); outline-offset: 2px; animation: nudge 1.2s ease-in-out 3; }
-@keyframes nudge { 50% { outline-color: transparent; } }
+.anatomy { padding: 7px 10px; background: var(--dele-wash); }
+.anatomy .tag { margin-right: 7px; font-family: var(--face-hand); font-size: 1.3em; line-height: 1; color: var(--dele); }
 
-/* The sidebar. */
-.panel { display: grid; gap: 10px; }
-.count { color: var(--ink-2); letter-spacing: 0; font-variant-numeric: tabular-nums; }
-.muted { margin: 0; color: var(--ink-2); font-size: .9rem; }
-.status-row { display: flex; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
-.slots { display: inline-flex; gap: 5px; }
-.slot { width: 22px; height: 22px; box-sizing: border-box; border: 1.5px solid var(--dele); }
-.slot.on { background: var(--dele); }
-.calls-row { display: flex; align-items: center; min-height: 28px; }
-.calls { display: flex; flex-wrap: wrap; gap: 4px; }
-.calls:empty { display: none; }
+/* After a pick, the verdict and Climb on stay in reach at the bottom of the screen while you read. */
+.next-bar { position: sticky; bottom: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-top: 14px; padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px)); border-top: 4px double var(--ink); background: var(--newsprint); }
+.verdict-line { flex: 1 1 10rem; margin: 0; font-weight: 600; line-height: 1.3; }
+.verdict-line.right { color: var(--pencil); }
+.verdict-line.wrong { color: var(--dele); }
+.climb-on { flex: none; min-height: 46px; padding: 8px 24px; border: 0; border-radius: 2px; background: var(--ink); color: var(--newsprint); font: inherit; font-weight: 600; cursor: pointer; }
+.climb-on:hover { opacity: .88; }
+
+/* The end of a climb: the result, then the log of every ledge. */
+.press { display: grid; gap: 10px; padding: 12px 14px; border: 2px solid var(--ink); }
+.press .kicker { color: var(--dele); }
+.press h2 { margin: 0; font-size: 1.9rem; font-weight: 800; line-height: 1.05; outline: none; }
+.muted { margin: 0; color: var(--ink-2); font-size: .95rem; }
+#share-text { box-sizing: border-box; width: 100%; padding: 8px 10px; border: 1px solid var(--rule); background: var(--newsprint); color: var(--ink); font: inherit; font-size: .95rem; resize: none; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.pill { font: inherit; font-size: .9rem; min-height: 38px; padding: 6px 16px; border: 1.5px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink); cursor: pointer; }
+.pill { min-height: 40px; padding: 6px 16px; border: 1.5px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink); font: inherit; font-size: .92rem; cursor: pointer; }
 .pill:hover { background: var(--pencil-wash); }
 .pill.quiet { border-color: var(--rule); color: var(--ink-2); }
-.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; cursor: pointer; }
-.toggle input { width: 18px; height: 18px; margin: 0; accent-color: var(--pencil); }
-.act:focus-visible, .pill:focus-visible, .page-tab:focus-visible, .toggle input:focus-visible, .dock-btn:focus-visible, .history-toggle:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
 
-.notes { margin: 0; padding-left: 1.5em; display: grid; gap: 7px; font-size: .95rem; }
-.notes li::marker { color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.notes .src { font-weight: 800; letter-spacing: .05em; text-transform: uppercase; font-size: .88em; color: var(--pencil); text-decoration: none; }
-.notes .src:hover { text-decoration: underline; }
-.notes li.fresh { animation: fresh 1.8s ease-out; }
-.notes li.hinted { background: var(--hunch-wash); outline: 2px dashed var(--hunch); outline-offset: 2px; }
-@keyframes fresh { from { background: var(--pencil-wash); } to { background: transparent; } }
-
-.press { padding: 12px 14px; border: 2px solid var(--ink); }
-.press .kicker { color: var(--dele); }
-.press h2 { margin: 0; font-size: 1.7rem; font-weight: 800; line-height: 1.05; }
-#share-text { font: inherit; font-size: .95rem; width: 100%; box-sizing: border-box; resize: none; padding: 8px 10px; border: 1px solid var(--rule); background: var(--newsprint); color: var(--ink); }
-
-.dock { display: none; }
-@media (max-width: 1039px) {
-  .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; display: flex; align-items: center; gap: 10px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 4px double var(--ink); background: var(--newsprint); }
-  .dock .slot { width: 18px; height: 18px; }
-  .dock-struck { flex: 1; min-width: 0; font-size: .9rem; font-variant-numeric: tabular-nums; }
-  .dock-btn { font: inherit; font-size: .9rem; min-height: 40px; padding: 4px 14px; border: 1.5px solid var(--ink); border-radius: 2px; background: transparent; color: var(--ink); cursor: pointer; }
-  .dock-btn .count { margin-left: 2px; }
-  .paper { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.log-panel { margin-top: 22px; }
+.log { margin: 0; padding: 0; list-style: none; }
+.log-row { border-bottom: 1px solid var(--rule); }
+.log-row summary { display: grid; grid-template-columns: 1em 4.6em minmax(0, 1fr); align-items: baseline; gap: 2px 12px; padding: 10px 2px; cursor: pointer; list-style: none; }
+.log-row summary::-webkit-details-marker { display: none; }
+.log-row summary:hover { background: var(--pencil-wash); }
+.log-mark { width: 1em; font-weight: 800; text-align: center; }
+.log-row.right .log-mark { color: var(--pencil); }
+.log-row.wrong .log-mark { color: var(--dele); }
+.log-row.unreached .log-mark { color: var(--ink-2); }
+.log-words { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; min-width: 0; }
+.log-alt { font-size: .78rem; letter-spacing: .08em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.log-real { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.log-fake { color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--dele); }
+.log-body { display: grid; gap: 10px; padding: 4px 0 14px; }
+@container ascent (min-width: 560px) {
+  .log-body { grid-template-columns: 1fr 1fr; align-items: start; }
 }
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); box-sizing: border-box; width: max-content; max-width: min(92vw, 520px); padding: 10px 16px; background: var(--ink); color: var(--newsprint); font-size: .95rem; box-shadow: 0 6px 24px rgb(0 0 0 / .22); z-index: 10; }
+.log-body .card { min-height: 0; }
 
-@media (max-width: 1039px) {
-  .toast { bottom: calc(78px + env(safe-area-inset-bottom, 0px)); }
-}
+.colophon { margin: 18px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-size: .8rem; font-style: italic; color: var(--ink-2); }
+
+.climb-on:focus-visible, .pill:focus-visible, .rules > summary:focus-visible, .log-row summary:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 10; box-sizing: border-box; width: max-content; max-width: min(92vw, 520px); padding: 10px 16px; transform: translateX(-50%); background: var(--ink); color: var(--newsprint); font-size: .95rem; box-shadow: 0 6px 24px rgb(0 0 0 / .22); }
 @media (max-width: 480px) {
   body { font-size: 16px; }
   .story { text-align: left; hyphens: manual; }
@@ -262,16 +232,16 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 <div class="paper">
   <header class="masthead">
     <div class="ear ear-left">
-      <span class="ear-kicker">Today’s page</span>
-      <span id="ear-count">13 entries, 3 of them forged</span>
+      <span class="ear-kicker">Today’s climb</span>
+      <span>Twelve ledges, three ropes</span>
     </div>
     <h1 class="nameplate">The Mountweazel</h1>
     <div class="ear ear-right">
-      <div class="ear-block" id="editions" hidden><span class="ear-kicker">Editions</span><nav class="pages" id="pages" aria-label="Pages"></nav></div>
-      <div class="ear-block" id="forecast"><span class="ear-kicker">Forecast</span><span>Foggy, with forgeries likely.</span></div>
+      <span class="ear-kicker">Forecast</span>
+      <span>Clear in the foothills, fog at the summit.</span>
     </div>
     <div class="folio">
-      <span id="issue">Vol. I · No. 2</span>
+      <span id="issue">Vol. I · Climb No. 1</span>
       <span id="dateline"></span>
       <span class="price">Price one penny</span>
     </div>
@@ -279,71 +249,62 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 
   <div class="front">
     <article class="lead">
-      <p class="kicker">Lexicography</p>
-      <h2 class="headline">Forgeries Found on Dictionary Page</h2>
-      <p class="deck"><span id="howto-fakes">3</span> of these <span id="howto-entries">13</span> entries are fakes. Readers are asked to strike them out before the page goes to press.</p>
-      <details class="rules" open>
+      <p class="kicker">Expedition</p>
+      <h2 class="headline">Twelve Ledges Up Mount Weazel</h2>
+      <p class="deck">On every ledge wait two old words, one real and one forged. Pick the real one to climb on. You carry three ropes, and each wrong pick cuts one.</p>
+      <details class="rules">
         <summary>How to play</summary>
-        <p class="byline">From our correspondent at the proof desk</p>
         <div class="story">
-          <p>Genuine entries vouch for each other. Verify one and it opens with its history and a note about the others. <b id="start-word">fleerish</b> is verified for you to start.</p>
-          <p>Tap an entry to call it genuine or fake, or tap its magnifying glass to mark a suspect. A call your notes prove scores <span class="call proven">✓</span>; a right guess is a hunch <span class="call hunch">?</span>, and a wrong one a mistake <span class="call mistake">✗</span>.</p>
-          <p>Neighbours are the entries just before and after one, in alphabetical order. Hint shows which notes to read together, then which entry they settle.</p>
+          <p>Tap the word you think is real. Then both are revealed: where the real word comes from, and how the forgery was made. Climb on when you’re ready.</p>
+          <p>The words grow rarer and stranger as you climb, from the foothills to the summit at 12,000 feet. A wrong pick cuts a rope, but you keep climbing; lose all three and the climb ends where you stand.</p>
+          <p>A mountweazel is a fake entry planted in a reference work to catch copiers. With a keyboard, press <kbd>←</kbd> or <kbd>→</kbd> to pick.</p>
         </div>
       </details>
     </article>
 
-    <aside class="notebook" aria-label="Notebook">
-      <section class="panel" id="play-panel" aria-label="Progress">
-        <h2 class="section-head"><span class="section-title">The proof</span></h2>
-        <div class="status-row">
-          <span class="slots" id="slots" aria-hidden="true"></span>
-          <span id="struck">0 of 3 struck</span>
-        </div>
-        <div class="calls-row"><span id="calls" class="calls"></span><span id="calls-empty" class="muted">No calls yet</span></div>
-        <p id="tally" class="muted"></p>
-        <div class="controls">
-          <button id="hint" type="button" class="pill">Hint</button>
-          <label class="toggle"><input id="hardcore" type="checkbox"> Hardcore</label>
-          <button id="reset" type="button" class="pill quiet">Start over</button>
+    <main class="ascent" id="ascent" aria-label="The climb">
+      <div class="section-head">
+        <h2 class="section-title">The ascent</h2>
+        <span class="heads" id="climb-no">Climb No. 1</span>
+      </div>
+      <div class="status">
+        <p class="where" id="where"></p>
+        <div class="ropes" id="ropes" role="img" aria-label="3 ropes left"><span class="ropes-label" aria-hidden="true">Ropes</span></div>
+      </div>
+      <svg class="mountain" id="mountain" viewBox="0 -14 360 122" role="img" aria-label="Mount Weazel"></svg>
+
+      <section class="ledge" id="ledge" aria-label="This ledge">
+        <h3 class="prompt" id="prompt">Which word is real?</h3>
+        <div class="pair" id="pair"></div>
+        <div class="next-bar" id="next-bar" hidden>
+          <p class="verdict-line" id="verdict-line"></p>
+          <button class="climb-on" id="climb-on" type="button">Climb on</button>
         </div>
       </section>
 
-      <section class="panel press" id="press" hidden aria-label="Result">
+      <section class="press" id="press" hidden aria-label="Result">
         <p class="kicker">Stop press</p>
-        <h2 id="verdict">Ready for press.</h2>
+        <h2 id="verdict" tabindex="-1">On the Summit</h2>
         <p id="press-stats" class="muted"></p>
         <textarea id="share-text" rows="3" readonly aria-label="Your result to share"></textarea>
         <div class="controls">
           <button id="copy" type="button" class="pill">Copy result</button>
-          <button id="reset-2" type="button" class="pill quiet">Start over</button>
+          <button id="reset" type="button" class="pill quiet">Start over</button>
         </div>
       </section>
 
-      <section class="panel" id="notes-panel" aria-label="Notes">
-        <h2 class="section-head"><span class="section-title">Notes &amp; Queries <span id="note-count" class="count">1</span></span></h2>
-        <ol id="notes" class="notes"></ol>
+      <section class="log-panel" id="log-panel" hidden aria-label="Climb log">
+        <h2 class="section-head"><span class="section-title">The climb log</span></h2>
+        <ol class="log" id="log"></ol>
       </section>
-    </aside>
 
-    <main class="page" aria-label="Dictionary page">
-      <div class="section-head">
-        <h2 class="section-title">The word page</h2>
-        <span class="heads"><span id="head-first"></span><span id="head-mid"></span><span id="head-last"></span></span>
-      </div>
-      <div class="cols"><div class="col" id="col-a"></div><div class="col" id="col-b"></div></div>
-      <p class="colophon">Each fake was invented for its page. What the genuine entries say comes from dictionaries and the works they quote.</p>
+      <p class="colophon">Every forgery here was invented for the climb. What the real entries say comes from dictionaries and the works they quote.</p>
     </main>
   </div>
 </div>
+<p id="live" class="sr-only" aria-live="polite"></p>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<div class="dock" id="dock" role="region" aria-label="Progress">
-  <span class="slots" aria-hidden="true"></span>
-  <span class="dock-struck" id="dock-struck">0 of 3 struck</span>
-  <button class="dock-btn" id="dock-notes" type="button">Notes <span class="count" id="dock-note-count">1</span></button>
-  <button class="dock-btn" id="dock-hint" type="button">Hint</button>
-</div>
-<script src="pages.js"></script>
-<script src="game.js"></script>
+<script src="climbs.js"></script>
+<script src="climb.js"></script>
 </body>
 </html>

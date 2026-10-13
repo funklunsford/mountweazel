@@ -1,54 +1,69 @@
-// Checks every page with the same engine the page uses.
+// Checks every climb in climbs.js. Run with `npm run check`; the deploy runs it too.
 'use strict';
-const PAGES = require('./pages.js');
-const { makeEngine } = require('./game.js');
+const CLIMBS = require('./climbs.js');
 
+const CAMPS = ['Foothills', 'Treeline', 'Scree', 'Ridge', 'Summit'];
 let failed = false;
 const check = (ok, msg) => { console.log((ok ? 'PASS ' : 'FAIL ') + msg); if (!ok) failed = true; };
-const WORDY = new Set(['meaning', 'spelling']);
+const filled = s => typeof s === 'string' && s.trim().length > 0;
+const senses = def => def.split(';').length;
+const list = xs => xs.length ? ` (${xs.join(', ')})` : '';
 
-for (const page of PAGES) {
-  console.log(`\nPage ${page.number} (${page.letters}, ${page.level})`);
-  const E = makeEngine(page);
-  const fakes = new Set(page.entries.filter(e => e.fake).map(e => e.id));
-  const notes = Object.values(page.notes);
-  const genuine = page.entries.filter(e => !e.fake).map(e => e.id);
+for (const climb of CLIMBS) {
+  const ledges = climb.ledges;
+  console.log(`\nClimb ${climb.number}: ${ledges.length} ledges`);
+  const at = (l, i) => `${i + 1} ${l.real.word}/${l.fake.word}`;
+  const where = test => ledges.map((l, i) => test(l, i) ? at(l, i) : null).filter(Boolean);
 
-  check(fakes.size === page.fakes, `${fakes.size} fakes on the page, ${page.fakes} announced`);
-  check(page.entries.every((e, i) => i === 0 || page.entries[i - 1].word < e.word), 'entries are in alphabetical order');
-  check(Boolean(page.start) && !E.ENTRY[page.start].fake, `the starting entry (${page.start}) is genuine`);
-  check(genuine.every(id => page.notes[id]) && Object.keys(page.notes).every(id => !E.ENTRY[id].fake),
-    'every genuine entry has a note, and no fake has one');
-  const bad = Object.entries(page.notes).filter(([, n]) => !E.holds(n, fakes)).map(([id]) => id);
-  check(bad.length === 0, `every note is true${bad.length ? ' (false: ' + bad.join(', ') + ')' : ''}`);
-  const named = Object.values(page.notes).flatMap(n => n.type === 'compare' ? [...n.a, ...n.b] : n.set);
-  check(named.every(id => E.ENTRY[id]), 'notes name only entries on the page');
+  check(ledges.length === 12, 'twelve ledges, one per thousand feet');
+  check(where(l => !['left', 'right'].includes(l.realOn)).length === 0, 'every ledge says which side the real word is on');
+  check(where(l => !(filled(l.real.word) && filled(l.real.pos) && filled(l.real.def) && filled(l.real.history))).length === 0,
+    'every real word has a part of speech, a definition and a history');
+  check(where(l => l.real.quote && !(filled(l.real.quote.text) && filled(l.real.quote.cite))).length === 0,
+    'every quotation has its source');
+  check(where(l => !(filled(l.fake.word) && filled(l.fake.pos) && filled(l.fake.def) && filled(l.fake.anatomy))).length === 0,
+    'every fake has a part of speech, a definition and an account of how it was made');
+  check(where(l => 'history' in l.fake || 'quote' in l.fake || 'anatomy' in l.real).length === 0,
+    'no fake has a history or a quotation, and no real word has an anatomy');
 
-  const sols = E.solutions({ [page.start]: 'genuine' }, notes);
-  check(sols.length === 1, `with the starting entry given, exactly one answer fits all the notes (found ${sols.length})`);
+  const words = ledges.flatMap(l => [l.real.word, l.fake.word]).map(w => w.toLowerCase());
+  const twice = words.filter((w, i) => words.indexOf(w) !== i);
+  check(twice.length === 0, `no word appears twice${list(twice)}`);
 
-  const run = E.profile();
-  check(!run.stalled, 'playing only provable calls from the starting entry finishes the page');
-  check(run.steps.every(s => !s.over), 'no step needs more than three notes at once');
-  const ks = run.steps.map(s => s.k);
-  console.log(`  difficulty profile (notes needed per step): ${ks.join(' ')}  [${ks.filter(k => k >= 2).length} of ${ks.length} steps need two or more]`);
-  console.log(`  entries settled per step: ${run.steps.map(s => s.ids.length).join(' ')}`);
+  // Side by side, the two cards should differ only in whether the word is real.
+  const pos = where(l => l.real.pos !== l.fake.pos);
+  check(pos.length === 0, `both cards on a ledge have the same part of speech${list(pos)}`);
+  const shape = where(l => senses(l.real.def) !== senses(l.fake.def));
+  check(shape.length === 0, `both definitions on a ledge have the same number of senses${list(shape)}`);
+  const length = where(l => {
+    const [a, b] = [l.real.def.length, l.fake.def.length].sort((x, y) => x - y);
+    return b > 2 * a;
+  });
+  check(length.length === 0, `neither definition on a ledge is more than twice as long as the other${list(length)}`);
+  const leans = where(l => [l.fake.def, l.fake.anatomy].some(t => t.toLowerCase().includes(l.real.word.toLowerCase())));
+  check(leans.length === 0, `no fake leans on the real word beside it${list(leans)}`);
+  const stale = where(l => /this page|neighbour/i.test(l.fake.anatomy));
+  check(stale.length === 0, `no fake's account mentions a page or a neighbour${list(stale)}`);
 
-  const known = { [page.start]: 'genuine' };
-  const naive = [];
-  for (const e of page.entries) {
-    if (known[e.id]) continue;
-    naive.push(E.judge(known, e.id, 'genuine'));
-    known[e.id] = E.truth(e.id);
-  }
-  check(naive.some(m => m !== 'proven'), `calling every entry genuine is not a clean proof (${naive.filter(m => m === 'proven').length} proven, ${naive.filter(m => m === 'hunch').length} hunches, ${naive.filter(m => m === 'mistake').length} mistakes)`);
+  const left = ledges.filter(l => l.realOn === 'left').length;
+  check(Math.abs(left - (ledges.length - left)) <= 1, `the real word is on each side about equally often (${left} left, ${ledges.length - left} right)`);
+  let run = 1, longest = 1;
+  ledges.forEach((l, i) => { if (i > 0) { run = l.realOn === ledges[i - 1].realOn ? run + 1 : 1; longest = Math.max(longest, run); } });
+  check(longest <= 3, `the real word is never on the same side more than three ledges running (longest run ${longest})`);
 
-  const blind = E.profile(n => !WORDY.has(n.kind));
-  check(blind.stalled, `without the notes about meanings and spellings, the solve stalls (after ${blind.steps.length} steps)`);
-  if (page.level !== 'easy') {
-    const wordStep = run.steps.some(s => s.k >= 2 && s.sets.every(set => set.some(n => WORDY.has(n.kind))));
-    check(wordStep, 'some step that needs two or more notes can only be done with a note about meanings or spellings');
-  }
+  // Altitude: the camps only go up, and common words (in SCOWL's lists) all come before rare ones.
+  const ranks = ledges.map(l => CAMPS.indexOf(l.camp));
+  check(ranks.every(r => r >= 0), 'every ledge is at a known camp');
+  check(ranks.every((r, i) => i === 0 || r >= ranks[i - 1]), 'the camps never go down');
+  check(ranks[0] === 0 && ranks[ranks.length - 1] === CAMPS.length - 1, 'the climb starts in the Foothills and ends on the Summit');
+  const common = ledges.map(l => l.real.scowl != null);
+  const lastCommon = common.lastIndexOf(true);
+  const firstRare = common.indexOf(false);
+  check(firstRare === -1 || lastCommon < firstRare, 'every real word in SCOWL’s common lists comes before every real word in none of them');
+  check(ledges.every(l => l.real.scowl === null || [35, 40, 50].includes(l.real.scowl)), 'scowl is 35, 40, 50 or null');
+
+  console.log(`  camps: ${ledges.map(l => l.camp).join(' · ')}`);
+  console.log(`  real words: ${ledges.map(l => l.real.word + (l.real.scowl ? ` (${l.real.scowl})` : '')).join(', ')}`);
 }
 
 process.exit(failed ? 1 : 0);
