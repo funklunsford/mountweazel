@@ -37,18 +37,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=swap">
 <style>
 /* A newspaper covering an expedition. The masthead, the lead and the word page are set like a
-   front page; the climb itself is a hand-tinted plate of the mountain with a scout on it. Each ledge
-   you climb sets one entry on the word page, so the page is built as you go. */
+   front page, with a running head for the climb: altitude, ledge and ropes. Each ledge you climb
+   sets one entry on the word page, so the page is built as you go. */
 :root {
   --newsprint: #ecebe5; --sheet: #f6f4ee;
   --ink: #161514; --ink-2: #57544d; --rule: #b8b4aa; --shadow: #161514;
   --pencil: #2645a8; --pencil-wash: #dde3f4;
   --dele: #ae2a1f; --dele-deep: #7d1b13; --dele-wash: #f2dbd6;
   --rope: #c99558; --rope-dark: #8c5f2e;
-  /* The plate, tinted like an engraving coloured by hand. */
-  --sky: #dbe4e3; --far: #9aa7ad; --cloud: #f8f7f2; --sun: #f0d98a; --star: transparent;
-  --foothills: #cfd8a3; --treeline: #9db98c; --scree: #c9bfb0; --ridge: #d7e2e5; --summit: #fbfaf5;
-  --tree: #5c875b; --rock: #9c9385; --scout: #e2904a; --scout-hat: #9a6a3c; --scout-pack: #7a5532; --sash: #2645a8;
   --face-name: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
   --face-text: "Newsreader", "Iowan Old Style", Georgia, serif;
   --face-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
@@ -61,9 +57,6 @@
     --pencil: #93acff; --pencil-wash: #1f2943;
     --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
     --rope: #d3a46a; --rope-dark: #8a5d2c;
-    --sky: #1c2230; --far: #3c4452; --cloud: #353b48; --sun: #e9e3c0; --star: #f2ecd2;
-    --foothills: #4e5b3b; --treeline: #3b5341; --scree: #5a544b; --ridge: #5b6a73; --summit: #c7ccd2;
-    --tree: #2a4534; --rock: #6b645a; --scout: #d98a48; --scout-hat: #8a5e36; --scout-pack: #6a4a2c; --sash: #93acff;
     color-scheme: dark;
   }
 }
@@ -73,16 +66,13 @@
   --pencil: #93acff; --pencil-wash: #1f2943;
   --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
   --rope: #d3a46a; --rope-dark: #8a5d2c;
-  --sky: #1c2230; --far: #3c4452; --cloud: #353b48; --sun: #e9e3c0; --star: #f2ecd2;
-  --foothills: #4e5b3b; --treeline: #3b5341; --scree: #5a544b; --ridge: #5b6a73; --summit: #c7ccd2;
-  --tree: #2a4534; --rock: #6b645a; --scout: #d98a48; --scout-hat: #8a5e36; --scout-pack: #6a4a2c; --sash: #93acff;
   color-scheme: dark;
 }
 
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 body { background: var(--newsprint); color: var(--ink); font-family: var(--face-text); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
-.paper { max-width: 1120px; margin-inline: auto; padding: 16px 16px 64px; }
+.paper { max-width: 860px; margin-inline: auto; padding: 16px 16px 64px; }
 
 /* Masthead: ears either side of the nameplate, then the folio line. */
 .masthead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 18px; }
@@ -114,12 +104,6 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .rope-seg.cut { background: repeating-linear-gradient(135deg, var(--dele) 0 3px, transparent 3px 6px); }
 
 .front { display: grid; gap: 22px; margin-top: 16px; }
-@media (min-width: 900px) {
-  .front { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); column-gap: 34px; align-items: start; }
-  .lead { grid-column: 1 / -1; }
-  .plate { grid-column: 1; position: sticky; top: calc(var(--runhead-h) + 16px); }
-  .page { grid-column: 2; }
-}
 
 /* The lead story: what the game is, with the rules folded beneath. */
 .lead { padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
@@ -136,68 +120,6 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   .deck { font-size: 1rem; margin-bottom: 8px; }
   .story p:first-child::first-letter { float: none; padding: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
 }
-
-/* The plate: the mountain, hand-tinted, in a double-ruled frame with a caption. */
-.plate { margin: 0; }
-.plate-frame { position: relative; overflow: hidden; border: 2px solid var(--ink); outline: 1px solid var(--ink); outline-offset: 3px; background: linear-gradient(180deg, var(--sky), var(--newsprint)); box-shadow: 7px 7px 0 var(--shadow); }
-.scene { display: block; width: 100%; height: clamp(170px, 50vw, 330px); overflow: visible; }
-.plate figcaption { margin-top: 12px; font-size: .86rem; font-style: italic; line-height: 1.35; color: var(--ink-2); }
-.plate figcaption b { font-style: normal; font-weight: 800; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
-/* A camp's name, rubber-stamped across the plate as you reach it. */
-.camp-stamp { position: absolute; inset: 0; display: grid; place-content: center; pointer-events: none; opacity: 0; }
-.camp-stamp.show { animation: campstamp 2.3s ease forwards; }
-.cs-box { display: grid; justify-items: center; gap: 2px; padding: 6px 16px 8px; border: 4px double var(--dele); background: color-mix(in srgb, var(--sheet) 88%, transparent); color: var(--dele); transform: rotate(-6deg); }
-.cs-name { font-size: clamp(1.5rem, 6vw, 2.3rem); font-weight: 800; line-height: 1; letter-spacing: .14em; text-transform: uppercase; }
-.cs-sub { font-size: .64rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-@keyframes campstamp { 0% { opacity: 0; transform: scale(1.4); } 10% { opacity: 1; transform: scale(1); } 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
-
-/* Scene pieces, drawn by climb.js (SCENE). */
-.scene .sky-sun { fill: var(--sun); stroke: var(--ink); stroke-width: 1.2; }
-.scene .star { fill: var(--star); }
-.scene .far-1, .scene .far-2 { fill: url(#far-hatch); stroke: var(--far); stroke-width: 1.2; stroke-linejoin: round; }
-.scene .far-2 { stroke: var(--ink-2); }
-.scene .far-line { stroke: var(--far); stroke-width: 1; }
-.scene .cloud { fill: var(--cloud); opacity: .92; }
-.scene .drift { animation: drift 16s ease-in-out infinite alternate; }
-.scene .drift.slow { animation-duration: 23s; animation-direction: alternate-reverse; }
-@keyframes drift { from { transform: translateX(-10px); } to { transform: translateX(12px); } }
-.scene .band-foothills { fill: var(--foothills); }
-.scene .band-treeline { fill: var(--treeline); }
-.scene .band-scree { fill: var(--scree); }
-.scene .band-ridge { fill: var(--ridge); }
-.scene .band-summit { fill: var(--summit); }
-.scene .shade { fill: url(#ink-hatch); }
-.scene .ink-line { stroke: var(--ink); stroke-width: .8; opacity: .55; }
-.scene .outline { fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linejoin: round; }
-.scene .tree { fill: var(--tree); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
-.scene .rock { fill: var(--rock); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
-.scene .haze { fill: url(#haze); }
-.scene .haze-stop { stop-color: var(--newsprint); }
-.scene .hatch-bg { fill: var(--dele); }
-.scene .hatch-fg { fill: var(--dele-deep); }
-.scene .trail { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 1.5 4.5; stroke-linecap: round; opacity: .7; }
-.scene .rope-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.scene .rope-under { stroke: var(--ink); stroke-width: 5.5; }
-.scene .rope-over { stroke: var(--rope); stroke-width: 2.8; }
-.scene .pole { stroke: var(--ink); stroke-width: 2; }
-.scene .flag { fill: var(--dele); stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; }
-.scene .marker circle { fill: var(--sheet); stroke: var(--ink); stroke-width: 2.2; }
-.scene .marker .glyph { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; display: none; }
-.scene .marker.right circle { fill: var(--pencil); }
-.scene .marker.wrong circle { fill: url(#hatch-wrong); }
-.scene .marker.right .tick, .scene .marker.wrong .cross { display: inline; }
-.scene .marker.unreached { opacity: .5; }
-.scene .halo { fill: none; stroke: var(--dele); stroke-width: 2.6; transform-box: fill-box; transform-origin: center; animation: halo 1.6s ease-out infinite; }
-@keyframes halo { from { opacity: .95; transform: scale(.7); } to { opacity: 0; transform: scale(1.7); } }
-.scene .climber { transition: transform .75s cubic-bezier(.3, .8, .3, 1); }
-.scene .climber .bob { animation: bob 2.4s ease-in-out infinite; }
-@keyframes bob { 50% { transform: translateY(-1.2px); } }
-.scene .scout-body { fill: var(--scout); stroke: var(--ink); stroke-width: 1.5; }
-.scene .scout-pack { fill: var(--scout-pack); stroke: var(--ink); stroke-width: 1.3; }
-.scene .scout-hat { fill: var(--scout-hat); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
-.scene .scout-sash { fill: none; stroke: var(--sash); stroke-width: 2.2; }
-.scene .scout-eye { fill: #fff; stroke: var(--ink); stroke-width: .8; }
-.scene .scout-pupil, .scene .scout-foot { fill: #161514; }
 
 /* The word page, built one ledge at a time. */
 .page { container: page / inline-size; min-width: 0; }
@@ -320,19 +242,10 @@ button.card .hw-line { padding-right: 0; }
   body { font-size: 16px; }
   .story { text-align: left; hyphens: manual; }
 }
-/* Tablets in one column: a shorter plate, so the first ledge's proofs are on the first screen. */
-@media (min-width: 720px) and (max-width: 899px) {
-  .scene { height: 220px; }
-}
-/* Phones: a one-line running head, a short lead and a smaller plate, so the first ledge's proofs
-   are on the first screen. The proof cards say what to do; the rules wait behind How to play. */
+/* Phones: a one-line running head, so the first ledge's proofs are on the first screen; the rules
+   wait behind How to play. */
 @media (max-width: 719px) {
-  .front { gap: 14px; margin-top: 12px; }
-  .lead { padding-bottom: 8px; }
-  .headline { font-size: 1.22rem; margin: 2px 0 4px; }
-  .deck { display: none; }
-  .scene { height: clamp(130px, 40vw, 180px); }
-  .plate figcaption { margin-top: 10px; font-size: .8rem; }
+  .front { gap: 16px; margin-top: 12px; }
   .runhead { gap: 6px 10px; }
   .rh-left { flex-wrap: nowrap; }
   .rh-alt { font-size: 1.1rem; }
@@ -352,8 +265,6 @@ button.card .hw-line { padding-right: 0; }
 @media (max-width: 359px) {
   .rope-seg { width: 15px; }
   .nameplate { font-size: 2.2rem; }
-  .headline { font-size: 1.06rem; }
-  .scene { height: 120px; }
   .camp-head { flex-wrap: wrap; }
   .card .hw { font-size: 1.08rem; }
   button.card .hw-line { padding-right: 58px; }
@@ -404,14 +315,6 @@ button.card .hw-line { padding-right: 0; }
         </div>
       </details>
     </article>
-
-    <figure class="plate" aria-label="The mountain">
-      <div class="plate-frame">
-        <svg class="scene" id="mountain" viewBox="0 0 360 230" role="img" aria-label="Mount Weazel"></svg>
-        <div class="camp-stamp" id="title-card" aria-hidden="true"><div class="cs-box"><span class="cs-name" id="tc-name"></span><span class="cs-sub" id="tc-sub"></span></div></div>
-      </div>
-      <figcaption><b>Fig. 1.</b> <span id="caption">Mount Weazel, 12,000 ft.</span></figcaption>
-    </figure>
 
     <main class="page" id="ascent" aria-label="The word page">
       <div class="section-head">

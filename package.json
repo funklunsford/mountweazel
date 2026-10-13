@@ -5,7 +5,7 @@
   "description": "Climb Mount Weazel: on each of twelve ledges, pick the real old word over the forged one.",
   "scripts": {
     "check": "node check.js",
-    "share-card": "node share/scene-svg.js && node share/render.js"
+    "share-card": "node share/render.js"
   },
   "engines": {
     "node": ">=18"
