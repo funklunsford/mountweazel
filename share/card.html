@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=block">
 <style>
 /* The wide link preview: 1200 × 630. `npm run share-card` renders it to card.png (see also square.html).
-   It says what the game is, in plain words, under the nameplate. No words from any page. */
+   It says what the game is, in plain words, under the nameplate. No words from any climb. */
 :root {
   --newsprint: #ecebe5;
   --ink: #161514;
@@ -28,6 +28,19 @@ body { background: var(--newsprint); color: var(--ink); font-family: "Newsreader
 .headline { margin: 12px 0 18px; font-size: 70px; font-weight: 800; line-height: 1.02; letter-spacing: -.014em; font-variation-settings: "opsz" 72; text-wrap: balance; }
 .deck { margin: 0; max-width: 980px; font-size: 31px; font-style: italic; line-height: 1.34; color: var(--ink-2); text-wrap: pretty; }
 
+/* The mountain from the page, beside the headline: twelve ledges up to a flag. */
+.lead { position: relative; }
+.mountain { position: absolute; right: 0; top: 62px; width: 410px; height: 140px; overflow: visible; }
+.mountain .ground { fill: var(--newsprint); }
+.mountain .hatched { fill: url(#hatch); }
+.mountain .hatch-line { stroke: #b8b4aa; stroke-width: 1.1; }
+.mountain .far, .mountain .ridge { fill: none; stroke-width: 1.5; stroke-linejoin: round; }
+.mountain .far { stroke: #b8b4aa; }
+.mountain .ridge { stroke: var(--ink); }
+.mountain .dot { fill: var(--newsprint); stroke: var(--ink-2); stroke-width: 1.5; }
+.mountain .pole { stroke: var(--ink); stroke-width: 1.5; }
+.mountain .flag { fill: var(--dele); }
+
 .foot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1.5px solid var(--ink); font-size: 21px; }
 .url { font-weight: 600; letter-spacing: .05em; }
 .tag { font-style: italic; color: var(--ink-2); }
@@ -39,9 +52,21 @@ body { background: var(--newsprint); color: var(--ink); font-family: "Newsreader
   <div class="rule"></div>
 
   <div class="lead">
+    <svg class="mountain" viewBox="0 -14 360 122" aria-hidden="true">
+      <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="5"/></pattern></defs>
+      <polygon class="ground" points="200,108 300,24 322,40 346,26 360,34 360,108 0,108"/>
+      <polyline class="far" points="200,108 300,24 322,40 346,26 360,34"/>
+      <polygon class="ground" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90 360,108 0,108"/>
+      <polygon class="hatched" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90 360,108 0,108"/>
+      <polyline class="ridge" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90"/>
+      <line class="ridge" x1="0" y1="108" x2="360" y2="108"/>
+      <line class="pole" x1="262" y1="8" x2="262" y2="-9"/>
+      <path class="flag" d="M262 -9l12 4.5l-12 4.5z"/>
+      <circle class="dot" cx="22" cy="100" r="5"/><circle class="dot" cx="44" cy="93" r="5"/><circle class="dot" cx="66" cy="91" r="5"/><circle class="dot" cx="87" cy="79" r="5"/><circle class="dot" cx="109" cy="77" r="5"/><circle class="dot" cx="131" cy="64" r="5"/><circle class="dot" cx="153" cy="59" r="5"/><circle class="dot" cx="175" cy="45" r="5"/><circle class="dot" cx="197" cy="41" r="5"/><circle class="dot" cx="218" cy="26" r="5"/><circle class="dot" cx="240" cy="20" r="5"/><circle class="dot" cx="262" cy="8" r="5"/>
+    </svg>
     <p class="kicker">A word puzzle</p>
-    <h2 class="headline">Find the fake words hiding among real old ones.</h2>
-    <p class="deck">Every real word you confirm gives you a clue about the others. Use the clues to prove which words were made up. No guessing needed.</p>
+    <h2 class="headline">Climb a mountain of old words.</h2>
+    <p class="deck">On each ledge, one word is real and one is forged. Pick the real one to climb on. The words grow stranger toward the summit, and you carry three ropes.</p>
   </div>
 
   <footer class="foot"><span class="url">funklunsford.github.io/mountweazel</span><span class="tag">Free to play in your browser</span></footer>

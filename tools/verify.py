@@ -1,6 +1,6 @@
-"""Check page candidates without naming them on the command line.
+"""Check candidate words for a climb without naming them on the command line.
 Genuine candidates: print the English etymology and senses from Wiktionary.
-Fake candidates: report whether Wiktionary or the Dictionaries of the Scots Language know the word."""
+Fake candidates: report whether Wiktionary, the Dictionaries of the Scots Language or a web search knows the word."""
 import html
 import json
 import time

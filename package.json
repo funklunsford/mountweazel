@@ -2,10 +2,9 @@
   "name": "mountweazel",
   "version": "0.1.0",
   "private": true,
-  "description": "Find the forged entries on a dictionary page by deduction.",
+  "description": "Climb Mount Weazel: on each of twelve ledges, pick the real old word over the forged one.",
   "scripts": {
     "check": "node check.js",
-    "gen": "node gen.js",
     "share-card": "node share/render.js"
   },
   "engines": {
