@@ -320,6 +320,10 @@ button.card .hw-line { padding-right: 0; }
   body { font-size: 16px; }
   .story { text-align: left; hyphens: manual; }
 }
+/* Tablets in one column: a shorter plate, so the first ledge's proofs are on the first screen. */
+@media (min-width: 720px) and (max-width: 899px) {
+  .scene { height: 220px; }
+}
 /* Phones: a one-line running head, a short lead and a smaller plate, so the first ledge's proofs
    are on the first screen. The proof cards say what to do; the rules wait behind How to play. */
 @media (max-width: 719px) {

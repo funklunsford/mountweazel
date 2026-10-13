@@ -610,10 +610,10 @@ if (typeof document !== 'undefined') {
     let saved = data && data.state;
     if (!saved) { try { saved = JSON.parse(localStorage.getItem(saveKey)); } catch (_) { saved = null; } }
     state = valid(saved) ? saved : fresh();
-    // The rules open for a first visit on a wide screen only; on a phone the deck says enough,
-    // and the first ledge stays on the first screen.
+    // The rules open for a first visit only where the plate and the page sit side by side; on
+    // narrower screens they'd push the first ledge off the first screen.
     const rules = $('.rules');
-    if (rules) rules.open = !narrow && !rulesSeen() && state.picks.length === 0;
+    if (rules) rules.open = window.matchMedia('(min-width: 900px)').matches && !rulesSeen() && state.picks.length === 0;
     render();
     announceCamp();
     try { window.claude?.hot?.snapshot?.(() => ({ state })); } catch (_) { /* not in a viewer */ }
