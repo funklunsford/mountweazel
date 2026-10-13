@@ -3,6 +3,7 @@
 const CLIMBS = require('./climbs.js');
 
 const CAMPS = ['Foothills', 'Treeline', 'Scree', 'Ridge', 'Summit'];
+const LAYOUT = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4].map(k => CAMPS[k]);
 let failed = false;
 const check = (ok, msg) => { console.log((ok ? 'PASS ' : 'FAIL ') + msg); if (!ok) failed = true; };
 const filled = s => typeof s === 'string' && s.trim().length > 0;
@@ -55,7 +56,8 @@ for (const climb of CLIMBS) {
   const ranks = ledges.map(l => CAMPS.indexOf(l.camp));
   check(ranks.every(r => r >= 0), 'every ledge is at a known camp');
   check(ranks.every((r, i) => i === 0 || r >= ranks[i - 1]), 'the camps never go down');
-  check(ranks[0] === 0 && ranks[ranks.length - 1] === CAMPS.length - 1, 'the climb starts in the Foothills and ends on the Summit');
+  // The page draws one mountain, with each camp's ledges in its own band.
+  check(ledges.every((l, i) => l.camp === LAYOUT[i]), 'the camps match the drawn mountain: Foothills 1–3, Treeline 4–6, Scree 7–9, Ridge 10–11, Summit 12');
   const common = ledges.map(l => l.real.scowl != null);
   const lastCommon = common.lastIndexOf(true);
   const firstRare = common.indexOf(false);

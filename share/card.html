@@ -5,70 +5,104 @@
 <title>Mountweazel share card</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:wght@500;700;800&display=block">
 <style>
 /* The wide link preview: 1200 × 630. `npm run share-card` renders it to card.png (see also square.html).
-   It says what the game is, in plain words, under the nameplate. No words from any climb. */
-:root {
-  --newsprint: #ecebe5;
-  --ink: #161514;
-  --ink-2: #57544d;
-  --dele: #ae2a1f;
-}
+   The name and a plain statement of the game on the left, the page's mountain on the right, mid-climb.
+   No words from any climb. The scene is the page's own drawing (climb.js), copied in as static SVG. */
+:root { --ink: #2a2140; --panel: #fffaf0; }
 * { box-sizing: border-box; }
 html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
-body { background: var(--newsprint); color: var(--ink); font-family: "Newsreader", Georgia, serif; }
-.card { display: flex; flex-direction: column; width: 1200px; height: 630px; padding: 38px 64px 34px; }
-
-.nameplate { margin: 0; font-family: "UnifrakturMaguntia", serif; font-weight: 400; font-size: 118px; line-height: 1; text-align: center; }
-.rule { margin-top: 18px; border-top: 5px double var(--ink); }
-
-.lead { display: flex; flex: 1; flex-direction: column; justify-content: center; }
-.kicker { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: var(--dele); }
-.headline { margin: 12px 0 18px; font-size: 70px; font-weight: 800; line-height: 1.02; letter-spacing: -.014em; font-variation-settings: "opsz" 72; text-wrap: balance; }
-.deck { margin: 0; max-width: 980px; font-size: 31px; font-style: italic; line-height: 1.34; color: var(--ink-2); text-wrap: pretty; }
-
-/* The mountain from the page, beside the headline: twelve ledges up to a flag. */
-.lead { position: relative; }
-.mountain { position: absolute; right: 0; top: 62px; width: 410px; height: 140px; overflow: visible; }
-.mountain .ground { fill: var(--newsprint); }
-.mountain .hatched { fill: url(#hatch); }
-.mountain .hatch-line { stroke: #b8b4aa; stroke-width: 1.1; }
-.mountain .far, .mountain .ridge { fill: none; stroke-width: 1.5; stroke-linejoin: round; }
-.mountain .far { stroke: #b8b4aa; }
-.mountain .ridge { stroke: var(--ink); }
-.mountain .dot { fill: var(--newsprint); stroke: var(--ink-2); stroke-width: 1.5; }
-.mountain .pole { stroke: var(--ink); stroke-width: 1.5; }
-.mountain .flag { fill: var(--dele); }
-
-.foot { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1.5px solid var(--ink); font-size: 21px; }
-.url { font-weight: 600; letter-spacing: .05em; }
-.tag { font-style: italic; color: var(--ink-2); }
+body { background: linear-gradient(180deg, #86c9e3 0, #cfe9ef 55%, #ffe9d4 100%); color: var(--ink); font-family: "Rubik", system-ui, sans-serif; }
+.card { display: grid; grid-template-columns: 560px 1fr; grid-template-rows: 1fr auto; column-gap: 48px; width: 1200px; height: 630px; padding: 56px 60px 40px; }
+.words { display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+.logo { display: flex; align-items: center; gap: 16px; margin: 0; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 84px; line-height: 1; letter-spacing: .01em; color: #fff;
+  text-shadow: -5px -5px 0 var(--ink), 5px -5px 0 var(--ink), -5px 5px 0 var(--ink), 5px 5px 0 var(--ink), 0 -5px 0 var(--ink), 0 5px 0 var(--ink), -5px 0 0 var(--ink), 5px 0 0 var(--ink), 0 10px 0 var(--ink); }
+.logo svg { width: 78px; height: 78px; flex: none; overflow: visible; filter: drop-shadow(0 6px 0 var(--ink)); }
+.lg-mtn { fill: #fff; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.lg-pole { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+.lg-flag { fill: #ff7d3b; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.kicker { width: fit-content; margin: 6px 0 0; padding: 6px 18px; border: 4px solid var(--ink); border-radius: 999px; background: #ff7d3b; color: #fff; font-size: 22px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; box-shadow: 0 5px 0 var(--ink); }
+.headline { margin: 4px 0 0; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 64px; line-height: 1.02; letter-spacing: .01em; }
+.deck { margin: 0; font-size: 27px; font-weight: 500; line-height: 1.35; }
+.frame { align-self: center; position: relative; height: 380px; overflow: hidden; border: 6px solid var(--ink); border-radius: 34px; background: linear-gradient(180deg, #86c9e3, #fde7cf); box-shadow: 0 10px 0 var(--ink); }
+.scene { display: block; width: 100%; height: 100%; overflow: visible; }
+.foot { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding-top: 22px; font-size: 24px; font-weight: 700; }
+.url { padding: 6px 18px; border: 4px solid var(--ink); border-radius: 999px; background: var(--panel); box-shadow: 0 5px 0 var(--ink); }
+.tag { color: #3d3453; }
+/* The page's scene, in its daytime colours. */
+.scene .sky-sun { fill: #fff1a8; }
+.scene .far-1 { fill: #bccfe8; }
+.scene .far-2 { fill: #a6bfe0; }
+.scene .cloud { fill: #ffffff; opacity: .9; }
+.scene .band-foothills { fill: #9ed27a; }
+.scene .band-treeline { fill: #4fa36f; }
+.scene .band-scree { fill: #b6abc4; }
+.scene .band-ridge { fill: #d8ecf6; }
+.scene .band-summit { fill: #ffffff; }
+.scene .shade { fill: rgb(42 33 64 / .16); }
+.scene .outline { fill: none; stroke: #2a2140; stroke-width: 2.5; stroke-linejoin: round; }
+.scene .tree { fill: #2f7a52; stroke: #2a2140; stroke-width: 1.2; stroke-linejoin: round; }
+.scene .rock { fill: #8f86a3; stroke: #2a2140; stroke-width: 1.2; stroke-linejoin: round; }
+.scene .haze { fill: url(#haze); }
+.scene .haze-stop { stop-color: #ffffff; }
+.scene .hatch-bg { fill: #e5483d; }
+.scene .hatch-fg { fill: #b8322a; }
+.scene .trail { fill: none; stroke: rgb(255 255 255 / .92); stroke-width: 2; stroke-dasharray: 2 5; stroke-linecap: round; }
+.scene .rope-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.scene .rope-under { stroke: #2a2140; stroke-width: 6; }
+.scene .rope-over { stroke: #f0a95b; stroke-width: 3; }
+.scene .pole { stroke: #2a2140; stroke-width: 2; }
+.scene .flag { fill: #ff7d3b; stroke: #2a2140; stroke-width: 1.5; stroke-linejoin: round; }
+.scene .marker circle { fill: #fff; stroke: #2a2140; stroke-width: 2.5; }
+.scene .marker .glyph { fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; display: none; }
+.scene .marker.right circle { fill: #49b465; }
+.scene .marker.wrong circle { fill: url(#hatch-wrong); }
+.scene .marker.right .tick, .scene .marker.wrong .cross { display: inline; }
+.scene .scout-body { fill: #ff9a3c; stroke: #2a2140; stroke-width: 1.6; }
+.scene .scout-pack { fill: #9b6a3e; stroke: #2a2140; stroke-width: 1.4; }
+.scene .scout-hat { fill: #b07a45; stroke: #2a2140; stroke-width: 1.4; stroke-linejoin: round; }
+.scene .scout-sash { fill: none; stroke: #3fa65a; stroke-width: 2.2; }
+.scene .scout-eye { fill: #fff; stroke: #2a2140; stroke-width: .8; }
+.scene .scout-pupil, .scene .scout-foot { fill: #2a2140; }
 </style>
 </head>
 <body>
 <div class="card">
-  <h1 class="nameplate">The Mountweazel</h1>
-  <div class="rule"></div>
-
-  <div class="lead">
-    <svg class="mountain" viewBox="0 -14 360 122" aria-hidden="true">
-      <defs><pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><line class="hatch-line" x1="0" y1="0" x2="0" y2="5"/></pattern></defs>
-      <polygon class="ground" points="200,108 300,24 322,40 346,26 360,34 360,108 0,108"/>
-      <polyline class="far" points="200,108 300,24 322,40 346,26 360,34"/>
-      <polygon class="ground" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90 360,108 0,108"/>
-      <polygon class="hatched" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90 360,108 0,108"/>
-      <polyline class="ridge" points="0,104 22,100 44,93 66,91 87,79 109,77 131,64 153,59 175,45 197,41 218,26 240,20 262,8 286,34 304,48 330,74 360,90"/>
-      <line class="ridge" x1="0" y1="108" x2="360" y2="108"/>
-      <line class="pole" x1="262" y1="8" x2="262" y2="-9"/>
-      <path class="flag" d="M262 -9l12 4.5l-12 4.5z"/>
-      <circle class="dot" cx="22" cy="100" r="5"/><circle class="dot" cx="44" cy="93" r="5"/><circle class="dot" cx="66" cy="91" r="5"/><circle class="dot" cx="87" cy="79" r="5"/><circle class="dot" cx="109" cy="77" r="5"/><circle class="dot" cx="131" cy="64" r="5"/><circle class="dot" cx="153" cy="59" r="5"/><circle class="dot" cx="175" cy="45" r="5"/><circle class="dot" cx="197" cy="41" r="5"/><circle class="dot" cx="218" cy="26" r="5"/><circle class="dot" cx="240" cy="20" r="5"/><circle class="dot" cx="262" cy="8" r="5"/>
-    </svg>
-    <p class="kicker">A word puzzle</p>
+  <div class="words">
+    <h1 class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><path class="lg-mtn" d="M3 35 L16 12 L22 21 L27 14 L38 35 Z"/><path class="lg-pole" d="M16 12 V2"/><path class="lg-flag" d="M16 2 l9 3.4 l-9 3.4 Z"/></svg>Mountweazel</h1>
+    <p class="kicker">A word game</p>
     <h2 class="headline">Climb a mountain of old words.</h2>
-    <p class="deck">On each ledge, one word is real and one is forged. Pick the real one to climb on. The words grow stranger toward the summit, and you carry three ropes.</p>
+    <p class="deck">On each ledge, one word is real and one is forged. Pick the real one to climb on, with three ropes to catch you.</p>
   </div>
-
+  <div class="frame"><svg class="scene" viewBox="0 0 360 230" aria-hidden="true">
+<defs><pattern id="hatch-wrong" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-bg" width="4" height="4"/><rect class="hatch-fg" width="1.6" height="4"/></pattern><linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop class="haze-stop" offset="0" stop-opacity="0"/><stop class="haze-stop" offset="1" stop-opacity="0.55"/></linearGradient><clipPath id="mountain-clip"><path d="M8 230 L40 208 L62 197 L86 172 L108 162 L126 134 L146 120 L160 94 L172 80 L182 54 L196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 Z"/></clipPath></defs>
+<circle class="sky-sun" cx="306" cy="76" r="15"/>
+<path class="far-1" d="M-240 230 V150 L-190 128 L-150 146 L-100 116 L-60 140 L-20 124 L24 140 L48 152 L78 122 L108 146 L140 128 L180 140 L230 120 L262 132 L298 96 L326 120 L360 104 L392 126 L430 100 L470 130 L520 112 L600 136 V230 Z"/>
+<path class="far-2" d="M-240 230 V190 L-200 172 L-160 186 L-120 164 L-80 182 L-40 170 L0 192 L34 172 L62 186 L96 160 L124 182 L230 176 L268 150 L300 168 L332 140 L360 158 L400 170 L440 150 L490 176 L540 160 L600 180 V230 Z"/>
+<g class="cloud"><circle cx="-6" cy="126" r="11.700000000000001"/><circle cx="8.3" cy="119.5" r="14.3"/><circle cx="25.200000000000003" cy="126" r="11.700000000000001"/><circle cx="9.600000000000001" cy="131.2" r="10.4"/></g><g class="cloud"><circle cx="318" cy="112" r="9.9"/><circle cx="330.1" cy="106.5" r="12.100000000000001"/><circle cx="344.4" cy="112" r="9.9"/><circle cx="331.2" cy="116.4" r="8.8"/></g><g class="cloud"><circle cx="-150" cy="100" r="10.799999999999999"/><circle cx="-136.8" cy="94" r="13.2"/><circle cx="-121.2" cy="100" r="10.799999999999999"/><circle cx="-135.6" cy="104.8" r="9.6"/></g><g class="cloud"><circle cx="450" cy="92" r="11.700000000000001"/><circle cx="464.3" cy="85.5" r="14.3"/><circle cx="481.2" cy="92" r="11.700000000000001"/><circle cx="465.6" cy="97.2" r="10.4"/></g>
+<path class="band-foothills" d="M-240 226 Q-150 218 -60 225 T120 224 T300 223 T480 225 T660 222 V240 H-240 Z"/>
+<g clip-path="url(#mountain-clip)"><rect class="band-foothills" x="-10" y="-10" width="380" height="250"/><path class="band-treeline" d="M-10 -10 H370 V181 Q355 178 340 181 Q325 184 310 181 Q295 178 280 181 Q265 184 250 181 Q235 178 220 181 Q205 184 190 181 Q175 178 160 181 Q145 184 130 181 Q115 178 100 181 Q85 184 70 181 Q55 178 40 181 Q25 184 10 181 Q-5 178 -20 181 Z"/><path class="band-scree" d="M-10 -10 H370 V127 Q355 124 340 127 Q325 130 310 127 Q295 124 280 127 Q265 130 250 127 Q235 124 220 127 Q205 130 190 127 Q175 124 160 127 Q145 130 130 127 Q115 124 100 127 Q85 130 70 127 Q55 124 40 127 Q25 130 10 127 Q-5 124 -20 127 Z"/><path class="band-ridge" d="M-10 -10 H370 V80 Q355 77 340 80 Q325 83 310 80 Q295 77 280 80 Q265 83 250 80 Q235 77 220 80 Q205 83 190 80 Q175 77 160 80 Q145 83 130 80 Q115 77 100 80 Q85 83 70 80 Q55 77 40 80 Q25 83 10 80 Q-5 77 -20 80 Z"/><path class="band-summit" d="M-10 -10 H370 V45 Q355 40 340 45 Q325 50 310 45 Q295 40 280 45 Q265 50 250 45 Q235 40 220 45 Q205 50 190 45 Q175 40 160 45 Q145 50 130 45 Q115 40 100 45 Q85 50 70 45 Q55 40 40 45 Q25 50 10 45 Q-5 40 -20 45 Z"/><path class="tree" d="M100 162 L104.5 169 H102.5 L106.5 176 H93.5 L97.5 169 H95.5 Z"/><path class="tree" d="M122 156 L126.5 163 H124.5 L128.5 170 H115.5 L119.5 163 H117.5 Z"/><path class="tree" d="M150 162 L154.5 169 H152.5 L156.5 176 H143.5 L147.5 169 H145.5 Z"/><path class="tree" d="M190 122 L194.5 129 H192.5 L196.5 136 H183.5 L187.5 129 H185.5 Z"/><path class="tree" d="M232 136 L236.5 143 H234.5 L238.5 150 H225.5 L229.5 143 H227.5 Z"/><path class="tree" d="M248 158 L252.5 165 H250.5 L254.5 172 H241.5 L245.5 165 H243.5 Z"/><path class="tree" d="M270 142 L274.5 149 H272.5 L276.5 156 H263.5 L267.5 149 H265.5 Z"/><path class="rock" d="M144 110 L146 105 L151 103 L156 107 L156 110 Z"/><path class="rock" d="M220 119 L222 114 L227 112 L232 116 L232 119 Z"/><path class="rock" d="M180 91 L182 86 L187 84 L192 88 L192 91 Z"/><path class="rock" d="M250 112 L252 107 L257 105 L262 109 L262 112 Z"/><path class="rock" d="M208 125 L210 120 L215 118 L220 122 L220 125 Z"/><path class="shade" d="M196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 L232 230 L222 196 L214 160 L208 120 L203 80 L199 50 Z"/></g>
+<path class="outline" d="M8 230 L40 208 L62 197 L86 172 L108 162 L126 134 L146 120 L160 94 L172 80 L182 54 L196 24 L212 48 L226 58 L244 86 L262 100 L282 128 L302 146 L324 180 L352 230 Z"/>
+<rect class="haze" x="-240" y="196" width="840" height="40"/>
+<polyline class="trail" points="34,226 64,216 112,204 160,192 210,170 170,153 134,140 168,118 204,104 236,90 212,72 190,56 196,30"/>
+<polyline class="rope-line rope-under" points="34,226 64,216 112,204 160,192 210,170 170,153 134,140 168,118"/><polyline class="rope-line rope-over" points="34,226 64,216 112,204 160,192 210,170 170,153 134,140 168,118"/>
+<line class="pole" x1="196" y1="24" x2="196" y2="5"/><path class="flag" d="M196 5l13 4.5l-13 4.5z"/>
+<g class="marker right" transform="translate(64 216)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker wrong" transform="translate(112 204)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker right" transform="translate(160 192)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker right" transform="translate(210 170)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker wrong" transform="translate(170 153)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker right" transform="translate(134 140)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker right" transform="translate(168 118)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker" transform="translate(204 104)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker" transform="translate(236 90)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker" transform="translate(212 72)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker" transform="translate(190 56)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g class="marker" transform="translate(196 30)"><circle r="6.5"/><path class="glyph tick" d="M-3 .2 L-.8 2.6 L3.2 -2.4"/><path class="glyph cross" d="M-2.4 -2.4 L2.4 2.4 M2.4 -2.4 L-2.4 2.4"/></g>
+<g transform="translate(168 112) scale(1.15)"><rect class="scout-pack" x="-9.6" y="-15.5" width="6" height="10" rx="2"/><ellipse class="scout-body" cx="0" cy="-9.5" rx="6.5" ry="8.5"/><path class="scout-sash" d="M-5.8 -9 L4.8 -2.6"/><ellipse class="scout-eye" cx="-2.2" cy="-11.6" rx="1.7" ry="2.1"/><ellipse class="scout-eye" cx="2.4" cy="-11.6" rx="1.7" ry="2.1"/><circle class="scout-pupil" cx="-1.8" cy="-11.3" r="0.85"/><circle class="scout-pupil" cx="2.8" cy="-11.3" r="0.85"/><path class="scout-hat" d="M-4.2 -16.6 C-4.2 -22.4 4.2 -22.4 4.2 -16.6 Z"/><ellipse class="scout-hat" cx="0" cy="-16.6" rx="8.4" ry="2.1"/><ellipse class="scout-foot" cx="-2.8" cy="-0.9" rx="2.4" ry="1.4"/><ellipse class="scout-foot" cx="2.8" cy="-0.9" rx="2.4" ry="1.4"/></g>
+<g class="cloud"><circle cx="266" cy="44" r="7.2"/><circle cx="274.8" cy="40" r="8.8"/><circle cx="285.2" cy="44" r="7.2"/><circle cx="275.6" cy="47.2" r="6.4"/></g>
+  </svg></div>
   <footer class="foot"><span class="url">funklunsford.github.io/mountweazel</span><span class="tag">Free to play in your browser</span></footer>
 </div>
 </body>
