@@ -1,6 +1,6 @@
 # Mountweazel
 
-A climb up Mount Weazel, set as a newspaper front page. Each of its twelve ledges shows two old words, one real and one forged; pick the real one to climb on. The real words grow older and stranger toward the summit. You carry three ropes, and each wrong pick cuts one.
+A climb up Mount Weazel, set as a newspaper front page. Each of its twelve ledges shows two old words, one real and one forged; pick the real one to climb on. The real words grow rarer and stranger toward the summit. You carry three ropes, and each wrong pick cuts one.
 
 A *mountweazel* is a fake entry planted in a reference work. The name comes from Lillian Virginia Mountweazel, an invented person slipped into the 1975 New Columbia Encyclopedia.
 
@@ -24,7 +24,7 @@ Every merge to `main` runs `npm run check` and, if every climb passes, publishes
 A climb is data in `climbs.js`: twelve ledges, each with its camp, a real word (part of speech, definition, history, perhaps a quotation, and how common it is), a forged one (part of speech, definition, and how it was made), and which side shows the real word.
 
 1. **Choose real words.** Put candidates in `candidates.json` as `{"genuine": [...]}` and run `python3 tools/verify.py candidates.json`. It prints Wiktionary's etymology and senses for each. Histories come from those sources and the dictionaries and works they cite, never from memory.
-2. **Forge the fakes.** Put candidates in the same file as `{"fake": [...]}` and run the same script. A fake must be unknown to Wiktionary, to the Dictionaries of the Scots Language and to a web search. Several plausible candidates have failed, and two "fakes" turned out to be real Scots words. Keeping the words in a file keeps them off the command line.
+2. **Forge the fakes.** Put candidates in the same file as `{"fake": [...]}` and run the same script. A fake must be unknown to Wiktionary, to the Dictionaries of the Scots Language and to a web search; when DuckDuckGo blocks the script, it says NOT SEARCHED, and the search has to be done by hand. Several plausible candidates have failed, and two "fakes" turned out to be real Scots words. Keeping the words in a file keeps them off the command line.
 3. **Rank by rarity.** `python3 tools/altitude.py candidates.json path/to/scowl` reports, for each real word, the smallest SCOWL list of common English it's in (35, 40 or 50) and the usage labels Wiktionary gives it. It reads the genuine words from the same file, and the folder needs `scowl-35.txt`, `scowl-40.txt` and `scowl-50.txt`, made from [SCOWL](http://wordlist.aspell.net). SCOWL membership is the only real measurement, and words in those lists go lowest. Above them the order is a judgment: the labels count every sense of a word, and Scots-only words have no English labels at all.
 4. **Pair them by shape.** Side by side, the two cards should differ only in whether the word is real. Give them the same part of speech, the same number of senses and definitions of similar length, and never set a fake beside a real word it was built from.
 5. **Check every climb** with `npm run check`. It confirms that:
