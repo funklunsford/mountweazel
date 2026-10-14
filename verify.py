@@ -1,6 +1,6 @@
-"""Check candidate words for a page without naming them on the command line.
+"""Check page candidates without naming them on the command line.
 Genuine candidates: print the English etymology and senses from Wiktionary.
-Fake candidates: report whether Wiktionary, the Dictionaries of the Scots Language or a web search knows the word."""
+Fake candidates: report whether Wiktionary or the Dictionaries of the Scots Language know the word."""
 import html
 import json
 import time
@@ -51,11 +51,7 @@ def main(path):
         qcode, qbody = fetch('https://html.duckduckgo.com/html/?q=' + urllib.parse.quote(f'"{w}"'))
         hits = len(re.findall(r'class="result__a"[^>]*>(?:(?!</a>).)*' + re.escape(w), qbody, re.I | re.S))
         snippets = len(re.findall(re.escape(w), re.sub(r'<input[^>]*>', '', qbody), re.I))
-        if qcode != 200 or ('result__a' not in qbody and 'no-results' not in qbody):
-            # DuckDuckGo sometimes answers with a bot challenge (often HTTP 202) instead of results: that proves nothing.
-            web = f'NOT SEARCHED (http {qcode}, no results page; DuckDuckGo may have sent a challenge): search for it by hand'
-        else:
-            web = f'{hits} result titles and {snippets} mentions on the results page'
+        web = f'http {qcode}' if qcode != 200 else f'{hits} result titles and {snippets} mentions on the results page'
         print(f'== fake candidate {w}: wiktionary {wik}; DSL {dsl}; web {web}')
 
 

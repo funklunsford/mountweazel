@@ -1,118 +1,289 @@
-/* Mountweazel pages. Each entry on a word page pairs a real old word with a forged one; `realOn`
-   says which proof, left or right (first or second on a phone), shows the real word. The real
-   words grow rarer down the page, in bands from Familiar to All but lost. `scowl` records whether a
-   real word is in the SCOWL lists of common English words (35, 40 or 50: the size of the smallest
-   list it's in) or in none of them (null). check.js holds the rules every page must pass. */
+/* Mountweazel pages. gen.js writes the notes and starting entry of generated pages. */
 'use strict';
 const PAGES = [
   {
-    number: 1,
-    entries: [
+    "number": 3,
+    "letters": "M",
+    "level": "medium",
+    "fakes": 3,
+    "start": "mammothrept",
+    "entries": [
       {
-        band: 'Familiar',
-        realOn: 'left',
-        real: { word: 'popinjay', pos: 'n.', def: 'a parrot; a vain, chattering person.', scowl: 50,
-          history: 'From Old French papejai, “parrot”, probably by way of Occitan from Arabic babghā’, an imitation of the bird. The parrot came first, in the 1300s; the vain person followed in the 1500s.',
-          quote: { text: 'innumerable popingayes of sundry kindes are found chattering in the groves', cite: 'Richard Eden, 1555' } },
-        fake: { word: 'gullfinch', pos: 'n.', def: 'a small finch; a simpleton.',
-          anatomy: 'Invented on the pattern of bullfinch, which old slang really did use for a fool, with gull supplying the simpleton.' }
+        "id": "malkin",
+        "word": "malkin",
+        "pos": "n.",
+        "label": "dialect",
+        "kinds": [
+          "person"
+        ],
+        "def": "a slattern, a kitchen maid; a mop for a baker’s oven.",
+        "history": "From Malde, an early form of Maud or Matilda, plus -kin. A stock name for a kitchen maid or a slattern since the 1200s; the oven mop followed in the 1400s."
       },
       {
-        band: 'Familiar',
-        realOn: 'right',
-        real: { word: 'pettifogger', pos: 'n.', def: 'a petty, quibbling lawyer.', scowl: 50,
-          history: 'Petty plus fogger. Both senses have held for centuries: someone who raises petty objections, and a lawyer of the shabbier sort.',
-          quote: { text: 'some political pettifogger skilled in delays, sophisms, and misapprehensions', cite: 'Washington Irving, 1809' } },
-        fake: { word: 'pottlebelly', pos: 'n.', def: 'a pot-bellied drinker.',
-          anatomy: 'Invented: pottle, an old half-gallon pot, plus belly. Shakespeare did write pottle, but never this.' }
+        "id": "mammock",
+        "word": "mammock",
+        "pos": "n.",
+        "label": "origin unknown",
+        "kinds": [],
+        "def": "a scrap, a shapeless piece.",
+        "history": "Mam, of obscure origin, plus the diminutive -ock. Now heard only in dialect.",
+        "quote": {
+          "text": "Let me be torn into mammocks with wild Bears",
+          "cite": "John Day, 1600"
+        }
       },
       {
-        band: 'Familiar',
-        realOn: 'right',
-        real: { word: 'flibbertigibbet', pos: 'n.', def: 'a flighty, chattering person.', scowl: 50,
-          history: 'Recorded from about 1450 as fleper-gebet, probably imitating idle chatter. Shakespeare made it the name of a fiend in King Lear, borrowed from Samuel Harsnett’s 1603 book exposing fake exorcisms.' },
-        fake: { word: 'grizzlewit', pos: 'n.', def: 'a grey-headed fool.',
-          anatomy: 'Invented: grizzle, grey hair, plus wit.' }
+        "id": "mammothrept",
+        "word": "mammothrept",
+        "pos": "n.",
+        "label": null,
+        "kinds": [
+          "person"
+        ],
+        "def": "a spoiled child.",
+        "history": "From Late Latin mammothreptus, “kept at the breast too long”, from Greek mammóthreptos, “brought up by one’s grandmother”.",
+        "quote": {
+          "text": "O, you are a meere mammothrept in judgement, then.",
+          "cite": "Ben Jonson, 1601"
+        }
       },
       {
-        band: 'Uncommon',
-        realOn: 'left',
-        real: { word: 'maunder', pos: 'v.', def: 'to babble, to ramble on.', scowl: 50,
-          history: 'From an earlier maund, “to beg”, so first the whine of a beggar, then any aimless talk.',
-          quote: { text: 'he briefly rallied, to maunder about many things', cite: 'Henry James, 1871' } },
-        fake: { word: 'mumchatter', pos: 'v.', def: 'to mutter sulkily.',
-          anatomy: 'Invented: mum, silent, plus chatter, two words pulling against each other.' }
+        "id": "maunder",
+        "word": "maunder",
+        "pos": "v.",
+        "label": null,
+        "kinds": [],
+        "def": "to babble, to ramble on.",
+        "history": "From an earlier maund, “to beg”, so first the whine of a beggar, then any aimless talk.",
+        "quote": {
+          "text": "he briefly rallied, to maunder about many things",
+          "cite": "Henry James, 1871"
+        }
       },
       {
-        band: 'Uncommon',
-        realOn: 'right',
-        real: { word: 'mavis', pos: 'n.', def: 'a song thrush.', scowl: 50,
-          history: 'Middle English mavys, from Old French mauvis, “song thrush”. Poets kept it long after everyone else had stopped.',
-          quote: { text: 'The clear voiced mavis dwelleth', cite: 'Tennyson, 1830' } },
-        fake: { word: 'merlehawk', pos: 'n.', def: 'a small moorland falcon.',
-          anatomy: 'Invented: merle, a real old word for a blackbird, plus hawk. Bird names really are built this way, as in sparrowhawk, which is why it passes.' }
+        "id": "mavis",
+        "word": "mavis",
+        "pos": "n.",
+        "label": "poetic",
+        "kinds": [
+          "animal"
+        ],
+        "def": "a song thrush.",
+        "history": "Middle English mavys, from Old French mauvis, “song thrush”. Poets kept it long after everyone else had stopped.",
+        "quote": {
+          "text": "The clear voiced mavis dwelleth",
+          "cite": "Tennyson, 1830"
+        }
       },
       {
-        band: 'Uncommon',
-        realOn: 'left',
-        real: { word: 'pelf', pos: 'n.', def: 'money, especially ill-gotten.', scowl: null,
-          history: 'Late Middle English, once meaning booty or stolen goods, then money and riches. It may come from Anglo-Norman pelfre, “loot”, but its origin beyond that is uncertain.',
-          quote: { text: 'Sirra, take up your pelfe, and be packing.', cite: 'Thomas Dekker, The Shoemaker’s Holiday, 1599' } },
-        fake: { word: 'costerwain', pos: 'n.', def: 'a costermonger’s handcart.',
-          anatomy: 'Invented: it borrows coster from costermonger and adds wain, an old word for a farm wagon. Leaning on a real word is a forger’s favourite trick.' }
+        "id": "merlehawk",
+        "word": "merlehawk",
+        "pos": "n.",
+        "label": "dialect",
+        "kinds": [
+          "animal"
+        ],
+        "fake": true,
+        "def": "a small moorland falcon.",
+        "anatomy": "Invented for this page: merle, a real old word for a blackbird, plus hawk. Bird names really are built this way, as in sparrowhawk, which is why it passes."
       },
       {
-        band: 'Rare',
-        realOn: 'right',
-        real: { word: 'fustilarian', pos: 'n.', def: 'a low, shabby fellow.', scowl: null,
-          history: 'Falstaff’s insult, probably built on fusty, “mouldy”, and first recorded around 1600.',
-          quote: { text: 'Away, you scullion! you rampallian! you fustilarian!', cite: 'Henry IV, Part 2' } },
-        fake: { word: 'flouterkin', pos: 'n.', def: 'a pert young mocker.',
-          anatomy: 'Invented: flouter, one who flouts, plus -kin. The real flounderkin, an old sneer at the Dutch, is a letter away.' }
+        "id": "merrythought",
+        "word": "merrythought",
+        "pos": "n.",
+        "label": null,
+        "kinds": [],
+        "def": "a wishbone.",
+        "history": "Merry plus thought, traditionally for the pleasant thoughts imagined as the bone is broken.",
+        "quote": {
+          "text": "a bone, which we call the Merry thought",
+          "cite": "Randle Holme, 1688"
+        }
       },
       {
-        band: 'Rare',
-        realOn: 'left',
-        real: { word: 'grimalkin', pos: 'n.', def: 'an old she-cat; a spiteful old woman.', scowl: null,
-          history: 'Usually explained as grey plus malkin, a pet form of Maud. The witch’s cat in Macbeth made it famous, though an earlier use exists, and some scholars suspect a French demon called Grimaud instead.',
-          quote: { text: 'I come, Graymalkin!', cite: 'Macbeth' } },
-        fake: { word: 'popingawk', pos: 'n.', def: 'a cuckoo; a gaping fool.',
-          anatomy: 'Invented from popinjay and gawk. The cuckoo sense borrows from the real Scots gowk, a cuckoo or a fool.' }
+        "id": "mouldwarp",
+        "word": "mouldwarp",
+        "pos": "n.",
+        "label": "dialect",
+        "kinds": [
+          "animal"
+        ],
+        "def": "a mole.",
+        "history": "Middle English moldewarpe, the “earth-thrower”: mould plus warp. German still calls the mole Maulwurf, and Danish muldvarp."
       },
       {
-        band: 'Rare',
-        realOn: 'left',
-        real: { word: 'mouldwarp', pos: 'n.', def: 'a mole.', scowl: null,
-          history: 'Middle English moldewarpe, the “earth-thrower”: mould plus warp. German still calls the mole Maulwurf, and Danish muldvarp.' },
-        fake: { word: 'farrowkin', pos: 'n.', def: 'a young pig.',
-          anatomy: 'Invented: farrow, a litter of pigs, plus the diminutive -kin, as in lambkin.' }
+        "id": "mulligrubs",
+        "word": "mulligrubs",
+        "pos": "n.",
+        "label": "origin unknown",
+        "kinds": [],
+        "def": "a stomach ache; a fit of the sulks.",
+        "history": "From the 1500s, origin unknown; perhaps mull, “dirt”, plus grub. First the colic, then sullenness and low spirits."
       },
       {
-        band: 'Obscure',
-        realOn: 'right',
-        real: { word: 'mammothrept', pos: 'n.', def: 'a spoiled child.', scowl: null,
-          history: 'From Late Latin mammothreptus, “kept at the breast too long”, from Greek mammóthreptos, “brought up by one’s grandmother”.',
-          quote: { text: 'O, you are a meere mammothrept in judgement, then.', cite: 'Ben Jonson, 1601' } },
-        fake: { word: 'grumshaw', pos: 'n.', def: 'a sullen, surly fellow.',
-          anatomy: 'Invented: grum, an old word for surly, with the ending of a surname like Grimshaw.' }
+        "id": "mumchatter",
+        "word": "mumchatter",
+        "pos": "v.",
+        "label": "origin unknown",
+        "kinds": [],
+        "fake": true,
+        "def": "to mutter sulkily.",
+        "anatomy": "Invented for this page: mum, silent, plus chatter, two words pulling against each other. Forgers love the “origin unknown” label because it needs no evidence."
       },
       {
-        band: 'Obscure',
-        realOn: 'left',
-        real: { word: 'gaberlunzie', pos: 'n.', def: 'a wandering beggar, especially a licensed one.', scowl: null,
-          history: 'Scots, recorded from the 1500s. Licensed beggars were the King’s Bedesmen, called bluegowns after the blue gowns given them as alms. Where the word comes from is unknown; the guesses involve a cloak, a wallet and the loins.' },
-        fake: { word: 'fardelman', pos: 'n.', def: 'a pedlar who carries his wares in a bundle.',
-          anatomy: 'Invented: fardel, a bundle, plus man. A pedlar with a pack is easy to believe, which is the point.' }
+        "id": "mumpsimus",
+        "word": "mumpsimus",
+        "pos": "n.",
+        "label": null,
+        "kinds": [
+          "person"
+        ],
+        "def": "one who clings to an error after it is corrected; the error itself.",
+        "history": "From the story of a priest who misread sumpsimus, “we have taken”, as mumpsimus, and refused to change it when corrected. Tyndale used it in 1530; the tale is credited to Richard Pace or Erasmus."
       },
       {
-        band: 'All but lost',
-        realOn: 'right',
-        real: { word: 'fleerish', pos: 'n.', def: 'a steel for striking sparks from a flint.', scowl: null,
-          history: 'North-east Scots, recorded from 1700 to 1920, mostly in “flint an fleerish”. It is a worn-down form of Old Scots furisine, a “fire-iron”, with the fl- probably borrowed from flint. It sounds invented, but the Scottish National Dictionary has it.' },
-        fake: { word: 'colewife', pos: 'n.', def: 'a woman who cries cabbages in the street.',
-          anatomy: 'Invented: it joins cole, as in colewort, to wife in its old sense of “woman”, as in fishwife.' }
+        "id": "muzzlefog",
+        "word": "muzzlefog",
+        "pos": "n.",
+        "label": "poetic",
+        "kinds": [],
+        "fake": true,
+        "def": "a damp, choking mist.",
+        "anatomy": "Invented for this page: muzzle plus fog, built to sound like a lost weather word."
       }
-    ]
+    ],
+    "notes": {
+      "malkin": {
+        "text": "More of the four entries that begin with MU are fakes than of the five entries that begin with MA.",
+        "kind": "spelling",
+        "type": "compare",
+        "a": [
+          "mulligrubs",
+          "mumchatter",
+          "mumpsimus",
+          "muzzlefog"
+        ],
+        "b": [
+          "malkin",
+          "mammock",
+          "mammothrept",
+          "maunder",
+          "mavis"
+        ],
+        "rel": "more"
+      },
+      "mammock": {
+        "text": "At least one of the three entries whose definitions name an animal is a fake.",
+        "kind": "meaning",
+        "set": [
+          "mavis",
+          "merlehawk",
+          "mouldwarp"
+        ],
+        "fakes": [
+          1,
+          2,
+          3
+        ]
+      },
+      "mammothrept": {
+        "text": "None of the three entries whose definitions name a person is a fake.",
+        "kind": "meaning",
+        "set": [
+          "malkin",
+          "mammothrept",
+          "mumpsimus"
+        ],
+        "fakes": [
+          0
+        ]
+      },
+      "maunder": {
+        "text": "At least one of the two entries labelled poetic is a fake.",
+        "kind": "label",
+        "set": [
+          "mavis",
+          "muzzlefog"
+        ],
+        "fakes": [
+          1,
+          2
+        ]
+      },
+      "mavis": {
+        "text": "Exactly one of my two neighbours is a fake.",
+        "kind": "position",
+        "set": [
+          "maunder",
+          "merlehawk"
+        ],
+        "fakes": [
+          1
+        ]
+      },
+      "merrythought": {
+        "text": "At least one of the first six entries on the page is a fake.",
+        "kind": "position",
+        "set": [
+          "malkin",
+          "mammock",
+          "mammothrept",
+          "maunder",
+          "mavis",
+          "merlehawk"
+        ],
+        "fakes": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "mouldwarp": {
+        "text": "The first six entries on the page hold as many fakes as the two entries marked v.",
+        "kind": "meaning",
+        "type": "compare",
+        "a": [
+          "malkin",
+          "mammock",
+          "mammothrept",
+          "maunder",
+          "mavis",
+          "merlehawk"
+        ],
+        "b": [
+          "maunder",
+          "mumchatter"
+        ],
+        "rel": "same"
+      },
+      "mulligrubs": {
+        "text": "At most one of the two entries labelled poetic is a fake.",
+        "kind": "label",
+        "set": [
+          "mavis",
+          "muzzlefog"
+        ],
+        "fakes": [
+          0,
+          1
+        ]
+      },
+      "mumpsimus": {
+        "text": "Exactly one of the three entries labelled origin unknown is a fake.",
+        "kind": "label",
+        "set": [
+          "mammock",
+          "mulligrubs",
+          "mumchatter"
+        ],
+        "fakes": [
+          1
+        ]
+      }
+    }
   }
 ];
 if (typeof module !== 'undefined' && module.exports) module.exports = PAGES;
