@@ -1,6 +1,6 @@
 # Mountweazel
 
-A word puzzle in the newspaper, and you're the editor. Every entry on today's word page reaches your desk as two proofs, one real old word and one forgery; send the real word to press. Pass a forgery and it goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.
+A word puzzle in the newspaper, and you're the editor. The newspaper is set as if in the Middle Ages, on vellum, with red rubrics and an illuminated initial. Every entry on today's word page reaches your desk as two proofs, one real old word and one forgery; send the real word to press. Pass a forgery and it goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.
 
 A *mountweazel* is a fake entry planted in a reference work. The name comes from Lillian Virginia Mountweazel, an invented person slipped into the 1975 New Columbia Encyclopedia.
 
@@ -43,7 +43,7 @@ Mountweazel began as a no-guess deduction page, modelled on [Clues by Sam](https
 
 ## Share card
 
-When the site's link is shared, previews show `share/card.png`: a 1200 × 630 front page with the nameplate and a plain statement of what the puzzle is. It shows no words from any page. `share/square.png` is a simpler square version, a blackletter M in a double-ruled frame with the name beneath, for apps that show square thumbnails. The M on its own makes the site's icons: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens.
+When the site's link is shared, previews show `share/card.png`: a 1200 × 630 front page on vellum, with the nameplate and a plain statement of what the puzzle is, opened by an illuminated initial. It shows no words from any page. `share/square.png` is a simpler square version, an illuminated initial M, gold on blue in a gilt frame, with the name beneath, for apps that show square thumbnails. The M on its own, gold on blue to the edges, makes the site's icons: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens.
 
 The cards are drawn in `share/card.html` and `share/square.html`. After changing either, run `npm run share-card` and commit the PNGs. It renders them with headless Chrome (set `CHROME` to Chrome's path if it isn't in the usual macOS place) and shrinks the icons with macOS's `sips`. `index.html` carries the Open Graph and Twitter tags: the wide card comes first and the square card second. Their title and description say in words what the card shows.
 
@@ -52,4 +52,4 @@ The cards are drawn in `share/card.html` and `share/square.html`. After changing
 - The first, deduction version of Mountweazel was modelled on [Clues by Sam](https://cluesbysam.com).
 - Word histories come from [Wiktionary](https://en.wiktionary.org) (CC BY-SA 4.0) and the [Dictionaries of the Scots Language](https://dsl.ac.uk). Quotations are from public-domain works. The fakes are invented.
 - How common a word is comes from [SCOWL](http://wordlist.aspell.net), Kevin Atkinson's word lists.
-- Fonts: UnifrakturMaguntia, Newsreader and Caveat, from Google Fonts under the SIL Open Font License.
+- Fonts: UnifrakturMaguntia, Grenze Gotisch, IM Fell English and IM Fell English SC, from Google Fonts under the SIL Open Font License.
