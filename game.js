@@ -36,6 +36,9 @@ if (typeof document !== 'undefined') {
     const js = entries.map((e, j) => e.band === band ? j + 1 : 0).filter(Boolean);
     return js.length > 1 ? `Entries ${js[0]}–${js[js.length - 1]}` : `Entry ${js[0]}`;
   };
+  const toRoman = n => [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'],
+    [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
+    .reduce((out, [value, letters]) => { while (n >= value) { out += letters; n -= value; } return out; }, '');
 
   function valid(s) {
     if (!s || typeof s !== 'object' || !Array.isArray(s.picks) || !Number.isInteger(s.seen)) return false;
@@ -359,9 +362,15 @@ if (typeof document !== 'undefined') {
 
     $('#issue').textContent = `Vol. I · No. ${page.number}`;
     const narrow = window.matchMedia('(max-width: 719px)').matches;
-    $('#dateline').textContent = new Date().toLocaleDateString(undefined, narrow ?
-      { weekday: 'short', month: 'short', day: 'numeric' } :
-      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Dated as a scribe would date it: the day in small numerals, the year in capitals. Screen readers
+    // get the date in plain words instead.
+    const now = new Date();
+    const name = opts => now.toLocaleDateString('en-GB', opts);
+    const day = toRoman(now.getDate()).toLowerCase(), year = toRoman(now.getFullYear());
+    const scribed = el('span', null, narrow ? `${name({ weekday: 'short' })} ${day} ${name({ month: 'short' })} ${year}` :
+      `${name({ weekday: 'long' })}, the ${day} day of ${name({ month: 'long' })}, ${year}`);
+    scribed.setAttribute('aria-hidden', 'true');
+    $('#dateline').replaceChildren(el('span', 'sr-only', name({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })), scribed);
     $('#errata').append(...Array.from({ length: ERRATA }, () => el('span', 'erratum-box')));
     measureRunhead();
     window.addEventListener('resize', measureRunhead);
