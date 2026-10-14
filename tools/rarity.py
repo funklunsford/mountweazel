@@ -1,11 +1,11 @@
-"""Rank candidate real words by how archaic they are, for the climb's ledges.
+"""Rank candidate real words by how rare they are, to order the entries on a word page.
 Height signals: membership of the local SCOWL lists (35, 40, 50: common words) and the usage
 labels Wiktionary gives the word's English senses (archaic, obsolete, dialectal, rare...).
 
-Usage: python3 tools/altitude.py words.json scowl_dir
+Usage: python3 tools/rarity.py words.json scowl_dir
   words.json  a JSON list of words, or verify.py's {"genuine": [...]} file; a file keeps them off the command line
   scowl_dir   a folder holding scowl-35.txt, scowl-40.txt and scowl-50.txt (from SCOWL, wordlist.aspell.net)
-Prints one line per word and writes words-altitude.json beside the input."""
+Prints one line per word and writes words-rarity.json beside the input."""
 import html
 import json
 import re
@@ -58,7 +58,7 @@ def main(words_path, scowl_dir):
         found = sorted({lab for lab in LABELS if re.search(r'\(\s*[^)]*\b' + re.escape(lab) + r'\b[^)]*\)', text, re.I)})
         out[w] = {'scowl': size, 'labels': found, 'wiktionary': code}
         print(f'{w:16} scowl {size or "-":>3}  labels: {", ".join(found) or "-"}')
-    json.dump(out, open(words_path.replace('.json', '-altitude.json'), 'w'), indent=1)
+    json.dump(out, open(words_path.replace('.json', '-rarity.json'), 'w'), indent=1)
 
 
 if __name__ == '__main__':

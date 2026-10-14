@@ -1,7 +1,7 @@
 .DS_Store
 node_modules/
 __pycache__/
-# Word lists for the tools, and their output, can name a climb's answers.
+# Word lists for the tools, and their output, can name a page's answers.
 candidates*.json
 verify-out*.txt
-*-altitude.json
+*-rarity.json
