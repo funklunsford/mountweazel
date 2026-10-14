@@ -2,9 +2,10 @@
   "name": "mountweazel",
   "version": "0.1.0",
   "private": true,
-  "description": "A word puzzle in the newspaper: pick the real old word over the forged one, and set the word page one entry at a time.",
+  "description": "Find the forged entries on a dictionary page by deduction.",
   "scripts": {
     "check": "node check.js",
+    "gen": "node gen.js",
     "share-card": "node share/render.js"
   },
   "engines": {

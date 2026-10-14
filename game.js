@@ -1,69 +1,145 @@
-/* Mountweazel: a word puzzle in the newspaper, played as its editor. Every entry on today's word
-   page reaches the desk as two proofs, one real and one forged. Send the real word to press; a forgery
-   goes to press as an erratum, and the third erratum pulls the page. The words are in pages.js. */
+/* Mountweazel prototype: the deduction engine and the page UI.
+   check.js and gen.js run the same engine under Node; the UI at the bottom only runs in a browser. */
 'use strict';
 
+function eachSubset(n, k, fn) {
+  const sel = [];
+  (function pick(from) {
+    if (sel.length === k) { fn(sel); return; }
+    for (let i = from; i <= n - (k - sel.length); i++) { sel.push(i); pick(i + 1); sel.pop(); }
+  })(0);
+}
+
+function makeEngine(page) {
+  const ENTRY = Object.fromEntries(page.entries.map(e => [e.id, e]));
+  // Every possible answer: each way of choosing page.fakes entries to be the fakes.
+  const ALL = [];
+  eachSubset(page.entries.length, page.fakes, sel => ALL.push(new Set(sel.map(i => page.entries[i].id))));
+
+  const count = (ids, fakeSet) => ids.reduce((n, id) => n + (fakeSet.has(id) ? 1 : 0), 0);
+
+  // A note says how many fakes a set of entries holds, or compares two sets.
+  function holds(note, fakeSet) {
+    if (note.type === 'compare') {
+      const a = count(note.a, fakeSet);
+      const b = count(note.b, fakeSet);
+      return note.rel === 'more' ? a > b : note.rel === 'fewer' ? a < b : a === b;
+    }
+    return note.fakes.includes(count(note.set, fakeSet));
+  }
+
+  function satisfies(fakeSet, known, notes) {
+    for (const id in known) if (fakeSet.has(id) !== (known[id] === 'fake')) return false;
+    return notes.every(n => holds(n, fakeSet));
+  }
+
+  const solutions = (known, notes) => ALL.filter(s => satisfies(s, known, notes));
+
+  // Unresolved entries whose status is the same in every answer the notes still allow.
+  function settled(known, notes) {
+    const sols = solutions(known, notes);
+    const out = {};
+    if (!sols.length) return out;
+    for (const e of page.entries) {
+      if (known[e.id]) continue;
+      const fakeIn = sols.reduce((n, s) => n + (s.has(e.id) ? 1 : 0), 0);
+      if (fakeIn === sols.length) out[e.id] = 'fake';
+      else if (fakeIn === 0) out[e.id] = 'genuine';
+    }
+    return out;
+  }
+
+  const truth = id => (ENTRY[id].fake ? 'fake' : 'genuine');
+
+  // Only what the player can see: notes on entries already resolved as genuine.
+  const visibleNotes = known => Object.keys(known)
+    .filter(id => known[id] === 'genuine' && page.notes[id])
+    .map(id => page.notes[id]);
+
+  function judge(known, id, call) {
+    if (call !== truth(id)) return 'mistake';
+    return settled(known, visibleNotes(known))[id] === call ? 'proven' : 'hunch';
+  }
+
+  // The fewest of `notes` that settle some entry, with every smallest set that does.
+  function minStep(known, notes, maxK = 3) {
+    for (let k = 0; k <= Math.min(maxK, notes.length); k++) {
+      const forced = {};
+      const sets = [];
+      eachSubset(notes.length, k, sel => {
+        const s = settled(known, sel.map(i => notes[i]));
+        if (Object.keys(s).length) { Object.assign(forced, s); sets.push(sel.slice()); }
+      });
+      if (sets.length) return { k, forced, sets };
+    }
+    return null;
+  }
+
+  // Solve from the starting entry; each step settles what the fewest notes can.
+  // The profile of k values is the page's difficulty: 1 means one note at a time.
+  function profile(keep = () => true) {
+    const known = { [page.start]: 'genuine' };
+    const steps = [];
+    while (Object.keys(known).length < page.entries.length) {
+      const notes = visibleNotes(known).filter(keep);
+      let step = minStep(known, notes, 3);
+      if (!step) {
+        const all = settled(known, notes);
+        if (!Object.keys(all).length) return { stalled: true, steps };
+        step = { k: notes.length, forced: all, sets: [notes.map((_, i) => i)], over: true };
+      }
+      steps.push({ k: step.k, over: Boolean(step.over), ids: Object.keys(step.forced), sets: step.sets.map(sel => sel.map(i => notes[i])) });
+      Object.assign(known, step.forced);
+    }
+    return { stalled: false, steps };
+  }
+
+  return { page, ENTRY, ALL, holds, satisfies, solutions, settled, truth, visibleNotes, judge, minStep, profile };
+}
+
+if (typeof module !== 'undefined' && module.exports) module.exports = { eachSubset, makeEngine };
+
+/* ---------- The page ---------- */
+
 if (typeof document !== 'undefined') {
-  const ERRATA = 3;
-  const RULES_KEY = 'mountweazel-page-rules-seen';
+  const MARK = { proven: { glyph: '✓', name: 'Proven' }, hunch: { glyph: '?', name: 'Hunch' }, mistake: { glyph: '✗', name: 'Mistake' } };
+  const SHARE = { proven: '✅', hunch: '🟨', mistake: '❌' };
+  const CURRENT_KEY = 'mountweazel-current-page';
+  const RULES_KEY = 'mountweazel-rules-seen';
   const $ = sel => document.querySelector(sel);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const page = PAGES[PAGES.length - 1];
-  const entries = page.entries;
-  const saveKey = 'mountweazel-page-' + page.number;
-
-  // picks: the proof picked for each entry so far. seen: how many of those reveals you've moved on from.
+  let E = null;
+  let pageIndex = 0;
   let state = null;
+  let openId = null;
+  let hint = null;
   let resetArmed = null;
   let toastTimer = null;
-  // The word page: one slot per entry and a heading per band, built once and updated in place.
-  const slotEls = [];
-  const bandHeads = {};
-  let nextBar, nextBtn, verdictLine, slotList;
+  let els = {};
 
-  const fresh = () => ({ picks: [], seen: 0 });
-  const upper = w => w.toUpperCase();
-  const errataText = n => n === 0 ? 'no errata' : n === 1 ? '1 erratum' : `${n} errata`;
-  const rightAt = i => state.picks[i] === entries[i].realOn;
-  const errata = () => state.picks.filter((p, i) => p !== entries[i].realOn).length;
-  const pulled = () => errata() >= ERRATA;
-  const complete = () => state.picks.length === entries.length && !pulled();
-  const over = () => pulled() || state.picks.length === entries.length;
-  const mode = () => state.picks.length > state.seen ? 'reveal' : over() ? 'end' : 'pick';
-  const bandStarts = i => i === 0 || entries[i].band !== entries[i - 1].band;
-  const bandSpan = band => {
-    const js = entries.map((e, j) => e.band === band ? j + 1 : 0).filter(Boolean);
-    return js.length > 1 ? `Entries ${js[0]}–${js[js.length - 1]}` : `Entry ${js[0]}`;
-  };
-  const toRoman = n => [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'],
-    [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]
-    .reduce((out, [value, letters]) => { while (n >= value) { out += letters; n -= value; } return out; }, '');
+  const saveKey = () => 'mountweazel-page-' + E.page.number;
+  const fresh = () => ({ known: { [E.page.start]: 'genuine' }, calls: [], suspects: {}, hints: 0, hardcore: false, started: null, finished: null });
 
   function valid(s) {
-    if (!s || typeof s !== 'object' || !Array.isArray(s.picks) || !Number.isInteger(s.seen)) return false;
-    if (s.picks.length > entries.length || !s.picks.every(p => p === 'left' || p === 'right')) return false;
-    if (s.seen < s.picks.length - 1 || s.seen > s.picks.length) return false;
-    // Nothing may be picked after the page was pulled.
-    let wrong = 0;
-    for (let i = 0; i < s.picks.length; i++) {
-      if (wrong >= ERRATA) return false;
-      if (s.picks[i] !== entries[i].realOn) wrong++;
-    }
-    return true;
+    if (!s || typeof s !== 'object' || !s.known || !Array.isArray(s.calls)) return false;
+    if (s.known[E.page.start] !== 'genuine') return false;
+    if (s.suspects != null && (typeof s.suspects !== 'object' || Object.keys(s.suspects).some(id => !E.ENTRY[id]))) return false;
+    return Object.keys(s.known).every(id => E.ENTRY[id] && s.known[id] === E.truth(id)) &&
+      s.calls.every(c => E.ENTRY[c.id] && MARK[c.mark]);
   }
 
   function save() {
-    try { localStorage.setItem(saveKey, JSON.stringify(state)); } catch (_) { /* storage blocked: play on without saving */ }
+    try { localStorage.setItem(saveKey(), JSON.stringify(state)); } catch (_) { /* storage blocked: play on without saving */ }
   }
 
-  function rulesSeen() {
-    try { return localStorage.getItem(RULES_KEY) === '1'; } catch (_) { return false; }
-  }
-
-  function markRulesSeen() {
-    try { localStorage.setItem(RULES_KEY, '1'); } catch (_) { /* fine */ }
-  }
+  const done = () => Object.keys(state.known).length === E.page.entries.length;
+  const revealOrder = () => [E.page.start, ...state.calls.map(c => c.id).filter(id => E.truth(id) === 'genuine')];
+  const counts = () => state.calls.reduce((n, c) => (n[c.mark]++, n), { proven: 0, hunch: 0, mistake: 0 });
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const upper = id => E.ENTRY[id].word.toUpperCase();
+  const signature = () => `${E.page.number}:${state.calls.length}`;
+  const listNumbers = ns => ns.length === 1 ? String(ns[0]) : `${ns.slice(0, -1).join(', ')} and ${ns[ns.length - 1]}`;
 
   function el(tag, cls, text) {
     const node = document.createElement(tag);
@@ -72,263 +148,303 @@ if (typeof document !== 'undefined') {
     return node;
   }
 
-  /* ---------- Entries ---------- */
-
-  function revealBody(entry, isReal) {
-    const box = el('div', 'reveal');
-    if (isReal) {
-      box.append(el('p', 'history', entry.history));
-      if (entry.quote) {
-        const q = el('blockquote', 'quote');
-        q.append(el('span', 'q-text', `“${entry.quote.text}”`), el('cite', null, entry.quote.cite));
-        box.append(q);
-      }
-    } else {
-      const p = el('p', 'anatomy');
-      p.append(el('span', 'tag', 'Mountweazel'), document.createTextNode(entry.anatomy));
-      box.append(p);
-    }
-    return box;
+  function buildSwitcher() {
+    const single = PAGES.length < 2;
+    $('#editions').hidden = single;
+    $('#forecast').hidden = !single;
+    const nav = $('#pages');
+    nav.replaceChildren(...PAGES.map((p, i) => {
+      const b = el('button', 'page-tab', `Page ${p.number} · ${p.level[0].toUpperCase()}${p.level.slice(1)}`);
+      b.type = 'button';
+      b.addEventListener('click', () => { if (i !== pageIndex) showPage(i); });
+      return b;
+    }));
   }
 
-  // A proof is a button until it's picked, then a revealed entry, marked real or forged.
-  // Before a pick the two proofs differ only by side (A or B), never by which is real.
-  function card(i, side, revealed, just) {
-    const e = entries[i];
-    const isReal = e.realOn === side;
-    const entry = isReal ? e.real : e.fake;
-    const line = el('span', 'hw-line');
-    line.append(el('span', 'hw', entry.word), el('span', 'pos', entry.pos));
-    if (!revealed) {
-      const button = el('button', 'card');
-      button.type = 'button';
-      button.append(el('span', 'proof-label', side === 'left' ? 'Proof A' : 'Proof B'), line, el('span', 'def', entry.def));
-      button.addEventListener('click', () => pick(side));
-      return button;
-    }
-    const node = el('div', `card ${isReal ? 'real' : 'forged'}${just ? ' just' : ''}`);
-    if (state.picks[i] === side) {
-      node.classList.add('picked');
-      node.append(el('span', 'pick-tag', 'Your pick'));
-    }
-    node.append(el('span', 'stamp', isReal ? 'real ✓' : 'forged ✗'), line, el('span', 'def', entry.def), revealBody(entry, isReal));
-    return node;
-  }
-
-  /* ---------- The word page ---------- */
-
-  function buildPage() {
-    slotList = $('#slots');
-    nextBar = $('#next-bar');
-    nextBtn = $('#next-proof');
-    verdictLine = $('#verdict-line');
+  function build() {
+    const cols = [$('#col-a'), $('#col-b')];
+    cols.forEach(c => c.replaceChildren());
+    els = {};
+    const entries = E.page.entries;
+    const half = Math.ceil(entries.length / 2);
     entries.forEach((e, i) => {
-      if (bandStarts(i)) {
-        const head = el('li', 'band-head');
-        head.append(el('span', 'bh-name', e.band), el('span', 'bh-sub', bandSpan(e.band)));
-        bandHeads[e.band] = { el: head, first: i };
-        slotList.append(head);
-      }
-      const slot = el('li', 'slot');
-      slotEls.push(slot);
-      slotList.append(slot);
+      const art = el('article', 'entry');
+      art.id = 'e-' + e.id;
+
+      const main = el('button', 'entry-main');
+      main.type = 'button';
+      main.id = 'b-' + e.id;
+      const line = el('span', 'hw-line');
+      line.append(el('span', 'hw', e.word), el('span', 'pos', e.pos));
+      if (e.label) line.append(el('span', 'label', e.label));
+      const mark = el('span', 'call');
+      line.append(mark);
+      main.append(line, el('span', 'def', e.def));
+      main.addEventListener('click', () => toggle(e.id));
+
+      const actions = el('div', 'actions');
+      actions.hidden = true;
+      const yes = el('button', 'act act-genuine', 'Genuine');
+      const no = el('button', 'act act-fake', 'Fake');
+      yes.type = no.type = 'button';
+      yes.addEventListener('click', () => call(e.id, 'genuine'));
+      no.addEventListener('click', () => call(e.id, 'fake'));
+      actions.append(yes, no);
+
+      const reveal = el('div', 'reveal');
+      reveal.hidden = true;
+      const proof = el('span', 'proofmark');
+      proof.setAttribute('aria-hidden', 'true');
+      const sus = el('button', 'suspect');
+      sus.type = 'button';
+      sus.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14.6 14.6 20.5 20.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+      sus.addEventListener('click', () => toggleSuspect(e.id));
+
+      art.append(proof, sus, main, actions, reveal);
+      cols[i < half ? 0 : 1].append(art);
+      els[e.id] = { art, main, actions, reveal, mark, proof, yes, sus };
     });
+
+    $('#head-first').textContent = entries[0].word;
+    $('#head-last').textContent = entries[entries.length - 1].word;
+    $('#head-mid').textContent = `${E.page.letters} · ${E.page.number}`;
+    $('#issue').textContent = `Vol. I · No. ${E.page.number}`;
+    $('#ear-count').textContent = `${entries.length} entries, ${E.page.fakes} of them forged`;
+    const narrow = window.matchMedia('(max-width: 719px)').matches;
+    $('#dateline').textContent = new Date().toLocaleDateString(undefined, narrow ?
+      { weekday: 'short', month: 'short', day: 'numeric' } :
+      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    $('#howto-fakes').textContent = E.page.fakes;
+    $('#howto-entries').textContent = entries.length;
+    $('#start-word').textContent = E.ENTRY[E.page.start].word;
+    document.querySelectorAll('.slots').forEach(box =>
+      box.replaceChildren(...Array.from({ length: E.page.fakes }, () => el('span', 'slot'))));
   }
 
-  function slotKind(i) {
-    if (i < state.picks.length) return mode() === 'reveal' && i === state.seen ? 'reveal' : 'set';
-    if (mode() === 'pick' && i === state.picks.length) return 'frontier';
-    return over() ? 'unreached' : 'unset';
-  }
-
-  function fillSlot(i, kind, { just = false, typeset = false, arrive = false } = {}) {
-    const slot = slotEls[i];
-    const e = entries[i];
-    slot.className = 'slot ' + kind;
-    slot.replaceChildren();
-    if (kind === 'unset') {
-      slot.append(el('span', 'slot-n', `Entry ${i + 1}`), el('span', 'slot-note', 'To be set'));
+  function fillReveal(e) {
+    const box = els[e.id].reveal;
+    box.replaceChildren();
+    if (e.fake) {
+      const p = el('p', 'anatomy');
+      p.append(el('span', 'tag', 'Mountweazel'), document.createTextNode(e.anatomy));
+      box.append(p);
       return;
     }
-    if (kind === 'frontier' || kind === 'reveal') {
-      const head = el('h3', 'slot-head', kind === 'frontier' ? 'Which goes to press?' : `Entry ${i + 1}, revealed`);
-      head.append(el('span', 'sh-sub', kind === 'frontier' ? `Entry ${i + 1} of ${entries.length}` : e.band));
-      if (kind === 'frontier') head.id = 'prompt';
-      const pair = el('div', 'pair' + (arrive && !reduceMotion ? ' arrive' : ''));
-      pair.id = 'pair';
-      const revealed = kind === 'reveal';
-      pair.append(card(i, 'left', revealed, just), card(i, 'right', revealed, just));
-      slot.append(head, pair);
+    // The note comes first: it's what the puzzle needs. On a phone the history waits behind a button.
+    const n = el('p', 'note');
+    const tag = el('span', 'note-tag', 'Note');
+    n.append(tag, document.createTextNode(E.page.notes[e.id].text));
+    const more = el('div', 'history-block');
+    more.append(el('p', 'history', e.history));
+    if (e.quote) {
+      const q = el('blockquote', 'quote');
+      q.append(el('span', 'q-text', `“${e.quote.text}”`), el('cite', null, e.quote.cite));
+      more.append(q);
+    }
+    const toggleHistory = el('button', 'history-toggle', 'History');
+    toggleHistory.type = 'button';
+    toggleHistory.addEventListener('click', () => { els[e.id].showHistory = !els[e.id].showHistory; render(); });
+    box.append(n, toggleHistory, more);
+    Object.assign(els[e.id], { note: n, noteTag: tag, toggleHistory });
+  }
+
+  function render() {
+    if (hint && hint.sig !== signature()) hint = null;
+    const byCall = Object.fromEntries(state.calls.map(c => [c.id, c]));
+    for (const e of E.page.entries) {
+      const x = els[e.id];
+      const status = state.known[e.id];
+      const isOpen = openId === e.id && !status;
+      const hinted = hint && hint.stage === 2 && hint.target === e.id && !status;
+      const suspected = !status && Boolean(state.suspects[e.id]);
+      x.art.className = 'entry' + (status ? ' ' + status : '') + (e.id === E.page.start ? ' start' : '') +
+        (isOpen ? ' open' : '') + (hinted ? ' hinted' : '') + (suspected ? ' suspected' : '') +
+        (status && x.showHistory ? ' show-history' : '');
+      if (x.toggleHistory) {
+        x.toggleHistory.textContent = x.showHistory ? 'Hide history' : 'History';
+        x.toggleHistory.setAttribute('aria-expanded', String(Boolean(x.showHistory)));
+      }
+      x.sus.hidden = Boolean(status);
+      x.sus.setAttribute('aria-pressed', String(suspected));
+      x.sus.setAttribute('aria-label', `${suspected ? 'Unmark' : 'Mark'} ${e.word} as a suspect`);
+      x.sus.title = suspected ? 'Suspect (tap to unmark)' : 'Mark as a suspect';
+      x.main.setAttribute('aria-expanded', String(isOpen));
+      x.main.setAttribute('aria-disabled', String(Boolean(status)));
+      x.actions.hidden = !isOpen;
+      x.proof.textContent = status === 'genuine' ? 'stet' : status === 'fake' ? 'dele' : '';
+      const c = byCall[e.id];
+      x.mark.className = 'call' + (c ? ' ' + c.mark : '');
+      x.mark.textContent = c ? MARK[c.mark].glyph : '';
+      x.mark.title = c ? MARK[c.mark].name : '';
+      if (c) x.mark.setAttribute('aria-label', MARK[c.mark].name); else x.mark.removeAttribute('aria-label');
+      if (status && x.reveal.hidden) { fillReveal(e); x.reveal.hidden = false; }
+      if (!status && !x.reveal.hidden) { x.reveal.hidden = true; x.reveal.replaceChildren(); }
+    }
+
+    // Notes, numbered in the order they were revealed.
+    const order = revealOrder();
+    const hintedNotes = new Set(hint ? hint.notes : []);
+    $('#notes').replaceChildren(...order.map((id, i) => {
+      const li = el('li', [i === order.length - 1 && order.length > 1 ? 'fresh' : '', hintedNotes.has(i + 1) ? 'hinted' : ''].join(' ').trim() || null);
+      const a = el('a', 'src', E.ENTRY[id].word);
+      a.href = '#e-' + id;
+      li.append(a, document.createTextNode(' ' + E.page.notes[id].text));
+      return li;
+    }));
+    $('#note-count').textContent = order.length;
+    $('#dock-note-count').textContent = order.length;
+    // The same numbers on the notes inside the entries, so a hint works without the list.
+    order.forEach((id, i) => {
+      const x = els[id];
+      if (!x.noteTag) return;
+      x.noteTag.textContent = `Note ${i + 1}`;
+      x.note.classList.toggle('hinted', hintedNotes.has(i + 1));
+    });
+
+    // Progress.
+    const struck = Object.values(state.known).filter(s => s === 'fake').length;
+    document.querySelectorAll('.slots').forEach(box =>
+      [...box.children].forEach((s, i) => s.classList.toggle('on', i < struck)));
+    $('#struck').textContent = `${struck} of ${E.page.fakes} struck`;
+    $('#dock-struck').textContent = `${struck} of ${E.page.fakes} struck`;
+    const n = counts();
+    $('#calls').replaceChildren(...state.calls.map(c => {
+      const g = el('span', 'call ' + c.mark, MARK[c.mark].glyph);
+      g.title = `${E.ENTRY[c.id].word}: ${MARK[c.mark].name}`;
+      return g;
+    }));
+    $('#calls-empty').hidden = state.calls.length > 0;
+    const nSus = Object.keys(state.suspects).filter(id => !state.known[id]).length;
+    $('#tally').textContent = `${plural(n.hunch, 'hunch', 'hunches')} · ${plural(n.mistake, 'mistake', 'mistakes')} · ${plural(state.hints, 'hint', 'hints')} · ${plural(nSus, 'suspect', 'suspects')}`;
+    $('#hardcore').checked = Boolean(state.hardcore);
+    document.querySelectorAll('.page-tab').forEach((b, i) => b.setAttribute('aria-pressed', String(i === pageIndex)));
+
+    const finished = done();
+    $('#play-panel').hidden = finished;
+    $('#press').hidden = !finished;
+    $('#dock').hidden = finished;
+    if (finished) {
+      $('#verdict').textContent = n.hunch === 0 && n.mistake === 0 ? 'Clean proof.' : 'Ready for press.';
+      const secs = state.started && state.finished ? Math.max(0, Math.round((state.finished - state.started) / 1000)) : null;
+      $('#press-stats').textContent = `${n.proven} proven · ${plural(n.hunch, 'hunch', 'hunches')} · ${plural(n.mistake, 'mistake', 'mistakes')} · ${plural(state.hints, 'hint', 'hints')}` +
+        (secs != null ? ` · ${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}` : '');
+      $('#share-text').value = shareText();
+    }
+  }
+
+  function startClock() {
+    if (!state.started) state.started = Date.now();
+  }
+
+  function toggle(id) {
+    if (state.known[id]) return;
+    startClock();
+    openId = openId === id ? null : id;
+    render();
+    if (openId) els[id].yes.focus({ preventScroll: true });
+  }
+
+  function call(id, verdict) {
+    if (state.known[id]) return;
+    startClock();
+    const proof = E.settled(state.known, E.visibleNotes(state.known))[id];
+    if (state.hardcore && !proof) {
+      toast('Not proven yet. Hardcore only accepts calls your notes prove.');
       return;
     }
-    // Set (or, once the page is pulled, never set): the real entry in type, the forgery struck out.
-    const result = kind === 'unreached' ? 'unreached' : (rightAt(i) ? 'right' : 'wrong');
-    slot.classList.add(result);
-    if (typeset && !reduceMotion) slot.classList.add('typeset');
-    const mark = el('span', 'slot-mark', { right: '✓', wrong: '✗', unreached: '·' }[result]);
-    mark.setAttribute('aria-hidden', 'true');
-    const body = el('div', 'set-entries');
-    const real = el('p', 'set-entry real');
-    real.append(el('span', 'sr-only', { right: 'Right: ', wrong: 'Erratum: ', unreached: 'Not set: ' }[result]),
-      el('b', 'hw', e.real.word), ' ', el('i', 'pos', e.real.pos), ' ', el('span', 'def', e.real.def), el('span', 'proof real', 'real'));
-    const fake = el('p', 'set-entry forged');
-    fake.append(el('b', 'hw', e.fake.word), ' ', el('i', 'pos', e.fake.pos), ' ', el('span', 'def', e.fake.def), el('span', 'proof forged', 'forged'));
-    body.append(real, fake);
-    if (result === 'wrong') body.append(el('p', 'erratum', `Erratum: ${upper(e.fake.word)} went to press in error.`));
-    if (result === 'unreached') body.append(el('p', 'unset-note', 'Not set: the page was pulled.'));
-    const more = el('details', 'more');
-    more.append(el('summary', null, 'History'), revealBody(e.real, true), revealBody(e.fake, false));
-    body.append(more);
-    slot.append(mark, body);
-  }
-
-  // Redraws only the slots whose state changed, so an open History stays open.
-  function renderPage(m, just, arrive) {
-    for (let i = 0; i < entries.length; i++) {
-      const kind = slotKind(i);
-      const key = `${kind}:${state.picks[i] || ''}`;
-      const slot = slotEls[i];
-      if (slot.dataset.key === key) continue;
-      const was = slot.dataset.key || '';
-      slot.dataset.key = key;
-      fillSlot(i, kind, { just: just && kind === 'reveal', typeset: arrive && kind === 'set' && was.startsWith('reveal'), arrive: arrive && kind === 'frontier' });
-    }
-    const reach = m === 'pick' ? state.picks.length : m === 'reveal' ? state.seen : state.picks.length - 1;
-    for (const { el: head, first } of Object.values(bandHeads)) head.classList.toggle('ahead', first > reach);
-    // The verdict and Next proof travel with the entry being revealed.
-    if (m === 'reveal') {
-      const slot = slotEls[state.seen];
-      if (nextBar.parentNode !== slot) slot.append(nextBar);
-      nextBar.hidden = false;
-    } else {
-      if (nextBar.previousElementSibling !== slotList) slotList.after(nextBar);
-      nextBar.hidden = true;
-    }
-    $('#set-count').textContent = `${Math.min(state.seen, entries.length)} of ${entries.length} set`;
-  }
-
-  /* ---------- Drawing ---------- */
-
-  function render(just = false, arrive = false) {
-    const m = mode();
-    const current = m === 'pick' ? state.picks.length : m === 'reveal' ? state.seen : null;
-    renderStatus(m, current);
-    renderPage(m, just, arrive);
-    if (m === 'reveal') renderVerdict(state.seen);
-    $('#press').hidden = m !== 'end';
-    if (m === 'end') renderEnd();
-  }
-
-  function renderStatus(m, current) {
-    // The band half drops out on phones, where every band has its own heading on the page.
-    const [main, extra] = m === 'end'
-      ? (complete() ? ['Page complete', ` · ${errataText(errata())}`] : ['Page pulled', ` · at entry ${state.picks.length}`])
-      : [`Entry ${current + 1} of ${entries.length}`, ` · ${entries[current].band}`];
-    $('#where').replaceChildren(el('span', 'w-main', main), el('span', 'w-extra', extra));
-    const n = errata();
-    document.querySelectorAll('#errata .erratum-box').forEach((b, k) => b.classList.toggle('struck', k < n));
-    $('#errata').setAttribute('aria-label', `${n} of ${ERRATA} errata`);
-  }
-
-  // A band's heading lights up on the word page as you reach it.
-  function announceBand() {
-    if (mode() !== 'pick' || reduceMotion) return;
-    const i = state.picks.length;
-    if (!bandStarts(i)) return;
-    const head = bandHeads[entries[i].band].el;
-    head.classList.remove('arrived');
-    void head.offsetWidth;
-    head.classList.add('arrived');
-  }
-
-  function renderVerdict(i) {
-    const e = entries[i];
-    const right = rightAt(i);
-    const n = errata();
-    verdictLine.className = 'verdict-line ' + (right ? 'right' : 'wrong');
-    if (right) verdictLine.textContent = complete()
-      ? `Right: ${upper(e.real.word)} is real. Your page is ready for press.`
-      : `Right: ${upper(e.real.word)} is real, and goes to press.`;
-    else if (pulled()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, and your page is pulled.`;
-    else if (complete()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, but your page is ready for press.`;
-    else verdictLine.textContent = `${upper(e.fake.word)} was the forgery, and it went to press: erratum ${n} of ${ERRATA}.`;
-    nextBtn.textContent = over() ? 'See the page' : 'Next proof';
-  }
-
-  function renderEnd() {
-    const n = errata();
-    const done = complete();
-    const stamp = $('#press-stamp');
-    stamp.textContent = done ? 'Passed for press' : 'Pulled';
-    stamp.className = 'press-stamp ' + (done ? 'pass' : 'pulled');
-    $('#verdict').textContent = done ? (n === 0 ? 'A Clean Page' : 'Your Page Goes to Press') : `Your Page Is Pulled at Entry ${state.picks.length}`;
-    $('#press-stats').textContent = done
-      ? `You set all ${entries.length} entries, with ${errataText(n)}.`
-      : `You set ${state.picks.length > ERRATA ? `${state.picks.length - ERRATA} of ${entries.length} entries` : 'no entries'} clean before the third erratum, at entry ${state.picks.length}.`;
-    $('#share-text').value = shareText();
-  }
-
-  /* ---------- Playing ---------- */
-
-  function pick(side) {
-    if (mode() !== 'pick') return;
-    state.picks.push(side);
+    const mark = E.judge(state.known, id, verdict);
+    state.known[id] = E.truth(id);
+    state.calls.push({ id, mark });
+    delete state.suspects[id];
     markRulesSeen();
+    openId = null;
+    if (done()) state.finished = Date.now();
     save();
-    render(true);
-    $('#live').textContent = verdictLine.textContent;
-    nextBtn.focus({ preventScroll: true });
+    render();
+    els[id].art.classList.add('just');
+    setTimeout(() => els[id].art.classList.remove('just'), 700);
+    els[id].main.focus({ preventScroll: true });
+    toast(message(id, verdict, mark));
+    if (done()) $('#press').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest' });
   }
 
-  function nextProof() {
-    if (mode() !== 'reveal') return;
-    state.seen = state.picks.length;
+  function toggleSuspect(id) {
+    if (state.known[id]) return;
+    startClock();
+    if (state.suspects[id]) delete state.suspects[id];
+    else state.suspects[id] = true;
     save();
-    render(false, true);
-    const behavior = reduceMotion ? 'auto' : 'smooth';
-    if (mode() === 'pick') {
-      // Show the entry just set, with the next entry's proofs beneath it, below the running head.
-      const set = slotEls[state.picks.length - 1];
-      const slot = slotEls[state.picks.length];
-      const top = set.getBoundingClientRect().top;
-      if (top < $('#runhead').offsetHeight || slot.getBoundingClientRect().bottom > innerHeight) set.scrollIntoView({ behavior, block: 'start' });
-      announceBand();
-      slot.querySelector('.card').focus({ preventScroll: true });
-    } else {
-      $('#press').scrollIntoView({ behavior, block: 'start' });
-      $('#verdict').focus({ preventScroll: true });
-    }
+    render();
   }
 
-  function reset() {
-    if (!resetArmed) {
-      resetArmed = setTimeout(() => { resetArmed = null; }, 4000);
-      toast('Press Start over again to clear the page.');
+  function message(id, verdict, mark) {
+    const w = upper(id);
+    if (mark === 'proven') return verdict === 'genuine' ? `Stet. Your notes proved ${w} genuine.` : `Struck. Your notes proved ${w} a fake.`;
+    if (mark === 'hunch') return `Right about ${w}, but it was a hunch: your notes didn’t prove it yet.`;
+    return E.truth(id) === 'genuine' ? `Wrong: ${w} is genuine. Its note is yours anyway.` : `Wrong: ${w} is a fake.`;
+  }
+
+  // First press: which notes to read together. Second press: the entry they settle.
+  function giveHint() {
+    if (done()) return;
+    startClock();
+    if (!hint) {
+      const notes = revealOrder().map(id => E.page.notes[id]);
+      const step = E.minStep(state.known, notes, 3) || { sets: [notes.map((_, i) => i)] };
+      const sel = step.sets[0];
+      const settles = E.settled(state.known, sel.map(i => notes[i]));
+      const target = E.page.entries.find(e => settles[e.id]);
+      if (!target) { toast('Nothing is provable from your notes yet.'); return; }
+      hint = { sig: signature(), stage: 1, notes: sel.map(i => i + 1), target: target.id };
+      state.hints++;
+      save();
+      render();
+      toast(sel.length === 0 ? 'The number of fakes left settles an entry by itself.' :
+        sel.length === 1 ? `Note ${sel[0] + 1} settles an entry by itself.` :
+        `Read notes ${listNumbers(hint.notes)} together.`);
       return;
     }
-    clearTimeout(resetArmed);
-    resetArmed = null;
-    state = fresh();
-    save();
-    render(false, true);
-    $('#page').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-    announceBand();
-    toast('A blank page.');
+    if (hint.stage === 1) {
+      hint.stage = 2;
+      state.hints++;
+      save();
+      render();
+      els[hint.target].art.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+    }
+    const which = hint.notes.length === 0 ? 'The number of fakes left settles' :
+      hint.notes.length === 1 ? `Note ${hint.notes[0]} settles` : `Notes ${listNumbers(hint.notes)} settle`;
+    toast(`${which} ${upper(hint.target)}.`);
   }
 
-  function onKey(ev) {
-    if (ev.defaultPrevented || ev.metaKey || ev.ctrlKey || ev.altKey) return;
-    if (ev.target.closest && ev.target.closest('textarea, input, select, summary, [contenteditable]')) return;
-    if (mode() !== 'pick') return;
-    if (ev.key === 'ArrowLeft' || ev.key === '1') { ev.preventDefault(); pick('left'); }
-    else if (ev.key === 'ArrowRight' || ev.key === '2') { ev.preventDefault(); pick('right'); }
+  function reset(ev) {
+    const btn = ev.currentTarget;
+    if (resetArmed !== btn) {
+      resetArmed = btn;
+      btn.dataset.label = btn.textContent;
+      btn.textContent = 'Tap again to start over';
+      setTimeout(() => {
+        if (resetArmed === btn) { resetArmed = null; btn.textContent = btn.dataset.label; }
+      }, 3000);
+      return;
+    }
+    resetArmed = null;
+    btn.textContent = btn.dataset.label;
+    const hardcore = state.hardcore;
+    state = fresh();
+    state.hardcore = hardcore;
+    openId = hint = null;
+    for (const id in els) { els[id].reveal.hidden = true; els[id].reveal.replaceChildren(); els[id].showHistory = false; }
+    save();
+    render();
+    toast(`Fresh proof. ${upper(E.page.start)} is verified for you to start.`);
   }
 
   function shareText() {
-    const grid = entries.map((_, i) => i < state.picks.length ? (rightAt(i) ? '🟩' : '🟥') : '⬜').join('');
-    const n = errata();
-    const line = complete() ? (n === 0 ? 'A clean page' : `To press with ${errataText(n)}`) : `Pulled at entry ${state.picks.length}`;
-    return `Mountweazel · No. ${page.number}\n${grid}\n${line}`;
+    const n = counts();
+    const line = n.hunch === 0 && n.mistake === 0 ? 'Clean proof' :
+      `${n.proven} proven · ${plural(n.hunch, 'hunch', 'hunches')} · ${plural(n.mistake, 'mistake', 'mistakes')}`;
+    const hints = state.hints ? ` · ${plural(state.hints, 'hint', 'hints')}` : '';
+    return `Mountweazel · Page ${E.page.number}\n${state.calls.map(c => SHARE[c.mark]).join('')}\n${line}${hints}`;
   }
 
   function copyShare() {
@@ -348,43 +464,48 @@ if (typeof document !== 'undefined') {
     toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
   }
 
-  // Slots scroll into view below the running head, whatever its height.
-  function measureRunhead() {
-    document.documentElement.style.setProperty('--runhead-h', `${$('#runhead').offsetHeight}px`);
+  function showPage(i, savedState) {
+    if (state && E) save();
+    pageIndex = Math.max(0, Math.min(PAGES.length - 1, i));
+    E = makeEngine(PAGES[pageIndex]);
+    openId = null;
+    hint = null;
+    let saved = savedState;
+    if (!saved) { try { saved = JSON.parse(localStorage.getItem(saveKey())); } catch (_) { saved = null; } }
+    state = valid(saved) ? saved : fresh();
+    if (!state.suspects) state.suspects = {};
+    // The rules open for a first visit only; once you've made a call they stay folded.
+    const rules = document.querySelector('.rules');
+    if (rules) rules.open = !rulesSeen() && state.calls.length === 0;
+    try { localStorage.setItem(CURRENT_KEY, String(pageIndex)); } catch (_) { /* fine */ }
+    build();
+    render();
+  }
+
+  function rulesSeen() {
+    try { return localStorage.getItem(RULES_KEY) === '1'; } catch (_) { return false; }
+  }
+
+  function markRulesSeen() {
+    try { localStorage.setItem(RULES_KEY, '1'); } catch (_) { /* fine */ }
   }
 
   function boot(data) {
-    buildPage();
-    nextBtn.addEventListener('click', nextProof);
-    $('#copy').addEventListener('click', copyShare);
+    buildSwitcher();
+    $('#hint').addEventListener('click', giveHint);
+    $('#dock-hint').addEventListener('click', giveHint);
+    $('#dock-notes').addEventListener('click', () =>
+      $('#notes-panel').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' }));
     $('#reset').addEventListener('click', reset);
-    document.addEventListener('keydown', onKey);
+    $('#reset-2').addEventListener('click', reset);
+    $('#hardcore').addEventListener('change', ev => { state.hardcore = ev.target.checked; save(); });
+    $('#copy').addEventListener('click', copyShare);
 
-    $('#issue').textContent = `Vol. I · No. ${page.number}`;
-    const narrow = window.matchMedia('(max-width: 719px)').matches;
-    // Dated as a scribe would date it: the day in small numerals, the year in capitals. Screen readers
-    // get the date in plain words instead.
-    const now = new Date();
-    const name = opts => now.toLocaleDateString('en-GB', opts);
-    const day = toRoman(now.getDate()).toLowerCase(), year = toRoman(now.getFullYear());
-    const scribed = el('span', null, narrow ? `${name({ weekday: 'short' })} ${day} ${name({ month: 'short' })} ${year}` :
-      `${name({ weekday: 'long' })}, the ${day} day of ${name({ month: 'long' })}, ${year}`);
-    scribed.setAttribute('aria-hidden', 'true');
-    $('#dateline').replaceChildren(el('span', 'sr-only', name({ weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })), scribed);
-    $('#errata').append(...Array.from({ length: ERRATA }, () => el('span', 'erratum-box')));
-    measureRunhead();
-    window.addEventListener('resize', measureRunhead);
-
-    let saved = data && data.state;
-    if (!saved) { try { saved = JSON.parse(localStorage.getItem(saveKey)); } catch (_) { saved = null; } }
-    state = valid(saved) ? saved : fresh();
-    // The rules open for a first visit on a wide screen only; on a phone the deck says enough,
-    // and the first entry's proofs stay on the first screen.
-    const rules = $('.rules');
-    if (rules) rules.open = !narrow && !rulesSeen() && state.picks.length === 0;
-    render();
-    announceBand();
-    try { window.claude?.hot?.snapshot?.(() => ({ state })); } catch (_) { /* not in a viewer */ }
+    let start = data && Number.isInteger(data.page) ? data.page : null;
+    if (start == null) { try { const v = localStorage.getItem(CURRENT_KEY); if (v != null) start = Number(v); } catch (_) { /* fine */ } }
+    if (start == null || Number.isNaN(start)) start = PAGES.length - 1;
+    showPage(start, data && data.page === start ? data.state : null);
+    try { window.claude?.hot?.snapshot?.(() => ({ page: pageIndex, state })); } catch (_) { /* not in a viewer */ }
   }
 
   if (window.claude?.hot?.ready) window.claude.hot.ready(boot);

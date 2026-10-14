@@ -1,69 +1,54 @@
-// Checks every page in pages.js. Run with `npm run check`; the deploy runs it too.
+// Checks every page with the same engine the page uses.
 'use strict';
 const PAGES = require('./pages.js');
+const { makeEngine } = require('./game.js');
 
-const BANDS = ['Familiar', 'Uncommon', 'Rare', 'Obscure', 'All but lost'];
 let failed = false;
 const check = (ok, msg) => { console.log((ok ? 'PASS ' : 'FAIL ') + msg); if (!ok) failed = true; };
-const filled = s => typeof s === 'string' && s.trim().length > 0;
-const senses = def => def.split(';').length;
-const list = xs => xs.length ? ` (${xs.join(', ')})` : '';
+const WORDY = new Set(['meaning', 'spelling']);
 
 for (const page of PAGES) {
-  const entries = page.entries;
-  console.log(`\nPage ${page.number}: ${entries.length} entries`);
-  const at = (e, i) => `${i + 1} ${e.real.word}/${e.fake.word}`;
-  const where = test => entries.map((e, i) => test(e, i) ? at(e, i) : null).filter(Boolean);
+  console.log(`\nPage ${page.number} (${page.letters}, ${page.level})`);
+  const E = makeEngine(page);
+  const fakes = new Set(page.entries.filter(e => e.fake).map(e => e.id));
+  const notes = Object.values(page.notes);
+  const genuine = page.entries.filter(e => !e.fake).map(e => e.id);
 
-  check(entries.length === 12, 'twelve entries on the page');
-  check(where(e => !['left', 'right'].includes(e.realOn)).length === 0, 'every entry says which proof shows the real word');
-  check(where(e => !(filled(e.real.word) && filled(e.real.pos) && filled(e.real.def) && filled(e.real.history))).length === 0,
-    'every real word has a part of speech, a definition and a history');
-  check(where(e => e.real.quote && !(filled(e.real.quote.text) && filled(e.real.quote.cite))).length === 0,
-    'every quotation has its source');
-  check(where(e => !(filled(e.fake.word) && filled(e.fake.pos) && filled(e.fake.def) && filled(e.fake.anatomy))).length === 0,
-    'every fake has a part of speech, a definition and an account of how it was made');
-  check(where(e => 'history' in e.fake || 'quote' in e.fake || 'anatomy' in e.real).length === 0,
-    'no fake has a history or a quotation, and no real word has an anatomy');
+  check(fakes.size === page.fakes, `${fakes.size} fakes on the page, ${page.fakes} announced`);
+  check(page.entries.every((e, i) => i === 0 || page.entries[i - 1].word < e.word), 'entries are in alphabetical order');
+  check(Boolean(page.start) && !E.ENTRY[page.start].fake, `the starting entry (${page.start}) is genuine`);
+  check(genuine.every(id => page.notes[id]) && Object.keys(page.notes).every(id => !E.ENTRY[id].fake),
+    'every genuine entry has a note, and no fake has one');
+  const bad = Object.entries(page.notes).filter(([, n]) => !E.holds(n, fakes)).map(([id]) => id);
+  check(bad.length === 0, `every note is true${bad.length ? ' (false: ' + bad.join(', ') + ')' : ''}`);
+  const named = Object.values(page.notes).flatMap(n => n.type === 'compare' ? [...n.a, ...n.b] : n.set);
+  check(named.every(id => E.ENTRY[id]), 'notes name only entries on the page');
 
-  const words = entries.flatMap(e => [e.real.word, e.fake.word]).map(w => w.toLowerCase());
-  const twice = words.filter((w, i) => words.indexOf(w) !== i);
-  check(twice.length === 0, `no word appears twice${list(twice)}`);
+  const sols = E.solutions({ [page.start]: 'genuine' }, notes);
+  check(sols.length === 1, `with the starting entry given, exactly one answer fits all the notes (found ${sols.length})`);
 
-  // Side by side, the two proofs should differ only in whether the word is real.
-  const pos = where(e => e.real.pos !== e.fake.pos);
-  check(pos.length === 0, `both proofs of an entry have the same part of speech${list(pos)}`);
-  const shape = where(e => senses(e.real.def) !== senses(e.fake.def));
-  check(shape.length === 0, `both definitions of an entry have the same number of senses${list(shape)}`);
-  const length = where(e => {
-    const [a, b] = [e.real.def.length, e.fake.def.length].sort((x, y) => x - y);
-    return b > 2 * a;
-  });
-  check(length.length === 0, `neither definition of an entry is more than twice as long as the other${list(length)}`);
-  const leans = where(e => [e.fake.def, e.fake.anatomy].some(t => t.toLowerCase().includes(e.real.word.toLowerCase())));
-  check(leans.length === 0, `no fake leans on the real word beside it${list(leans)}`);
-  const stale = where(e => /this page|neighbour/i.test(e.fake.anatomy));
-  check(stale.length === 0, `no fake's account mentions "this page" or a neighbour${list(stale)}`);
+  const run = E.profile();
+  check(!run.stalled, 'playing only provable calls from the starting entry finishes the page');
+  check(run.steps.every(s => !s.over), 'no step needs more than three notes at once');
+  const ks = run.steps.map(s => s.k);
+  console.log(`  difficulty profile (notes needed per step): ${ks.join(' ')}  [${ks.filter(k => k >= 2).length} of ${ks.length} steps need two or more]`);
+  console.log(`  entries settled per step: ${run.steps.map(s => s.ids.length).join(' ')}`);
 
-  const left = entries.filter(e => e.realOn === 'left').length;
-  check(Math.abs(left - (entries.length - left)) <= 1, `the real word is on each side about equally often (${left} left, ${entries.length - left} right)`);
-  let run = 1, longest = 1;
-  entries.forEach((e, i) => { if (i > 0) { run = e.realOn === entries[i - 1].realOn ? run + 1 : 1; longest = Math.max(longest, run); } });
-  check(longest <= 3, `the real word is never on the same side more than three entries running (longest run ${longest})`);
+  const known = { [page.start]: 'genuine' };
+  const naive = [];
+  for (const e of page.entries) {
+    if (known[e.id]) continue;
+    naive.push(E.judge(known, e.id, 'genuine'));
+    known[e.id] = E.truth(e.id);
+  }
+  check(naive.some(m => m !== 'proven'), `calling every entry genuine is not a clean proof (${naive.filter(m => m === 'proven').length} proven, ${naive.filter(m => m === 'hunch').length} hunches, ${naive.filter(m => m === 'mistake').length} mistakes)`);
 
-  // Rarity: the bands only go down the page, and common words (in SCOWL's lists) all come first.
-  const ranks = entries.map(e => BANDS.indexOf(e.band));
-  check(ranks.every(r => r >= 0), 'every entry is in a known band');
-  check(ranks.every((r, i) => i === 0 || r >= ranks[i - 1]), 'the bands never get commoner down the page');
-  check(ranks[0] === 0 && ranks[ranks.length - 1] === BANDS.length - 1, 'the page starts with Familiar words and ends with All but lost');
-  const common = entries.map(e => e.real.scowl != null);
-  const lastCommon = common.lastIndexOf(true);
-  const firstRare = common.indexOf(false);
-  check(firstRare === -1 || lastCommon < firstRare, 'every real word in SCOWL’s common lists comes before every real word in none of them');
-  check(entries.every(e => e.real.scowl === null || [35, 40, 50].includes(e.real.scowl)), 'scowl is 35, 40, 50 or null');
-
-  console.log(`  bands: ${entries.map(e => e.band).join(' · ')}`);
-  console.log(`  real words: ${entries.map(e => e.real.word + (e.real.scowl ? ` (${e.real.scowl})` : '')).join(', ')}`);
+  const blind = E.profile(n => !WORDY.has(n.kind));
+  check(blind.stalled, `without the notes about meanings and spellings, the solve stalls (after ${blind.steps.length} steps)`);
+  if (page.level !== 'easy') {
+    const wordStep = run.steps.some(s => s.k >= 2 && s.sets.every(set => set.some(n => WORDY.has(n.kind))));
+    check(wordStep, 'some step that needs two or more notes can only be done with a note about meanings or spellings');
+  }
 }
 
 process.exit(failed ? 1 : 0);
