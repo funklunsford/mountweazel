@@ -72,6 +72,24 @@
 body { background: var(--newsprint); color: var(--ink); font-family: var(--face-text); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
 .paper { max-width: 1200px; margin-inline: auto; padding-inline: 16px; padding-block: 16px 80px; }
 
+/* The advertisement across the top: a standard banner slot (728 × 90 on wide screens, 320 × 50 on
+   phones), labelled and ruled off above the masthead so it never reads as part of the paper. An ad
+   network's unit goes in #ad-top; until one does, a house notice keeps the space. */
+.ad-top { display: grid; justify-items: center; gap: 4px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.ad-label { font-size: .6rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
+.ad-slot { display: grid; place-items: center; box-sizing: border-box; width: 100%; max-width: 728px; height: 90px; overflow: hidden; }
+.ad-house { display: grid; place-items: center; align-content: center; gap: 2px; box-sizing: border-box; width: 100%; height: 100%; margin: 0; border: 3px double var(--ink); text-align: center; }
+.ad-house-head { font-family: var(--face-name); font-size: 2.1rem; line-height: 1; }
+.ad-house-sub { font-size: .66rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
+/* Phones: the banner runs edge to edge, so a 320-wide unit fits even a 320px screen. */
+@media (max-width: 759px) {
+  .ad-top { gap: 3px; margin: -8px -16px 10px; padding: 0 0 8px; }
+  .ad-slot { max-width: 320px; height: 50px; }
+  .ad-house { border-width: 3px 0; }
+  .ad-house-head { font-size: 1.6rem; }
+  .ad-house-sub { display: none; }
+}
+
 /* Masthead: ears either side of the nameplate, then the folio line. */
 .masthead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 18px; }
 .nameplate { grid-column: 2; grid-row: 1; margin: 0; font-family: var(--face-name); font-weight: 400; font-size: clamp(2.5rem, 8.4vw, 5.3rem); line-height: 1.05; text-align: center; }
@@ -260,6 +278,13 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 </head>
 <body>
 <div class="paper">
+  <aside class="ad-top" aria-label="Advertisement">
+    <span class="ad-label" aria-hidden="true">Advertisement</span>
+    <div class="ad-slot" id="ad-top">
+      <!-- An ad network's banner unit replaces this house notice. -->
+      <p class="ad-house"><span class="ad-house-head">This Space to Let</span><span class="ad-house-sub">Advertise in the Mountweazel</span></p>
+    </div>
+  </aside>
   <header class="masthead">
     <div class="ear ear-left">
       <span class="ear-kicker">Today’s page</span>
