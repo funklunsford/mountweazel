@@ -158,7 +158,8 @@ body { color: var(--ink); font-family: var(--face-text); font-size: 18px; line-h
 .sh-sub { font-family: var(--face-sc); font-weight: 400; font-size: .86rem; letter-spacing: .04em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 .pair { display: grid; gap: 16px; }
-@container page (min-width: 520px) {
+/* Side by side only when even FLIBBERTIGIBBET fits on one line beside the stamp. */
+@container page (min-width: 600px) {
   .pair { grid-template-columns: 1fr 1fr; }
   .pair .card { min-height: 124px; }
 }
