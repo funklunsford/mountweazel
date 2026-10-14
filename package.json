@@ -2,7 +2,7 @@
   "name": "mountweazel",
   "version": "0.1.0",
   "private": true,
-  "description": "Climb Mount Weazel: on each of twelve ledges, pick the real old word over the forged one.",
+  "description": "A word puzzle in the newspaper: pick the real old word over the forged one, and set the word page one entry at a time.",
   "scripts": {
     "check": "node check.js",
     "share-card": "node share/render.js"

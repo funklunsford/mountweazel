@@ -1,7 +1,7 @@
 # Every push to main (a merged pull request) is checked and published to the site,
 # https://funklunsford.github.io/mountweazel/ (GitHub Pages on this repo, built by Actions).
 # Pull requests are checked but not published. Only the page itself is published:
-# index.html, climb.js, climbs.js and the images in share/ (link previews and icons), not the tools beside them.
+# index.html, game.js, pages.js and the images in share/ (link previews and icons), not the tools beside them.
 name: Check and deploy
 
 on:
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - name: Check every climb
+      - name: Check every page
         run: npm run check
 
   deploy:
@@ -47,7 +47,7 @@ jobs:
       - name: Collect the page
         run: |
           mkdir -p site/share
-          cp index.html climb.js climbs.js site/
+          cp index.html game.js pages.js site/
           cp share/*.png site/share/
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5

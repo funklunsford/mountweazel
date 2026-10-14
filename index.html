@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body { margin: 0; }</style>
 <title>Mountweazel</title>
-<meta name="description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta name="description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
 <link rel="canonical" href="https://funklunsford.github.io/mountweazel/">
 <meta name="theme-color" content="#ecebe5">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141413">
@@ -14,41 +14,40 @@
 <!-- Link previews: share/card.html (wide) and share/square.html (square), rendered by `npm run share-card`. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mountweazel">
-<meta property="og:title" content="The Mountweazel: climb a mountain of old words">
-<meta property="og:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta property="og:title" content="The Mountweazel: find the forgeries on the word page">
+<meta property="og:description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
 <meta property="og:url" content="https://funklunsford.github.io/mountweazel/">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
+<meta property="og:image:alt" content="The Mountweazel, a word puzzle: find the forgeries before the page goes to press. Every entry comes as two proofs, one real and one forged.">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/square.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
-<meta property="og:image:alt" content="A round summit badge, a snowy peak with a red flag, in a double-ruled frame above the words “The Mountweazel, a word puzzle”.">
+<meta property="og:image:alt" content="A blackletter M in a double-ruled frame, above the words “The Mountweazel, a word puzzle”.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Mountweazel: climb a mountain of old words">
-<meta name="twitter:description" content="A word game: climb Mount Weazel, twelve ledges high. On each ledge one old word is real and one is forged; pick the real one to climb on and set it on the word page. The words grow rarer and stranger toward the summit, and you carry three ropes.">
+<meta name="twitter:title" content="The Mountweazel: find the forgeries on the word page">
+<meta name="twitter:description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
 <meta name="twitter:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
-<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: climb a mountain of old words. On each ledge one word is real and one is forged; pick the real one to climb on.">
+<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: find the forgeries before the page goes to press. Every entry comes as two proofs, one real and one forged.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=swap">
 <style>
-/* A newspaper covering an expedition. The masthead, the lead and the word page are set like a
-   front page, with a running head for the climb: altitude, ledge and ropes. Each ledge you climb
-   sets one entry on the word page, so the page is built as you go. */
+/* A word puzzle inside a newspaper. The masthead and the lead are set like a front page; the game
+   is the word page, which you set one entry at a time from two proofs each. A running head keeps
+   your place and your errata in view. */
 :root {
   --newsprint: #ecebe5; --sheet: #f6f4ee;
   --ink: #161514; --ink-2: #57544d; --rule: #b8b4aa; --shadow: #161514;
   --pencil: #2645a8; --pencil-wash: #dde3f4;
   --dele: #ae2a1f; --dele-deep: #7d1b13; --dele-wash: #f2dbd6;
-  --rope: #c99558; --rope-dark: #8c5f2e;
   --face-name: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
   --face-text: "Newsreader", "Iowan Old Style", Georgia, serif;
   --face-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
-  --runhead-h: 46px;
+  --runhead-h: 44px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -56,7 +55,6 @@
     --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934; --shadow: #45423c;
     --pencil: #93acff; --pencil-wash: #1f2943;
     --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
-    --rope: #d3a46a; --rope-dark: #8a5d2c;
     color-scheme: dark;
   }
 }
@@ -65,7 +63,6 @@
   --ink: #ebe8e0; --ink-2: #a9a59b; --rule: #3b3934; --shadow: #45423c;
   --pencil: #93acff; --pencil-wash: #1f2943;
   --dele: #ff8577; --dele-deep: #b84a3f; --dele-wash: #3b201d;
-  --rope: #d3a46a; --rope-dark: #8a5d2c;
   color-scheme: dark;
 }
 
@@ -90,22 +87,18 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   .folio .price { display: none; }
 }
 
-/* The running head stays at the top of the screen: altitude, ledge and camp, and the rope bar. */
+/* The running head stays at the top of the screen: which entry you're on, and your errata. */
 .runhead { position: sticky; top: 0; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 6px 14px; min-height: var(--runhead-h); box-sizing: border-box; margin: 0 -16px; padding: 5px 16px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--newsprint); }
-.rh-left { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; min-width: 0; }
-.rh-alt { font-size: 1.3rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.rh-where { margin: 0; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
-.ropes { display: flex; align-items: center; gap: 4px; flex: none; }
-.ropes-label { margin-right: 2px; font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
-.rope-icon { width: 20px; height: 20px; flex: none; }
-.rope-icon .coil-under { fill: none; stroke: var(--ink); stroke-width: 4.2; stroke-linecap: round; }
-.rope-icon .coil-over { fill: none; stroke: var(--rope); stroke-width: 2.2; stroke-linecap: round; }
-.rope-seg { width: 24px; height: 11px; box-sizing: border-box; border: 2px solid var(--ink); border-radius: 2px; background: repeating-linear-gradient(135deg, var(--rope) 0 4px, var(--rope-dark) 4px 6px); }
-.rope-seg.cut { background: repeating-linear-gradient(135deg, var(--dele) 0 3px, transparent 3px 6px); }
+.rh-where { margin: 0; min-width: 0; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.w-main { font-size: 1.12rem; letter-spacing: 0; text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
+.errata { display: flex; align-items: center; gap: 5px; flex: none; }
+.errata-label { margin-right: 3px; font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.erratum-box { width: 17px; height: 17px; box-sizing: border-box; border: 2px solid var(--dele); border-radius: 2px; }
+.erratum-box.struck { background: repeating-linear-gradient(135deg, var(--dele) 0 3px, transparent 3px 6px); }
 
 .front { display: grid; gap: 22px; margin-top: 16px; }
 
-/* The lead story: what the game is, with the rules folded beneath. */
+/* The lead story: what the puzzle is, with the rules folded beneath. */
 .lead { padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
 .kicker { margin: 0; font-size: .7rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--dele); }
 .headline { margin: 4px 0 8px; font-size: clamp(1.7rem, 4.4vw, 3rem); font-weight: 800; line-height: 1.03; letter-spacing: -.01em; font-variation-settings: "opsz" 72; text-wrap: balance; }
@@ -121,27 +114,27 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
   .story p:first-child::first-letter { float: none; padding: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
 }
 
-/* The word page, built one ledge at a time. */
+/* The word page, set one entry at a time. */
 .page { container: page / inline-size; min-width: 0; }
 .section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin: 0; padding: 5px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); }
 .section-title { margin: 0; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 .heads { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .slots { margin: 0; padding: 0; list-style: none; }
-.camp-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-top: 12px; padding: 4px 2px 3px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-.camp-head:first-child { margin-top: 4px; }
-.ch-sub { font-weight: 600; letter-spacing: .1em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.camp-head.ahead { opacity: .45; }
-.camp-head.arrived { animation: arrived 1.8s ease-out; }
+/* Bands of rarity divide the page, from Familiar to All but lost. */
+.band-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin-top: 12px; padding: 4px 2px 3px; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.band-head:first-child { margin-top: 4px; }
+.bh-sub { font-weight: 600; letter-spacing: .1em; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.band-head.ahead { opacity: .45; }
+.band-head.arrived { animation: arrived 1.8s ease-out; }
 @keyframes arrived { from { background: var(--dele-wash); } to { background: transparent; } }
 
 .slot { scroll-margin-top: calc(var(--runhead-h) + 10px); border-bottom: 1px solid var(--rule); }
 .slot.unset { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 7px 2px; border-bottom-style: dotted; color: var(--ink-2); font-size: .8rem; opacity: .7; }
 .slot-n { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.slot-alt { font-variant-numeric: tabular-nums; }
 .slot-note { font-style: italic; }
 .slot.frontier, .slot.reveal { padding: 12px 0 18px; border-bottom: 0; }
 .slot-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; margin: 0 0 12px; font-size: 1.15rem; font-weight: 800; line-height: 1.2; }
-.sh-alt { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.sh-sub { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 .pair { display: grid; gap: 14px; }
 @container page (min-width: 520px) {
@@ -151,7 +144,7 @@ body { background: var(--newsprint); color: var(--ink); font-family: var(--face-
 .pair.arrive { animation: arrive .35s ease-out; }
 @keyframes arrive { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
-/* Proof cards: pasted-up clippings with a hard shadow, pressed when you pick one. */
+/* Proofs: pasted-up clippings with a hard shadow, pressed when you pick one. */
 .card { position: relative; display: flex; flex-direction: column; gap: 3px; box-sizing: border-box; width: 100%; margin: 0; padding: 11px 14px 14px; border: 2px solid var(--ink); border-radius: 3px; background: var(--sheet); color: var(--ink); box-shadow: 4px 4px 0 var(--shadow); font: inherit; text-align: left; }
 button.card { cursor: pointer; transition: transform .1s, box-shadow .1s, background-color .15s; }
 button.card:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--shadow); background: var(--pencil-wash); }
@@ -186,7 +179,7 @@ button.card .hw-line { padding-right: 0; }
 .anatomy { padding: 7px 10px; background: var(--dele-wash); }
 .anatomy .tag { margin-right: 7px; font-family: var(--face-hand); font-size: 1.3em; line-height: 1; color: var(--dele); }
 
-/* After a pick, the verdict and Climb on float at the bottom of the screen while you read. */
+/* After a pick, the verdict and Next proof float at the bottom of the screen while you read. */
 .next-bar { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; margin-top: 18px; padding: 8px 8px 8px 12px; border: 2px solid var(--ink); border-radius: 3px; background: var(--sheet); box-shadow: 4px 4px 0 var(--shadow); }
 .verdict-line { flex: 1 1 10rem; margin: 0; font-weight: 600; line-height: 1.3; }
 .verdict-line.right { color: var(--pencil); }
@@ -197,7 +190,7 @@ button.card .hw-line { padding-right: 0; }
 .btn-plain { background: transparent; color: var(--ink); box-shadow: 3px 3px 0 var(--rule); }
 .btn-plain:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--rule); }
 
-/* A settled ledge: the real entry set in type, the forgery struck out beneath it. */
+/* A set entry: the real word in type, the forgery struck out beneath it. */
 .slot.set, .slot.unreached { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 10px; padding: 9px 2px 10px; }
 .slot-mark { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 2px; box-sizing: border-box; border: 2px solid var(--ink); border-radius: 50%; font-size: .72rem; font-weight: 800; line-height: 1; color: #fff; }
 .slot.right .slot-mark { background: var(--pencil); }
@@ -209,26 +202,27 @@ button.card .hw-line { padding-right: 0; }
 .set-entry .hw { font-size: .96rem; }
 .set-entry .def { display: inline; font-size: 1rem; }
 .set-entry.forged .hw, .set-entry.forged .def { color: var(--ink-2); text-decoration: line-through; text-decoration-color: var(--dele); text-decoration-thickness: 2px; }
-.set-alt { margin-left: 6px; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .proof { margin-left: 6px; font-family: var(--face-hand); font-size: 1.2em; line-height: 1; white-space: nowrap; }
 .proof.real { color: var(--pencil); }
 .proof.forged { color: var(--dele); }
 .erratum { margin: 1px 0 0; font-size: .84rem; font-style: italic; color: var(--dele); }
+.unset-note { margin: 1px 0 0; font-size: .84rem; font-style: italic; color: var(--ink-2); }
 .more { margin-top: 2px; }
 .more > summary { width: fit-content; padding: 2px 0; font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; }
 .more > summary::-webkit-details-marker { display: none; }
 .more .reveal { margin-top: 4px; }
-/* A ledge just set comes off the press: each line inked from the top down. */
+/* An entry just set comes off the press: each line inked from the top down. */
 .slot.typeset .set-entry, .slot.typeset .erratum { animation: typeset .55s ease-out both; }
 .slot.typeset .set-entry.forged { animation-delay: .25s; }
 .slot.typeset .erratum { animation-delay: .45s; }
 @keyframes typeset { from { clip-path: inset(0 0 100% 0); opacity: .3; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
 
-/* The end of a climb: the stop-press box, with a badge for the camp you reached. */
+/* The end: the stop-press box, stamped passed for press or pulled. */
 .press { display: grid; justify-items: center; gap: 8px; margin-top: 22px; padding: 16px 16px 18px; border: 2px solid var(--ink); background: var(--sheet); box-shadow: 6px 6px 0 var(--shadow); text-align: center; }
 .press .kicker { color: var(--dele); }
-.badge { width: 112px; height: 112px; }
-.badge-name { margin: -4px 0 0; font-size: .66rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
+.press-stamp { margin: 6px 0 4px; padding: 4px 16px 6px; border: 4px double currentColor; font-size: 1.35rem; font-weight: 800; line-height: 1.1; letter-spacing: .14em; text-transform: uppercase; transform: rotate(-4deg); }
+.press-stamp.pass { color: var(--pencil); }
+.press-stamp.pulled { color: var(--dele); }
 .press h2 { margin: 0; font-size: 1.9rem; font-weight: 800; line-height: 1.05; text-wrap: balance; outline: none; }
 .muted { margin: 0; color: var(--ink-2); font-size: .95rem; }
 #share-text { box-sizing: border-box; width: 100%; max-width: 26rem; padding: 8px 10px; border: 1px solid var(--rule); background: var(--newsprint); color: var(--ink); font: inherit; font-size: .95rem; text-align: center; resize: none; }
@@ -242,30 +236,25 @@ button.card .hw-line { padding-right: 0; }
   body { font-size: 16px; }
   .story { text-align: left; hyphens: manual; }
 }
-/* Phones: a one-line running head, so the first ledge's proofs are on the first screen; the rules
+/* Phones: a one-line running head, so the first entry's proofs are on the first screen; the rules
    wait behind How to play. */
 @media (max-width: 719px) {
   .front { gap: 16px; margin-top: 12px; }
   .runhead { gap: 6px 10px; }
-  .rh-left { flex-wrap: nowrap; }
-  .rh-alt { font-size: 1.1rem; }
-  .rh-where { font-size: .62rem; letter-spacing: .06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rh-where { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .w-main { font-size: 1.02rem; }
   .w-extra { display: none; }
-  .ropes-label { display: none; }
-  .ropes { gap: 3px; }
-  .rope-seg { width: 18px; }
   .slot-head { font-size: 1.08rem; }
-  .camp-head { flex-wrap: nowrap; font-size: .64rem; letter-spacing: .1em; }
-  .ch-sub { letter-spacing: .04em; white-space: nowrap; }
+  .band-head { flex-wrap: nowrap; font-size: .64rem; letter-spacing: .1em; }
+  .bh-sub { letter-spacing: .04em; white-space: nowrap; }
   /* Proof A and B move into the card's corner. */
   .proof-label { position: absolute; right: 12px; top: 12px; }
   button.card .hw-line { padding-right: 64px; }
 }
 /* The smallest phones: everything a size down, so long headwords like FLIBBERTIGIBBET stay whole. */
 @media (max-width: 359px) {
-  .rope-seg { width: 15px; }
   .nameplate { font-size: 2.2rem; }
-  .camp-head { flex-wrap: wrap; }
+  .band-head { flex-wrap: wrap; }
   .card .hw { font-size: 1.08rem; }
   button.card .hw-line { padding-right: 58px; }
 }
@@ -278,45 +267,42 @@ button.card .hw-line { padding-right: 0; }
 <div class="paper">
   <header class="masthead">
     <div class="ear ear-left">
-      <span class="ear-kicker">Today’s climb</span>
-      <span>Twelve ledges, three ropes</span>
+      <span class="ear-kicker">Today’s page</span>
+      <span>Twelve entries, three errata allowed</span>
     </div>
     <h1 class="nameplate">The Mountweazel</h1>
     <div class="ear ear-right">
       <span class="ear-kicker">Forecast</span>
-      <span>Clear in the foothills, fog at the summit.</span>
+      <span>Foggy, with forgeries likely.</span>
     </div>
     <div class="folio">
-      <span id="issue">Vol. I · Climb No. 1</span>
+      <span id="issue">Vol. I · No. 1</span>
       <span id="dateline"></span>
       <span class="price">Price one penny</span>
     </div>
   </header>
 
   <div class="runhead" id="runhead">
-    <div class="rh-left">
-      <span class="rh-alt" id="alt">0 ft</span>
-      <p class="rh-where" id="where"></p>
-    </div>
-    <div class="ropes" id="ropes" role="img" aria-label="3 ropes left"><span class="ropes-label" aria-hidden="true">Ropes</span></div>
+    <p class="rh-where" id="where"></p>
+    <div class="errata" id="errata" role="img" aria-label="0 of 3 errata"><span class="errata-label" aria-hidden="true">Errata</span></div>
   </div>
 
   <div class="front">
     <article class="lead">
-      <p class="kicker">Expedition</p>
-      <h2 class="headline">Twelve Ledges Up Mount Weazel</h2>
-      <p class="deck">Two old words wait on every ledge, one real and one forged. Pick the real one to climb, and it’s set on the word page. You carry three ropes; a wrong pick cuts one.</p>
+      <p class="kicker">Lexicography</p>
+      <h2 class="headline">Forgeries Slip Onto the Word Page</h2>
+      <p class="deck">Every entry on today’s page comes as two proofs, one real and one forged. Pick the real word to set it in type. A wrong pick goes to press as an erratum, and the third erratum pulls the page.</p>
       <details class="rules">
         <summary>How to play</summary>
         <div class="story">
-          <p>Tap the word you think is real. Both are then revealed: where the real word comes from, and how the forgery was made. Climb on, and the ledge is set on the word page: the real entry in type, the forgery struck out.</p>
-          <p>The words grow rarer and stranger as you climb, from the foothills to the summit at 12,000 feet. A wrong pick cuts a rope, and the forgery goes to press with an erratum, but you keep climbing. Lose all three ropes and the climb ends where you stand.</p>
+          <p>Tap the proof you think is real. Both are then revealed: where the real word comes from, and how the forgery was made. The entry then takes its place on the word page, the real word in type and the forgery struck out beneath it.</p>
+          <p>The words grow rarer down the page, from the familiar to the all but lost. A wrong pick goes to press as an erratum; at the third, the editor pulls the page.</p>
           <p>A mountweazel is a fake entry planted in a reference work to catch copiers. With a keyboard, press <kbd>←</kbd> or <kbd>→</kbd> to pick.</p>
         </div>
       </details>
     </article>
 
-    <main class="page" id="ascent" aria-label="The word page">
+    <main class="page" id="page" aria-label="The word page">
       <div class="section-head">
         <h2 class="section-title">The word page</h2>
         <span class="heads" id="set-count">0 of 12 set</span>
@@ -324,14 +310,13 @@ button.card .hw-line { padding-right: 0; }
       <ol class="slots" id="slots"></ol>
       <div class="next-bar" id="next-bar" hidden>
         <p class="verdict-line" id="verdict-line"></p>
-        <button class="btn btn-go" id="climb-on" type="button">Climb on</button>
+        <button class="btn btn-go" id="next-proof" type="button">Next proof</button>
       </div>
 
       <section class="press" id="press" hidden aria-label="Result">
         <p class="kicker">Stop press</p>
-        <svg class="badge" id="badge" viewBox="0 0 128 128" aria-hidden="true"></svg>
-        <p class="badge-name" id="badge-name"></p>
-        <h2 id="verdict" tabindex="-1">Summit reached</h2>
+        <p class="press-stamp" id="press-stamp"></p>
+        <h2 id="verdict" tabindex="-1">The Page Goes to Press</h2>
         <p id="press-stats" class="muted"></p>
         <textarea id="share-text" rows="3" readonly aria-label="Your result to share"></textarea>
         <div class="controls">
@@ -340,13 +325,13 @@ button.card .hw-line { padding-right: 0; }
         </div>
       </section>
 
-      <p class="colophon">Every forgery here was invented for the climb. What the real entries say comes from dictionaries and the works they quote.</p>
+      <p class="colophon">Every forgery here was invented for this puzzle. What the real entries say comes from dictionaries and the works they quote.</p>
     </main>
   </div>
 </div>
 <p id="live" class="sr-only" aria-live="polite"></p>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
-<script src="climbs.js"></script>
-<script src="climb.js"></script>
+<script src="pages.js"></script>
+<script src="game.js"></script>
 </body>
 </html>
