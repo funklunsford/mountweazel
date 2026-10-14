@@ -12,6 +12,10 @@ Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html`
 
 Every merge to `main` runs `npm run check` and, if every page passes, publishes the page (`index.html`, `game.js`, `pages.js` and the images in `share/`) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
 
+## Advertising
+
+A banner across the top of the page, above the masthead, holds one advertisement. It's labelled "Advertisement" and ruled off from the paper. The slot, `#ad-top` in `index.html`, is a standard size: 728 × 90 on screens 760px wide or more, and 320 × 50 on phones, where the banner runs edge to edge. The space is reserved, so the page doesn't jump when an ad loads. To show ads, replace the house notice inside `#ad-top` with an ad network's banner unit. Until then, the notice reads "This Space to Let".
+
 ## Share card
 
 When the site's link is shared, previews show `share/card.png`: a 1200 × 630 card with the nameplate and a plain statement of what the game is. It shows no words from any page. `share/square.png` is a simpler square version, a blackletter M in a double-ruled frame with the name beneath, for apps that show square thumbnails. The M on its own makes the site's icons: `favicon.png` for the browser tab and `apple-touch-icon.png` for phone home screens.
