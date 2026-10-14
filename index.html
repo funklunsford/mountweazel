@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body { margin: 0; }</style>
 <title>Mountweazel</title>
-<meta name="description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
+<meta name="description" content="A word puzzle in the newspaper, and you’re the editor. Every entry on today’s word page reaches your desk as two proofs, one real and one forged. Send the real word to press; pass a forgery and it’s an erratum, and three errata pull the page. The words grow rarer down the page.">
 <link rel="canonical" href="https://funklunsford.github.io/mountweazel/">
 <meta name="theme-color" content="#ecebe5">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141413">
@@ -14,31 +14,31 @@
 <!-- Link previews: share/card.html (wide) and share/square.html (square), rendered by `npm run share-card`. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mountweazel">
-<meta property="og:title" content="The Mountweazel: find the forgeries on the word page">
-<meta property="og:description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
+<meta property="og:title" content="The Mountweazel: you’re the editor, and the word page is full of forgeries">
+<meta property="og:description" content="A word puzzle in the newspaper, and you’re the editor. Every entry on today’s word page reaches your desk as two proofs, one real and one forged. Send the real word to press; pass a forgery and it’s an erratum, and three errata pull the page. The words grow rarer down the page.">
 <meta property="og:url" content="https://funklunsford.github.io/mountweazel/">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="The Mountweazel, a word puzzle: find the forgeries before the page goes to press. Every entry comes as two proofs, one real and one forged.">
+<meta property="og:image:alt" content="The Mountweazel, a word puzzle: you’re the editor. Catch the forgeries before they go to press; every entry comes as two proofs, one real and one forged.">
 <meta property="og:image" content="https://funklunsford.github.io/mountweazel/share/square.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:alt" content="A blackletter M in a double-ruled frame, above the words “The Mountweazel, a word puzzle”.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Mountweazel: find the forgeries on the word page">
-<meta name="twitter:description" content="A word puzzle in the newspaper: every entry on today’s word page comes as two proofs, one real and one forged. Pick the real word to set it in type; a wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.">
+<meta name="twitter:title" content="The Mountweazel: you’re the editor, and the word page is full of forgeries">
+<meta name="twitter:description" content="A word puzzle in the newspaper, and you’re the editor. Every entry on today’s word page reaches your desk as two proofs, one real and one forged. Send the real word to press; pass a forgery and it’s an erratum, and three errata pull the page. The words grow rarer down the page.">
 <meta name="twitter:image" content="https://funklunsford.github.io/mountweazel/share/card.png">
-<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: find the forgeries before the page goes to press. Every entry comes as two proofs, one real and one forged.">
+<meta name="twitter:image:alt" content="The Mountweazel, a word puzzle: you’re the editor. Catch the forgeries before they go to press; every entry comes as two proofs, one real and one forged.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,800;1,6..72,400&family=UnifrakturMaguntia&display=swap">
 <style>
-/* A word puzzle inside a newspaper. The masthead and the lead are set like a front page; the game
-   is the word page, which you set one entry at a time from two proofs each. A running head keeps
-   your place and your errata in view. */
+/* A word puzzle inside a newspaper, played as its editor. The masthead and the lead are set like a
+   front page; the game is the word page, which you set one entry at a time from two proofs each. A
+   running head keeps your place and your errata in view. */
 :root {
   --newsprint: #ecebe5; --sheet: #f6f4ee;
   --ink: #161514; --ink-2: #57544d; --rule: #b8b4aa; --shadow: #161514;
@@ -267,8 +267,8 @@ button.card .hw-line { padding-right: 0; }
 <div class="paper">
   <header class="masthead">
     <div class="ear ear-left">
-      <span class="ear-kicker">Today’s page</span>
-      <span>Twelve entries, three errata allowed</span>
+      <span class="ear-kicker">Editor’s desk</span>
+      <span>Twelve entries to pass, three errata allowed</span>
     </div>
     <h1 class="nameplate">The Mountweazel</h1>
     <div class="ear ear-right">
@@ -289,14 +289,14 @@ button.card .hw-line { padding-right: 0; }
 
   <div class="front">
     <article class="lead">
-      <p class="kicker">Lexicography</p>
-      <h2 class="headline">Forgeries Slip Onto the Word Page</h2>
-      <p class="deck">Every entry on today’s page comes as two proofs, one real and one forged. Pick the real word to set it in type. A wrong pick goes to press as an erratum, and the third erratum pulls the page.</p>
+      <p class="kicker">To the editor</p>
+      <h2 class="headline">Forgeries on Today’s Word Page</h2>
+      <p class="deck">You’re the editor. Every entry on today’s word page has come back with a forged twin. Send the real word to press. Pass a forgery and you print an erratum; three errata, and the page is pulled.</p>
       <details class="rules">
         <summary>How to play</summary>
         <div class="story">
-          <p>Tap the proof you think is real. Both are then revealed: where the real word comes from, and how the forgery was made. The entry then takes its place on the word page, the real word in type and the forgery struck out beneath it.</p>
-          <p>The words grow rarer down the page, from the familiar to the all but lost. A wrong pick goes to press as an erratum; at the third, the editor pulls the page.</p>
+          <p>Each entry reaches your desk as two proofs. Tap the one you think is real. Both are then revealed: where the real word comes from, and how the forgery was made. The entry takes its place on your page, the real word in type and the forgery struck out beneath it.</p>
+          <p>The words grow rarer down the page, from the familiar to the all but lost. Pass a forgery and it goes to press as an erratum; at the third erratum, the page is pulled.</p>
           <p>A mountweazel is a fake entry planted in a reference work to catch copiers. With a keyboard, press <kbd>←</kbd> or <kbd>→</kbd> to pick.</p>
         </div>
       </details>

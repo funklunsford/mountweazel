@@ -4,5 +4,4 @@ __pycache__/
 # Word lists for the tools, and their output, can name a page's answers.
 candidates*.json
 verify-out*.txt
-*-altitude.json
 *-rarity.json

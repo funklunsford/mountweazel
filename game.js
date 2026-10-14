@@ -1,19 +1,17 @@
-/* Mountweazel: a word puzzle in the newspaper. Every entry on today's word page comes as two proofs,
-   one genuine and one forged. Pick the genuine word to set it in type; a wrong pick goes to press as
-   an erratum, and the third erratum pulls the page. The words are in pages.js. */
+/* Mountweazel: a word puzzle in the newspaper, played as its editor. Every entry on today's word
+   page reaches the desk as two proofs, one real and one forged. Send the real word to press; a forgery
+   goes to press as an erratum, and the third erratum pulls the page. The words are in pages.js. */
 'use strict';
 
 if (typeof document !== 'undefined') {
   const ERRATA = 3;
-  // Progress is saved under the names the game had when it was framed as a climb, so a game in
-  // progress carries over.
-  const RULES_KEY = 'mountweazel-climb-rules-seen';
+  const RULES_KEY = 'mountweazel-page-rules-seen';
   const $ = sel => document.querySelector(sel);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const page = PAGES[PAGES.length - 1];
   const entries = page.entries;
-  const saveKey = 'mountweazel-climb-' + page.number;
+  const saveKey = 'mountweazel-page-' + page.number;
 
   // picks: the proof picked for each entry so far. seen: how many of those reveals you've moved on from.
   let state = null;
@@ -150,7 +148,7 @@ if (typeof document !== 'undefined') {
       return;
     }
     if (kind === 'frontier' || kind === 'reveal') {
-      const head = el('h3', 'slot-head', kind === 'frontier' ? 'Which word is real?' : `Entry ${i + 1}, revealed`);
+      const head = el('h3', 'slot-head', kind === 'frontier' ? 'Which goes to press?' : `Entry ${i + 1}, revealed`);
       head.append(el('span', 'sh-sub', kind === 'frontier' ? `Entry ${i + 1} of ${entries.length}` : e.band));
       if (kind === 'frontier') head.id = 'prompt';
       const pair = el('div', 'pair' + (arrive && !reduceMotion ? ' arrive' : ''));
@@ -246,11 +244,11 @@ if (typeof document !== 'undefined') {
     const n = errata();
     verdictLine.className = 'verdict-line ' + (right ? 'right' : 'wrong');
     if (right) verdictLine.textContent = complete()
-      ? `Right: ${upper(e.real.word)} is real. The page is complete.`
-      : `Right: ${upper(e.real.word)} is real.`;
-    else if (pulled()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, and the page is pulled.`;
-    else if (complete()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, but the page is complete.`;
-    else verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}.`;
+      ? `Right: ${upper(e.real.word)} is real. Your page is ready for press.`
+      : `Right: ${upper(e.real.word)} is real, and goes to press.`;
+    else if (pulled()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, and your page is pulled.`;
+    else if (complete()) verdictLine.textContent = `${upper(e.fake.word)} was the forgery: erratum ${n} of ${ERRATA}, but your page is ready for press.`;
+    else verdictLine.textContent = `${upper(e.fake.word)} was the forgery, and it went to press: erratum ${n} of ${ERRATA}.`;
     nextBtn.textContent = over() ? 'See the page' : 'Next proof';
   }
 
@@ -260,10 +258,10 @@ if (typeof document !== 'undefined') {
     const stamp = $('#press-stamp');
     stamp.textContent = done ? 'Passed for press' : 'Pulled';
     stamp.className = 'press-stamp ' + (done ? 'pass' : 'pulled');
-    $('#verdict').textContent = done ? (n === 0 ? 'A Clean Page' : 'The Page Goes to Press') : `Page Pulled at Entry ${state.picks.length}`;
+    $('#verdict').textContent = done ? (n === 0 ? 'A Clean Page' : 'Your Page Goes to Press') : `Your Page Is Pulled at Entry ${state.picks.length}`;
     $('#press-stats').textContent = done
-      ? `All ${entries.length} entries set, with ${errataText(n)}.`
-      : `${state.picks.length > ERRATA ? `${state.picks.length - ERRATA} of ${entries.length} entries` : 'No entries'} went in clean before the third erratum, at entry ${state.picks.length}.`;
+      ? `You set all ${entries.length} entries, with ${errataText(n)}.`
+      : `You set ${state.picks.length > ERRATA ? `${state.picks.length - ERRATA} of ${entries.length} entries` : 'no entries'} clean before the third erratum, at entry ${state.picks.length}.`;
     $('#share-text').value = shareText();
   }
 

@@ -1,6 +1,6 @@
 # Mountweazel
 
-A word puzzle in the newspaper. Every entry on today's word page comes as two proofs, one real old word and one forgery; pick the real word to set it in type. A wrong pick goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.
+A word puzzle in the newspaper, and you're the editor. Every entry on today's word page reaches your desk as two proofs, one real old word and one forgery; send the real word to press. Pass a forgery and it goes to press as an erratum, and the third erratum pulls the page. The words grow rarer down the page.
 
 A *mountweazel* is a fake entry planted in a reference work. The name comes from Lillian Virginia Mountweazel, an invented person slipped into the 1975 New Columbia Encyclopedia.
 
@@ -10,13 +10,13 @@ A *mountweazel* is a fake entry planted in a reference work. The name comes from
 
 Play it at **https://funklunsford.github.io/mountweazel/**, or open `index.html` in a browser. There's no build step and nothing to install.
 
-- **The word page is set one entry at a time.** The current entry shows two proofs, A and B. Tap the one you think is real, or press ← or → on a keyboard. Both are then revealed: the real word's history, with a quotation where there is one, and how the forgery was made.
+- **You set the word page one entry at a time.** The current entry shows two proofs, A and B. Tap the one you think is real, or press ← or → on a keyboard. Both are then revealed: the real word's history, with a quotation where there is one, and how the forgery was made.
 - **Next proof sets the entry.** The real word goes into the page in type, with the forgery struck out beneath it, a ✓ or ✗ in the margin and the history behind a History link.
 - **A wrong pick goes to press as an erratum.** The page carries a note of it, and one of the three erratum boxes in the running head is struck. The third erratum pulls the page.
 - **Bands of rarity divide the page:** Familiar (entries 1–3), Uncommon (4–6), Rare (7–9), Obscure (10–11) and All but lost (12). A band's heading lights up as you reach it.
 - **At the end,** the Stop press box stamps the page passed for press or pulled, and gives you a grid to share (🟩 a real word set, 🟥 an erratum, ⬜ not set). If the page was pulled, the entries it never reached are filled in, greyed.
 
-The browser keeps your progress, so a reload picks up where you left off. It's saved under the `mountweazel-climb-` keys from when the game was framed as a climb, so a game already in progress carries over.
+The browser keeps your progress, so a reload picks up where you left off.
 
 Every merge to `main` runs `npm run check` and, if every page passes, publishes the site (`index.html`, `game.js`, `pages.js` and the images in `share/`) to GitHub Pages; see `.github/workflows/deploy.yml`. Pull requests are checked but not published.
 
@@ -39,7 +39,7 @@ There is one page so far, No. 1. Its words come from the deduction pages that ca
 
 ## Earlier versions
 
-Mountweazel began as a no-guess deduction page, modelled on [Clues by Sam](https://cluesbysam.com): a dictionary page with a few forged entries, where every genuine entry you verified gave a clue about the others. It played well, but it was a logic puzzle more than a word game. That version is in the git history, up to commit `1a08bf2`. The pairs came next, framed for a while as a climb up a mountain; the framing went, and the pairs stayed.
+Mountweazel began as a no-guess deduction page, modelled on [Clues by Sam](https://cluesbysam.com): a dictionary page with a few forged entries, where every genuine entry you verified gave a clue about the others. It played well, but it was a logic puzzle more than a word game. That version is in the git history, up to commit `1a08bf2`; the pairs replaced it.
 
 ## Share card
 
